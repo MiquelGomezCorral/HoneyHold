@@ -13,17 +13,17 @@ import MobileHome from './features/mobile/MobileHome.jsx';
 export default function App() {
   const { profiles, profileId, loadError } = useProfile();
   const isMobile = useIsMobile();
-  const [modal, setModal] = useState(null); // { type: 'income' | 'expense' } | null
+  const [modal, setModal] = useState(null);
 
   if (loadError) {
     return (
-      <div className="boot">
-        <p>Can't reach the API ({loadError}).</p>
-        <p className="empty">Is the backend container running? Try <code>docker compose up</code>, then reload.</p>
+      <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
+        <p>{`Can't reach the API (${loadError}).`}</p>
+        <p className="text-muted text-sm">Is the backend container running? Try <code>docker compose up</code>, then reload.</p>
       </div>
     );
   }
-  if (profiles === null) return <div className="boot">Opening the books…</div>;
+  if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
   if (!profileId) return <ProfileGate />;
 
   const openAdd = (type = 'expense') => setModal({ type });
@@ -31,12 +31,11 @@ export default function App() {
   return (
     <>
       {isMobile ? (
-        // Mobile is deliberately radical: the balance and fast entry, nothing else.
         <MobileHome onAdd={openAdd} />
       ) : (
-        <div className="shell">
+        <div>
           <NavBar onAdd={() => openAdd('expense')} />
-          <main className="page">
+          <main className="max-w-[1040px] mx-auto px-8 pb-24 pt-2.5">
             <Routes>
               <Route path="/" element={<DashboardView />} />
               <Route path="/transactions" element={<TransactionsView />} />

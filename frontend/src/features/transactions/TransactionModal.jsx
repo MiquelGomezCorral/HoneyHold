@@ -7,9 +7,6 @@ import { todayISO } from '../../lib/format.js';
 
 const FREQUENCIES = ['weekly', 'monthly', 'quarterly', 'yearly'];
 
-// The one entry form for the whole app: navbar on desktop, the two big
-// buttons on mobile. "Is fixed?" expands the recurrence definition; the
-// backend then creates a rule and materializes the due occurrences.
 export default function TransactionModal({ defaultType = 'expense', onClose }) {
   const { profileId, bump } = useProfile();
   const { data: accounts } = useFetch(`/profiles/${profileId}/accounts`, [profileId]);
@@ -71,39 +68,57 @@ export default function TransactionModal({ defaultType = 'expense', onClose }) {
 
   return (
     <Modal title="Add entry" onClose={onClose}>
-      <form className="entry-form" onSubmit={submit}>
-        <div className="seg full" role="group" aria-label="Entry type">
-          <button type="button" className={form.type === 'expense' ? 'on' : ''} onClick={() => setForm((f) => ({ ...f, type: 'expense' }))}>
+      <form className="flex flex-col gap-4" onSubmit={submit}>
+        <div className="flex gap-0.5 p-0.5 border border-hairline rounded-[10px]" role="group" aria-label="Entry type">
+          <button
+            type="button"
+            className={
+              `border-0 bg-transparent flex-1 px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-colors hover:text-ink${
+                form.type === 'expense' ? ' bg-accent-soft text-ink font-semibold' : ''
+              }`
+            }
+            onClick={() => setForm((f) => ({ ...f, type: 'expense' }))}
+          >
             Expense
           </button>
-          <button type="button" className={form.type === 'income' ? 'on' : ''} onClick={() => setForm((f) => ({ ...f, type: 'income' }))}>
+          <button
+            type="button"
+            className={
+              `border-0 bg-transparent flex-1 px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-colors hover:text-ink${
+                form.type === 'income' ? ' bg-accent-soft text-ink font-semibold' : ''
+              }`
+            }
+            onClick={() => setForm((f) => ({ ...f, type: 'income' }))}
+          >
             Income
           </button>
         </div>
 
-        <div className="grid2">
-          <div className="field">
-            <label htmlFor="tm-amount">Amount (€)</label>
+        <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <label htmlFor="tm-amount" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Amount (€)</label>
             <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
           </div>
-          <div className="field">
-            <label htmlFor="tm-date">Date</label>
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <label htmlFor="tm-date" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Date</label>
             <input id="tm-date" type="date" value={form.txn_date} onChange={set('txn_date')} required />
           </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="tm-concept">Concept</label>
+        <div className="flex flex-col gap-1.5 min-w-0">
+          <label htmlFor="tm-concept" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Concept</label>
           <input id="tm-concept" type="text" value={form.concept} onChange={set('concept')} placeholder="Groceries at Mercadona" required />
         </div>
 
-        <div className="grid2">
-          <div className="field">
-            <label htmlFor="tm-who">{form.type === 'income' ? 'Payer' : 'Payee'}</label>
+        <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <label htmlFor="tm-who" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">
+              {form.type === 'income' ? 'Payer' : 'Payee'}
+            </label>
             <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} />
           </div>
-          <div className="field">
-            <label htmlFor="tm-tag">Tag</label>
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <label htmlFor="tm-tag" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Tag</label>
             <input id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} placeholder="Pick or type a new one" />
             <datalist id="tm-tags">
               {(tags || []).map((t) => (
@@ -113,8 +128,8 @@ export default function TransactionModal({ defaultType = 'expense', onClose }) {
           </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="tm-account">Account</label>
+        <div className="flex flex-col gap-1.5 min-w-0">
+          <label htmlFor="tm-account" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Account</label>
           <select id="tm-account" value={accountId} onChange={set('account_id')}>
             {(accounts || []).map((a) => (
               <option key={a.id} value={a.id}>
@@ -124,22 +139,22 @@ export default function TransactionModal({ defaultType = 'expense', onClose }) {
           </select>
         </div>
 
-        <label className="switch-row">
-          <span className="switch">
-            <input type="checkbox" checked={form.is_fixed} onChange={set('is_fixed')} />
-            <i />
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <span className="relative flex-shrink-0 w-[38px] h-[22px] mt-px">
+            <input type="checkbox" className="absolute inset-0 opacity-0 m-0 cursor-pointer peer" checked={form.is_fixed} onChange={set('is_fixed')} />
+            <i className="absolute inset-0 rounded-full bg-hairline peer-checked:bg-accent transition-colors pointer-events-none after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-transform peer-checked:after:translate-x-4" />
           </span>
           <span>
             Is fixed?
-            <small>Repeats automatically as a recurring entry</small>
+            <small className="block text-muted text-xs">Repeats automatically as a recurring entry</small>
           </span>
         </label>
 
         {form.is_fixed && (
-          <div className="fixed-block">
-            <div className="grid2">
-              <div className="field">
-                <label htmlFor="tm-freq">Frequency</label>
+          <div className="flex flex-col gap-3 pl-[14px] border-l-2 border-accent-soft">
+            <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
+              <div className="flex flex-col gap-1.5 min-w-0">
+                <label htmlFor="tm-freq" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Frequency</label>
                 <select id="tm-freq" value={form.frequency} onChange={set('frequency')}>
                   {FREQUENCIES.map((f) => (
                     <option key={f} value={f}>
@@ -148,22 +163,30 @@ export default function TransactionModal({ defaultType = 'expense', onClose }) {
                   ))}
                 </select>
               </div>
-              <div className="field">
-                <label htmlFor="tm-start">Starts on</label>
+              <div className="flex flex-col gap-1.5 min-w-0">
+                <label htmlFor="tm-start" className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Starts on</label>
                 <input id="tm-start" type="date" value={form.start_date} onChange={set('start_date')} required />
               </div>
             </div>
-            <p className="hint">Past occurrences since the start date are added right away.</p>
+            <p className="m-0 text-xs text-muted">Past occurrences since the start date are added right away.</p>
           </div>
         )}
 
-        {error && <p className="form-error" role="alert">{error}</p>}
+        {error && <p className="m-0 text-sm text-neg" role="alert">{error}</p>}
 
-        <div className="form-actions">
-          <button type="button" className="btn quiet" onClick={onClose}>
+        <div className="flex justify-end gap-2.5 mt-1">
+          <button
+            type="button"
+            className="bg-transparent text-accent px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors border border-hairline hover:bg-accent-soft"
+            onClick={onClose}
+          >
             Cancel
           </button>
-          <button type="submit" className="btn" disabled={saving}>
+          <button
+            type="submit"
+            className="border-0 bg-accent text-white px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors hover:bg-accent-deep disabled:opacity-45 disabled:cursor-default"
+            disabled={saving}
+          >
             {saving ? 'Saving…' : form.type === 'income' ? 'Add income' : 'Add expense'}
           </button>
         </div>

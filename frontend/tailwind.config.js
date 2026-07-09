@@ -1,0 +1,24 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx}'],
+  theme: {
+    extend: {
+      colors: {
+        paper: '#f2f7fb',
+        'paper-raise': '#fafcfe',
+        ink: '#16324a',
+        muted: '#5e7e99',
+        hairline: '#d3e2ee',
+        accent: '#1f6fae',
+        'accent-deep': '#185a8e',
+        'accent-soft': '#dbeaf6',
+        neg: '#a04b3c',
+      },
+      fontFamily: {
+        ui: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'Times New Roman', 'serif'],
+      },
+    },
+  },
+  plugins: [],
+};

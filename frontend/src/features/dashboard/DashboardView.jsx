@@ -15,78 +15,80 @@ export default function DashboardView() {
     [profileId, period.year, period.month, version]
   );
 
-  if (error) return <p className="form-error">Couldn't load the dashboard: {error}</p>;
-  if (!data) return <p className="empty">{loading ? 'Adding things up…' : ''}</p>;
+  if (error) return <p className="text-neg text-sm">{`Couldn't load the dashboard: ${error}`}</p>;
+  if (!data) return <p className="text-muted text-sm">{loading ? 'Adding things up…' : ''}</p>;
 
   const { accounts, totalBalance, month, fixedVsVariable, byTag, goals } = data;
 
   return (
     <>
-      <div className="page-controls">
+      <div className="flex items-center justify-between gap-4 pt-[22px]">
         <PeriodNav year={period.year} month={period.month} onChange={setPeriod} />
       </div>
 
-      <section className="section">
-        <div className="section-head">
-          <h2 className="eyebrow">Balance</h2>
-          <span className="eyebrow-aside">All accounts, all time</span>
+      <section className="mt-12 border-t border-hairline pt-[14px]">
+        <div className="flex items-baseline justify-between gap-4 mb-5">
+          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Balance</h2>
+          <span className="text-xs text-muted">All accounts, all time</span>
         </div>
-        <div className="hero">
-          <p className={`balance-figure num${totalBalance < 0 ? ' neg' : ''}`}>{money(totalBalance)}</p>
-          <ul className="accounts-list">
+        <div className="grid grid-cols-[1.1fr_1fr] gap-14 items-start max-lg:grid-cols-1 max-lg:gap-7">
+          <p className={`m-0 font-display font-semibold text-[64px] leading-[1.05] tracking-tight tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
+            {money(totalBalance)}
+          </p>
+          <ul className="list-none mt-1 p-0">
             {accounts.map((a) => (
-              <li key={a.id} className="acc-row">
+              <li key={a.id} className="flex justify-between items-baseline gap-4 py-[9px] border-b border-hairline last:border-b-0">
                 <span>
                   {a.name}
-                  <span className="acc-kind">{a.kind}</span>
+                  <span className="ml-2 text-xs text-muted">{a.kind}</span>
                 </span>
-                <span className="acc-balance num">{money(a.balance)}</span>
+                <span className="font-semibold whitespace-nowrap tabular-nums">{money(a.balance)}</span>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <h2 className="eyebrow">This month</h2>
+      <section className="mt-12 border-t border-hairline pt-[14px]">
+        <div className="flex items-baseline justify-between gap-4 mb-5">
+          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">This month</h2>
         </div>
-        <div className="stats">
-          <div className="stat">
-            <span className="stat-label">Income</span>
-            <span className="stat-value num income">{money(month.income)}</span>
+        <div className="flex gap-16 flex-wrap">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted">Income</span>
+            <span className="text-[26px] font-semibold tabular-nums text-accent">{money(month.income)}</span>
           </div>
-          <div className="stat">
-            <span className="stat-label">Expenses</span>
-            <span className="stat-value num">{money(month.expense)}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted">Expenses</span>
+            <span className="text-[26px] font-semibold tabular-nums">{money(month.expense)}</span>
           </div>
-          <div className="stat">
-            <span className="stat-label">Net</span>
-            <span className={`stat-value num${month.net >= 0 ? ' income' : ' neg'}`}>{money(month.net)}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted">Net</span>
+            <span className={`text-[26px] font-semibold tabular-nums${month.net >= 0 ? ' text-accent' : ' text-neg'}`}>{money(month.net)}</span>
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <h2 className="eyebrow">Where it goes</h2>
+      <section className="mt-12 border-t border-hairline pt-[14px]">
+        <div className="flex items-baseline justify-between gap-4 mb-5">
+          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Where it goes</h2>
         </div>
-        <div className="charts">
+        <div className="grid grid-cols-2 gap-14 max-lg:grid-cols-1 max-lg:gap-7">
           <div>
-            <h3 className="chart-title">Fixed vs. variable</h3>
+            <h3 className="m-0 mb-2 text-sm font-semibold">Fixed vs. variable</h3>
             <Donut data={fixedVsVariable} emptyNote="No expenses this month yet." />
           </div>
           <div>
-            <h3 className="chart-title">Spending by tag</h3>
+            <h3 className="m-0 mb-2 text-sm font-semibold">Spending by tag</h3>
             <Donut data={byTag} emptyNote="Add an expense to see the breakdown." />
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <h2 className="eyebrow">Goals</h2>
-          <span className="eyebrow-aside">{period.year}</span>
+      <section className="mt-12 border-t border-hairline pt-[14px]">
+        <div className="flex items-baseline justify-between gap-4 mb-5">
+          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Goals</h2>
+          <span className="text-xs text-muted">{period.year}</span>
         </div>
         <GoalsPanel goals={goals} year={period.year} />
       </section>

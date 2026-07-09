@@ -1,24 +1,27 @@
 import { useProfile } from '../context/ProfileContext.jsx';
 
-// First-load screen: pick who is keeping the books. No passwords by design —
-// a profile is a data scope, not an identity.
 export default function ProfileGate() {
   const { profiles, setProfileId } = useProfile();
 
   return (
-    <div className="gate">
-      <span className="wordmark gate-mark">
-        hucha<span className="dot">.</span>
+    <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
+      <span className="font-display font-semibold text-[34px] tracking-tight">
+        hucha<span className="text-accent">.</span>
       </span>
-      <p className="gate-lead">Who is keeping the books?</p>
-      <div className="gate-choices">
+      <p className="my-[14px] mb-7 text-muted">Who is keeping the books?</p>
+      <div className="flex gap-3 flex-wrap justify-center">
         {profiles.map((p) => (
-          <button key={p.id} type="button" onClick={() => setProfileId(p.id)}>
+          <button
+            key={p.id}
+            type="button"
+            className="border border-hairline bg-transparent text-ink px-8 py-4 rounded-xl font-semibold text-base cursor-pointer transition-colors hover:bg-accent-soft hover:border-accent"
+            onClick={() => setProfileId(p.id)}
+          >
             {p.display_name}
           </button>
         ))}
       </div>
-      <p className="gate-note">You can switch profiles any time from the top bar.</p>
+      <p className="mt-[26px] text-[13px] text-muted">You can switch profiles any time from the top bar.</p>
     </div>
   );
 }
