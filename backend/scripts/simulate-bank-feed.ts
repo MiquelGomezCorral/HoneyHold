@@ -1,9 +1,3 @@
-// Pretends to be an Open Banking connector: pushes a few raw bank movements
-// to POST /api/ingest, where they wait in the Inbox for human triage.
-//
-//   docker compose exec backend node scripts/simulate-bank-feed.js
-//
-// From the host instead: INGEST_URL=http://localhost:4000/api/ingest node scripts/simulate-bank-feed.js
 const url = process.env.INGEST_URL || 'http://localhost:4000/api/ingest';
 const token = process.env.INGEST_TOKEN || 'dev-ingest-token';
 const today = new Date().toISOString().slice(0, 10);
@@ -15,7 +9,7 @@ const items = [
     external_id: `sim-${batch}-1`,
     profile_slug: 'honey-1',
     account_name: 'BBVA',
-    amount: -23.4, // negative → normalized to an expense
+    amount: -23.4,
     date: today,
     concept: 'CARD PURCHASE 4821 SUPERMARKET',
     counterparty: 'Consum',
@@ -35,7 +29,7 @@ const items = [
   {
     source: 'demo-bank',
     external_id: `sim-${batch}-3`,
-    amount: 120, // no profile hint → lands unassigned, any profile can triage it
+    amount: 120,
     date: today,
     concept: 'TRANSFER RECEIVED',
     counterparty: 'J. Pérez',

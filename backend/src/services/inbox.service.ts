@@ -2,10 +2,25 @@ import { pool } from '../db/pool.js';
 import { HttpError } from '../middleware/errors.js';
 import { accountById } from './profiles.service.js';
 import { resolveTagId } from './tags.service.js';
+import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-// Pending entries the active profile should triage: its own + unassigned ones.
-export async function listPending(profileId) {
-  const [rows] = await pool.query(
+interface InboxEntryRow extends RowDataPacket {
+  id: number;
+  source: string;
+  external_id: string | null;
+  profile_id: number | null;
+  account_id: number | null;
+  suggested_type: string;
+  amount: number;
+  txn_date: string;
+  concept: string | null;
+  counterparty: string | null;
+  raw_payload: string;
+  created_at: string;
+}
+
+export async function listPending(profileId: number) {
+  const [rows] = await pool.query<InboxEntryRow[]>(
     `SELECT id, source, external_id, profile_id, account_id, suggested_type,
             amount, txn_date, concept, counterparty, raw_payload, created_at
        FROM inbox_entries
@@ -16,8 +31,8 @@ export async function listPending(profileId) {
   return rows;
 }
 
-export async function countPending(profileId) {
-  const [rows] = await pool.query(
+export async function countPending(profileId: number): Promise<number> {
+  const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT COUNT(*) AS count FROM inbox_entries
       WHERE status = 'pending' AND (profile_id IS NULL OR profile_id = ?)`,
     [profileId]
@@ -25,33 +40,41 @@ export async function countPending(profileId) {
   return rows[0].count;
 }
 
-// Edit-in-place before approving (the Inbox view PATCHes as the user types).
-export async function updateEntry(id, fields) {
+export async function updateEntry(id: number, fields: Record<string, unknown>) {
   const allowed = ['account_id', 'suggested_type', 'amount', 'txn_date', 'concept', 'counterparty'];
-  const sets = [];
-  const params = [];
+  const sets: string[] = [];
+  const params: unknown[] = [];
   for (const key of allowed) {
     if (key in fields) {
       sets.push(`${key} = ?`);
-      params.push(fields[key] ?? null);
+      params.push((fields as Record<string, unknown>)[key] ?? null);
     }
   }
   if (!sets.length) throw new HttpError(400, 'Nothing to update');
   params.push(id);
-  const [result] = await pool.query(
+  const [result] = await pool.query<ResultSetHeader>(
     `UPDATE inbox_entries SET ${sets.join(', ')} WHERE id = ? AND status = 'pending'`,
     params
   );
   if (!result.affectedRows) throw new HttpError(404, 'Pending inbox entry not found');
 }
 
-// Approve = promote to the ledger + close the entry, atomically.
-export async function approveEntry(id, overrides = {}) {
+interface ApproveOverrides {
+  account_id?: number | string;
+  type?: string;
+  amount?: number | string;
+  txn_date?: string;
+  concept?: string;
+  counterparty?: string | null;
+  tag?: string | null;
+}
+
+export async function approveEntry(id: number, overrides: ApproveOverrides = {}) {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
 
-    const [rows] = await conn.query(
+    const [rows] = await conn.query<RowDataPacket[]>(
       "SELECT * FROM inbox_entries WHERE id = ? AND status = 'pending' FOR UPDATE",
       [id]
     );
@@ -74,10 +97,10 @@ export async function approveEntry(id, overrides = {}) {
     if (!final.txn_date) throw new HttpError(400, 'Date is required');
     if (!final.concept) throw new HttpError(400, 'Concept is required');
 
-    const account = await accountById(final.account_id); // profile derives from the account
+    const account = await accountById(final.account_id);
     const tagId = await resolveTagId(account.profile_id, final.tag);
 
-    const [ins] = await conn.query(
+    const [ins] = await conn.query<ResultSetHeader>(
       `INSERT INTO transactions
          (profile_id, account_id, type, amount, txn_date, concept, counterparty, tag_id, source)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'automated')`,
@@ -103,8 +126,8 @@ export async function approveEntry(id, overrides = {}) {
   }
 }
 
-export async function rejectEntry(id) {
-  const [result] = await pool.query(
+export async function rejectEntry(id: number) {
+  const [result] = await pool.query<ResultSetHeader>(
     `UPDATE inbox_entries SET status = 'rejected', reviewed_at = NOW()
       WHERE id = ? AND status = 'pending'`,
     [id]

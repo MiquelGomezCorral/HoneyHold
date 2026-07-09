@@ -1,15 +1,29 @@
 import { pool } from '../db/pool.js';
 import { HttpError } from '../middleware/errors.js';
+import type { RowDataPacket } from 'mysql2';
+
+interface ProfileRow extends RowDataPacket {
+  id: number;
+  slug: string;
+  display_name: string;
+}
+
+interface AccountRow extends RowDataPacket {
+  id: number;
+  name: string;
+  kind: string;
+  initial_balance: string;
+}
 
 export async function listProfiles() {
-  const [rows] = await pool.query(
+  const [rows] = await pool.query<ProfileRow[]>(
     'SELECT id, slug, display_name FROM profiles ORDER BY id'
   );
   return rows;
 }
 
-export async function listAccounts(profileId) {
-  const [rows] = await pool.query(
+export async function listAccounts(profileId: number) {
+  const [rows] = await pool.query<AccountRow[]>(
     `SELECT id, name, kind, initial_balance
        FROM accounts
       WHERE profile_id = ? AND is_active = 1
@@ -19,9 +33,8 @@ export async function listAccounts(profileId) {
   return rows;
 }
 
-// Returns the account row iff it belongs to the profile — used to validate writes.
-export async function accountInProfile(accountId, profileId) {
-  const [rows] = await pool.query(
+export async function accountInProfile(accountId: number, profileId: number) {
+  const [rows] = await pool.query<RowDataPacket[]>(
     'SELECT id, profile_id FROM accounts WHERE id = ? AND profile_id = ? AND is_active = 1',
     [accountId, profileId]
   );
@@ -29,8 +42,8 @@ export async function accountInProfile(accountId, profileId) {
   return rows[0];
 }
 
-export async function accountById(accountId) {
-  const [rows] = await pool.query(
+export async function accountById(accountId: number) {
+  const [rows] = await pool.query<RowDataPacket[]>(
     'SELECT id, profile_id FROM accounts WHERE id = ? AND is_active = 1',
     [accountId]
   );

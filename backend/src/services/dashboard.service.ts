@@ -1,17 +1,42 @@
 import { pool } from '../db/pool.js';
 import { monthRange, yearRange } from '../utils/dates.js';
 import { getGoals } from './goals.service.js';
+import type { RowDataPacket } from 'mysql2';
 
-const r2 = (n) => Math.round(Number(n) * 100) / 100; // keep JSON money 2-decimal clean
+const r2 = (n: number) => Math.round(Number(n) * 100) / 100;
 
-// Everything the dashboard needs, scoped to one profile + one month,
-// gathered in parallel. Switching profiles only changes the ? bindings.
-export async function getDashboard(profileId, year, month) {
+interface AccountBalanceRow extends RowDataPacket {
+  id: number;
+  name: string;
+  kind: string;
+  balance: number;
+}
+
+interface TypeTotalRow extends RowDataPacket {
+  type: string;
+  total: number;
+}
+
+interface FixedRow extends RowDataPacket {
+  is_fixed: number;
+  total: number;
+}
+
+interface TagTotalRow extends RowDataPacket {
+  label: string;
+  value: number;
+}
+
+interface YtdRow extends RowDataPacket {
+  net: number;
+}
+
+export async function getDashboard(profileId: number, year: number, month: number) {
   const [mStart, mEnd] = monthRange(year, month);
   const [yStart, yEnd] = yearRange(year);
 
   const [accounts, monthRows, fixedRows, tagRows, ytdRows, goals] = await Promise.all([
-    pool.query(
+    pool.query<AccountBalanceRow[]>(
       `SELECT a.id, a.name, a.kind,
               a.initial_balance
               + COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE -t.amount END), 0)
@@ -24,7 +49,7 @@ export async function getDashboard(profileId, year, month) {
       [profileId]
     ).then(([r]) => r),
 
-    pool.query(
+    pool.query<TypeTotalRow[]>(
       `SELECT type, COALESCE(SUM(amount), 0) AS total
          FROM transactions
         WHERE profile_id = ? AND txn_date >= ? AND txn_date < ?
@@ -32,7 +57,7 @@ export async function getDashboard(profileId, year, month) {
       [profileId, mStart, mEnd]
     ).then(([r]) => r),
 
-    pool.query(
+    pool.query<FixedRow[]>(
       `SELECT is_fixed, COALESCE(SUM(amount), 0) AS total
          FROM transactions
         WHERE profile_id = ? AND type = 'expense' AND txn_date >= ? AND txn_date < ?
@@ -40,7 +65,7 @@ export async function getDashboard(profileId, year, month) {
       [profileId, mStart, mEnd]
     ).then(([r]) => r),
 
-    pool.query(
+    pool.query<TagTotalRow[]>(
       `SELECT COALESCE(tg.name, 'Untagged') AS label, SUM(t.amount) AS value
          FROM transactions t
          LEFT JOIN tags tg ON tg.id = t.tag_id
@@ -50,7 +75,7 @@ export async function getDashboard(profileId, year, month) {
       [profileId, mStart, mEnd]
     ).then(([r]) => r),
 
-    pool.query(
+    pool.query<YtdRow[]>(
       `SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) AS net
          FROM transactions
         WHERE profile_id = ? AND txn_date >= ? AND txn_date < ?`,

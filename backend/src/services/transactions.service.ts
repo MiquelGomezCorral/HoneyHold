@@ -5,10 +5,47 @@ import { accountInProfile } from './profiles.service.js';
 import { resolveTagId } from './tags.service.js';
 import { createRule } from './recurring.service.js';
 import { materializeRule } from '../jobs/materialize.js';
+import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-export async function listTransactions(profileId, { year, month, type, accountId, limit = 200 }) {
+interface TransactionRow extends RowDataPacket {
+  id: number;
+  type: string;
+  amount: number;
+  txn_date: string;
+  concept: string;
+  counterparty: string | null;
+  is_fixed: number;
+  source: string;
+  account_name: string;
+  tag_name: string | null;
+}
+
+interface TxnInput {
+  profile_id: number;
+  account_id: number;
+  type: string;
+  amount: number;
+  txn_date: string;
+  concept: string;
+  counterparty?: string | null;
+  tag_id?: number | null;
+  is_fixed?: boolean;
+  source?: string;
+  recurring_rule_id?: number | null;
+}
+
+interface ListQuery {
+  year?: string;
+  month?: string;
+  type?: string;
+  accountId?: string;
+  limit?: string;
+}
+
+export async function listTransactions(profileId: number, query: ListQuery) {
+  const { year, month, type, accountId, limit } = query;
   const where = ['t.profile_id = ?'];
-  const params = [profileId];
+  const params: (string | number)[] = [profileId];
 
   if (year && month) {
     const [start, end] = monthRange(Number(year), Number(month));
@@ -24,7 +61,7 @@ export async function listTransactions(profileId, { year, month, type, accountId
     params.push(Number(accountId));
   }
 
-  const [rows] = await pool.query(
+  const [rows] = await pool.query<TransactionRow[]>(
     `SELECT t.id, t.type, t.amount, t.txn_date, t.concept, t.counterparty,
             t.is_fixed, t.source, a.name AS account_name, tg.name AS tag_name
        FROM transactions t
@@ -38,7 +75,7 @@ export async function listTransactions(profileId, { year, month, type, accountId
   return rows;
 }
 
-function validate(input) {
+function validate(input: { amount: unknown; type: string; txn_date: string; concept: string }): number {
   const amount = Number(input.amount);
   if (!Number.isFinite(amount) || amount <= 0) throw new HttpError(400, 'Amount must be a positive number');
   if (!['income', 'expense'].includes(input.type)) throw new HttpError(400, 'Type must be income or expense');
@@ -47,8 +84,8 @@ function validate(input) {
   return amount;
 }
 
-export async function insertTransaction(txn) {
-  const [result] = await pool.query(
+export async function insertTransaction(txn: TxnInput): Promise<number> {
+  const [result] = await pool.query<ResultSetHeader>(
     `INSERT INTO transactions
        (profile_id, account_id, type, amount, txn_date, concept, counterparty,
         tag_id, is_fixed, source, recurring_rule_id)
@@ -62,11 +99,23 @@ export async function insertTransaction(txn) {
   return result.insertId;
 }
 
-// Entry point for the "Add income / expense" modal.
-// If is_fixed + recurrence → create a rule and let the materializer emit the
-// due occurrences (including today's), so recurring entries have one code path.
-export async function createFromModal(input) {
-  const amount = validate(input);
+export async function createFromModal(input: {
+  profile_id: string | number;
+  account_id: string | number;
+  type: string;
+  amount: unknown;
+  txn_date: string;
+  concept: string;
+  counterparty?: string | null;
+  tag?: string | null;
+  is_fixed?: boolean;
+  recurrence?: {
+    frequency?: string;
+    start_date?: string;
+    end_date?: string;
+  } | null;
+}) {
+  const amount = validate(input as Parameters<typeof validate>[0]);
   const profileId = Number(input.profile_id);
   const accountId = Number(input.account_id);
   await accountInProfile(accountId, profileId);
@@ -86,11 +135,11 @@ export async function createFromModal(input) {
       counterparty: input.counterparty,
       tag_id: tagId,
       frequency: recurrence.frequency,
-      start_date: recurrence.start_date,
+      start_date: recurrence.start_date!,
       end_date: recurrence.end_date,
     });
     const created = await materializeRule(ruleId);
-    return { kind: 'rule', rule_id: ruleId, transactions_created: created };
+    return { kind: 'rule' as const, rule_id: ruleId, transactions_created: created };
   }
 
   const id = await insertTransaction({
@@ -104,10 +153,10 @@ export async function createFromModal(input) {
     tag_id: tagId,
     is_fixed: !!input.is_fixed,
   });
-  return { kind: 'transaction', id };
+  return { kind: 'transaction' as const, id };
 }
 
-export async function deleteTransaction(id) {
-  const [result] = await pool.query('DELETE FROM transactions WHERE id = ?', [id]);
+export async function deleteTransaction(id: number) {
+  const [result] = await pool.query<ResultSetHeader>('DELETE FROM transactions WHERE id = ?', [id]);
   if (!result.affectedRows) throw new HttpError(404, 'Transaction not found');
 }

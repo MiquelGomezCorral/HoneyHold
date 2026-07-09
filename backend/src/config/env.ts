@@ -1,5 +1,18 @@
-// Central place for every environment variable the API reads.
-export const env = {
+interface DbConfig {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+}
+
+interface EnvConfig {
+  port: number;
+  db: DbConfig;
+  ingestToken: string;
+}
+
+export const env: EnvConfig = {
   port: Number(process.env.PORT || 4000),
   db: {
     host: process.env.DB_HOST || '127.0.0.1',

@@ -4,13 +4,11 @@ import * as inbox from '../services/inbox.service.js';
 
 const router = Router();
 
-// Edit a pending entry in place (the Inbox view saves field tweaks here).
 router.patch('/:id', asyncH(async (req, res) => {
   await inbox.updateEntry(Number(req.params.id), req.body);
   res.status(204).end();
 }));
 
-// Approve: promote to the ledger (body may override any suggested field).
 router.post('/:id/approve', asyncH(async (req, res) =>
   res.status(201).json(await inbox.approveEntry(Number(req.params.id), req.body || {}))));
 

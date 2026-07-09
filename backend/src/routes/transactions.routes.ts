@@ -4,7 +4,6 @@ import * as txns from '../services/transactions.service.js';
 
 const router = Router();
 
-// The single write endpoint behind the Add income/expense modal.
 router.post('/', asyncH(async (req, res) =>
   res.status(201).json(await txns.createFromModal(req.body))));
 

@@ -1,21 +1,27 @@
 import { pool } from '../db/pool.js';
 import { HttpError } from '../middleware/errors.js';
+import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-// The decoupled write path for automation (Open Banking connectors, CSV
-// importers, scrapers…). Items only ever land in inbox_entries — a human
-// promotes them to the ledger from the Inbox view.
-//
-// Accepted item shape:
-//   { source*, external_id, amount*, date*, concept, counterparty,
-//     type?, profile_slug?, account_name?, raw? }
-// Negative amounts are normalized to expenses.
-export async function ingestItems(items) {
+interface IngestItem {
+  source?: string;
+  external_id?: string;
+  amount?: unknown;
+  date?: string;
+  concept?: string;
+  counterparty?: string;
+  type?: string;
+  profile_slug?: string;
+  account_name?: string;
+  raw?: Record<string, unknown>;
+}
+
+export async function ingestItems(items: IngestItem[]) {
   if (!Array.isArray(items) || !items.length) {
     throw new HttpError(400, 'Body must be a non-empty array of items');
   }
 
-  const [profiles] = await pool.query('SELECT id, slug FROM profiles');
-  const bySlug = Object.fromEntries(profiles.map((p) => [p.slug, p.id]));
+  const [profiles] = await pool.query<RowDataPacket[]>('SELECT id, slug FROM profiles');
+  const bySlug = Object.fromEntries(profiles.map((p: RowDataPacket) => [p.slug, p.id]));
 
   let inserted = 0;
   let skipped = 0;
@@ -31,16 +37,16 @@ export async function ingestItems(items) {
     const amount = Math.abs(rawAmount);
     const profileId = item.profile_slug ? bySlug[item.profile_slug] ?? null : null;
 
-    let accountId = null;
+    let accountId: number | null = null;
     if (profileId && item.account_name) {
-      const [acc] = await pool.query(
+      const [acc] = await pool.query<RowDataPacket[]>(
         'SELECT id FROM accounts WHERE profile_id = ? AND name = ? AND is_active = 1',
         [profileId, item.account_name]
       );
       accountId = acc[0]?.id ?? null;
     }
 
-    const [result] = await pool.query(
+    const [result] = await pool.query<ResultSetHeader>(
       `INSERT IGNORE INTO inbox_entries
          (source, external_id, profile_id, account_id, suggested_type,
           amount, txn_date, concept, counterparty, raw_payload)
