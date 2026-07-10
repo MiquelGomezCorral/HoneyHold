@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useProfile } from './context/ProfileContext.jsx';
+import { useProfile } from './context/ProfileContext.js';
 import { useIsMobile } from './hooks/useIsMobile.js';
-import NavBar from './components/NavBar.jsx';
-import ProfileGate from './components/ProfileGate.jsx';
-import TransactionModal from './features/transactions/TransactionModal.jsx';
-import DashboardView from './features/dashboard/DashboardView.jsx';
-import TransactionsView from './features/transactions/TransactionsView.jsx';
-import InboxView from './features/inbox/InboxView.jsx';
-import MobileHome from './features/mobile/MobileHome.jsx';
+import NavBar from './components/NavBar.js';
+import ProfileGate from './components/ProfileGate.js';
+import TransactionModal from './features/transactions/TransactionModal.js';
+import DashboardView from './features/dashboard/DashboardView.js';
+import TransactionsView from './features/transactions/TransactionsView.js';
+import InboxView from './features/inbox/InboxView.js';
+import MobileHome from './features/mobile/MobileHome.js';
 
 export default function App() {
   const { profiles, profileId, loadError } = useProfile();
   const isMobile = useIsMobile();
-  const [modal, setModal] = useState(null);
+  const [modal, setModal] = useState<{ type: 'income' | 'expense' } | null>(null);
 
   if (loadError) {
     return (
@@ -26,7 +26,7 @@ export default function App() {
   if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
   if (!profileId) return <ProfileGate />;
 
-  const openAdd = (type = 'expense') => setModal({ type });
+  const openAdd = (type: 'income' | 'expense' = 'expense') => setModal({ type });
 
   return (
     <>

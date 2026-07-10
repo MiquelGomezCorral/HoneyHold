@@ -1,9 +1,15 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { money } from '../lib/format.js';
+import type { DonutSlice } from '../types.js';
 
 const BLUES = ['#1F6FAE', '#5D97C4', '#93BEDC', '#2E4E68', '#7FA6C1', '#C6DDEE', '#B3CCDE'];
 
-export default function Donut({ data, emptyNote }) {
+interface Props {
+  data: DonutSlice[];
+  emptyNote: string;
+}
+
+export default function Donut({ data, emptyNote }: Props) {
   const slices = data.filter((d) => Number(d.value) > 0);
 
   if (!slices.length) {
@@ -29,7 +35,7 @@ export default function Donut({ data, emptyNote }) {
                 <Cell key={entry.label} fill={BLUES[i % BLUES.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(v) => money(v)} separator=" · " />
+            <Tooltip formatter={(v: number) => money(v)} separator=" · " />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -37,10 +43,7 @@ export default function Donut({ data, emptyNote }) {
         {slices.map((entry, i) => (
           <li key={entry.label} className="flex justify-between gap-[14px] py-[7px] border-b border-hairline text-sm last:border-b-0">
             <span>
-              <i
-                className="inline-block w-[10px] h-[10px] rounded-[3px] mr-[9px]"
-                style={{ background: BLUES[i % BLUES.length] }}
-              />
+              <i className="inline-block w-[10px] h-[10px] rounded-[3px] mr-[9px]" style={{ background: BLUES[i % BLUES.length] }} />
               {entry.label}
             </span>
             <span className="tabular-nums">{money(entry.value)}</span>

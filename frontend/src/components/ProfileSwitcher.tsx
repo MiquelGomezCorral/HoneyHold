@@ -1,4 +1,4 @@
-import { useProfile } from '../context/ProfileContext.jsx';
+import { useProfile } from '../context/ProfileContext.js';
 
 export default function ProfileSwitcher() {
   const { profiles, profileId, setProfileId } = useProfile();

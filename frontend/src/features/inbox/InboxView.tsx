@@ -1,11 +1,22 @@
 import { useState } from 'react';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
-import { useProfile } from '../../context/ProfileContext.jsx';
+import { useProfile } from '../../context/ProfileContext.js';
 import { todayISO } from '../../lib/format.js';
+import type { InboxEntry, Account } from '../../types.js';
 
-function InboxRow({ entry, accounts, onDone }) {
-  const [draft, setDraft] = useState({
+interface Draft {
+  account_id: number | string;
+  type: string;
+  amount: number | string;
+  txn_date: string;
+  concept: string;
+  counterparty: string;
+  tag: string;
+}
+
+function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Account[]; onDone: () => void }) {
+  const [draft, setDraft] = useState<Draft>({
     account_id: entry.account_id ?? '',
     type: entry.suggested_type ?? 'expense',
     amount: entry.amount ?? '',
@@ -15,18 +26,19 @@ function InboxRow({ entry, accounts, onDone }) {
     tag: '',
   });
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const set = (key) => (e) => setDraft((d) => ({ ...d, [key]: e.target.value }));
+  const set = (key: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setDraft((d) => ({ ...d, [key]: e.target.value }));
 
-  const act = async (fn) => {
+  const act = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     setError(null);
     try {
       await fn();
       onDone();
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
       setBusy(false);
     }
   };
@@ -59,7 +71,7 @@ function InboxRow({ entry, accounts, onDone }) {
           <label htmlFor={`ib-date-${entry.id}`} className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Date</label>
           <input id={`ib-date-${entry.id}`} type="date" value={draft.txn_date} onChange={set('txn_date')} />
         </div>
-        <div className="flex flex-col gap-1.5 min-w-0 col-span-2 max-lg:col-span-2">
+        <div className="flex flex-col gap-1.5 min-w-0 col-span-2">
           <label htmlFor={`ib-concept-${entry.id}`} className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Concept</label>
           <input id={`ib-concept-${entry.id}`} type="text" value={draft.concept} onChange={set('concept')} />
         </div>
@@ -82,11 +94,7 @@ function InboxRow({ entry, accounts, onDone }) {
           <label htmlFor={`ib-account-${entry.id}`} className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">Account</label>
           <select id={`ib-account-${entry.id}`} value={draft.account_id} onChange={set('account_id')}>
             <option value="">Choose an account…</option>
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
+            {accounts.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
         </div>
         <div className="flex flex-col gap-1.5 min-w-0">
@@ -98,31 +106,15 @@ function InboxRow({ entry, accounts, onDone }) {
       {entry.raw_payload && (
         <details className="mt-3 text-xs text-muted">
           <summary className="cursor-pointer">Raw payload</summary>
-          <pre className="m-2 mt-0 p-2.5 bg-accent-soft rounded-lg overflow-auto text-ink">
-            {JSON.stringify(entry.raw_payload, null, 2)}
-          </pre>
+          <pre className="m-2 mt-0 p-2.5 bg-accent-soft rounded-lg overflow-auto text-ink">{JSON.stringify(entry.raw_payload, null, 2)}</pre>
         </details>
       )}
 
       {error && <p className="m-0 text-sm text-neg mt-3" role="alert">{error}</p>}
 
       <div className="flex justify-end gap-2.5 mt-[14px]">
-        <button
-          type="button"
-          className="bg-transparent text-accent px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors border border-hairline hover:bg-accent-soft disabled:opacity-45"
-          onClick={reject}
-          disabled={busy}
-        >
-          Reject
-        </button>
-        <button
-          type="button"
-          className="border-0 bg-accent text-white px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors hover:bg-accent-deep disabled:opacity-45 disabled:cursor-default"
-          onClick={approve}
-          disabled={busy || !draft.account_id}
-        >
-          Approve
-        </button>
+        <button type="button" className="bg-transparent text-accent px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors border border-hairline hover:bg-accent-soft disabled:opacity-45" onClick={reject} disabled={busy}>Reject</button>
+        <button type="button" className="border-0 bg-accent text-white px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors hover:bg-accent-deep disabled:opacity-45 disabled:cursor-default" onClick={approve} disabled={busy || !draft.account_id}>Approve</button>
       </div>
     </li>
   );
@@ -130,31 +122,22 @@ function InboxRow({ entry, accounts, onDone }) {
 
 export default function InboxView() {
   const { profileId, version, bump } = useProfile();
-  const { data: entries, error } = useFetch(`/profiles/${profileId}/inbox`, [profileId, version]);
-  const { data: accounts } = useFetch(`/profiles/${profileId}/accounts`, [profileId]);
+  const { data: entries } = useFetch<InboxEntry[]>(`/profiles/${profileId}/inbox`, [profileId, version]);
+  const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts`, [profileId]);
 
   return (
     <section className="mt-12 border-t border-hairline pt-[14px]">
       <div className="flex items-baseline justify-between gap-4 mb-5">
         <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Inbox</h2>
-        <span className="text-xs text-muted">
-          {entries ? `${entries.length} waiting for review` : ''}
-        </span>
+        <span className="text-xs text-muted">{entries ? `${entries.length} waiting for review` : ''}</span>
       </div>
-      <p className="-mt-2 mb-5 max-w-[56ch] text-muted">
-        Automated entries land here first — nothing touches the ledger until you approve it.
-      </p>
-      {error && <p className="m-0 text-sm text-neg">{error}</p>}
+      <p className="-mt-2 mb-5 max-w-[56ch] text-muted">Automated entries land here first — nothing touches the ledger until you approve it.</p>
       {entries && entries.length === 0 && (
-        <p className="text-muted text-sm">
-          Inbox zero. Push entries with the sample feed: <code>docker compose exec backend node scripts/simulate-bank-feed.js</code>
-        </p>
+        <p className="text-muted text-sm">Inbox zero. Push entries with the sample feed: <code>docker compose exec backend node scripts/simulate-bank-feed.js</code></p>
       )}
       {entries && entries.length > 0 && accounts && (
         <ul className="list-none m-0 p-0">
-          {entries.map((e) => (
-            <InboxRow key={e.id} entry={e} accounts={accounts} onDone={bump} />
-          ))}
+          {entries.map((e) => <InboxRow key={e.id} entry={e} accounts={accounts} onDone={bump} />)}
         </ul>
       )}
     </section>

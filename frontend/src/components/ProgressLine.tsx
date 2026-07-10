@@ -1,7 +1,15 @@
 import { money } from '../lib/format.js';
+import type { ReactNode } from 'react';
 
-export default function ProgressLine({ label, actual, target, children }) {
-  const pct = target > 0 ? Math.max(0, Math.min(100, (actual / target) * 100)) : 0;
+interface Props {
+  label: string;
+  actual: number;
+  target: number | null;
+  children?: ReactNode;
+}
+
+export default function ProgressLine({ label, actual, target, children }: Props) {
+  const pct = target && target > 0 ? Math.max(0, Math.min(100, (actual / target) * 100)) : 0;
 
   return (
     <div className="py-4 border-b border-hairline last:border-b-0">

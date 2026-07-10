@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import PeriodNav from '../../components/PeriodNav.jsx';
-import Donut from '../../components/Donut.jsx';
-import GoalsPanel from './GoalsPanel.jsx';
+import PeriodNav from '../../components/PeriodNav.js';
+import Donut from '../../components/Donut.js';
+import GoalsPanel from './GoalsPanel.js';
 import { useFetch } from '../../hooks/useFetch.js';
-import { useProfile } from '../../context/ProfileContext.jsx';
+import { useProfile } from '../../context/ProfileContext.js';
 import { currentPeriod, money } from '../../lib/format.js';
+import type { DashboardData } from '../../types.js';
 
 export default function DashboardView() {
   const { profileId, version } = useProfile();
   const [period, setPeriod] = useState(currentPeriod);
 
-  const { data, loading, error } = useFetch(
+  const { data, loading, error } = useFetch<DashboardData>(
     `/profiles/${profileId}/dashboard?year=${period.year}&month=${period.month}`,
     [profileId, period.year, period.month, version]
   );
@@ -32,7 +33,7 @@ export default function DashboardView() {
           <span className="text-xs text-muted">All accounts, all time</span>
         </div>
         <div className="grid grid-cols-[1.1fr_1fr] gap-14 items-start max-lg:grid-cols-1 max-lg:gap-7">
-          <p className={`m-0 font-display font-semibold text-[64px] leading-[1.05] tracking-tight tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
+          <p className={`m-0 font-display font-semibold text-[64px] leading-[1.05] tracking-[-0.02em] tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
             {money(totalBalance)}
           </p>
           <ul className="list-none mt-1 p-0">
