@@ -15,16 +15,8 @@ export default function App() {
   const isMobile = useIsMobile();
   const [modal, setModal] = useState<{ type: 'income' | 'expense' } | null>(null);
 
-  if (loadError) {
-    return (
-      <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
-        <p>{`Can't reach the API (${loadError}).`}</p>
-        <p className="text-muted text-sm">Is the backend container running? Try <code>docker compose up</code>, then reload.</p>
-      </div>
-    );
-  }
-  if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
-  if (!profileId) return <ProfileGate />;
+  const check = LoadingCheck({loadError, profiles, profileId})
+  if (check !== null) return check
 
   const openAdd = (type: 'income' | 'expense' = 'expense') => setModal({ type });
 
@@ -49,4 +41,20 @@ export default function App() {
       {modal && <TransactionModal defaultType={modal.type} onClose={() => setModal(null)} />}
     </>
   );
+}
+
+
+function LoadingCheck({loadError, profiles, profileId}:{loadError: any, profiles: any, profileId: any}){
+  if (loadError) {
+    return (
+      <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
+        <p>{`Can't reach the API (${loadError}).`}</p>
+        <p className="text-muted text-sm">Is the backend container running? Try <code>docker compose up</code>, then reload.</p>
+      </div>
+    );
+  }
+  if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
+  if (!profileId) return <ProfileGate />;
+
+  return null
 }
