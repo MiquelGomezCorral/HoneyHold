@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **Frontend:** React 18.3 + Vite 5, react-router-dom 6, recharts 2. Single `global.css` with design tokens (no CSS framework). ESM (`"type": "module"`).
+- **Frontend:** React 18.3 + Vite 5 + TypeScript + Tailwind CSS v3, react-router-dom 6, recharts 2. ESM (`"type": "module"`). Styling via Tailwind utility classes; `global.css` has only `@tailwind` directives + `@layer base` resets. Custom theme colors and fonts in `tailwind.config.js`. `tsconfig.json` with strict mode, `@types/react`, `@types/node` for vite.config.ts.
 - **Backend:** Node.js + Express 4, mysql2 3 (promise pool). ESM. No ORM, no migration tool — schema is SQL files in `db/init/`.
 - **DB:** MySQL 8.4 (`mysql:8.4` image). Schema + seeds run once on first boot of an empty `db_data` volume via `/docker-entrypoint-initdb.d`.
 - **Deployment:** Docker Compose, four services: `db`, `backend`, `frontend`, `db-backup`. Local-first; no accounts/auth, no cloud.

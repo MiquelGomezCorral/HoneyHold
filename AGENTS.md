@@ -19,7 +19,7 @@ This file routes agents to project memory. Read it before changing code in this 
 
 ## Project Notes
 
-- Stack: React 18 (Vite) frontend + Node.js/Express API + MySQL 8.4, orchestrated with Docker Compose. ESM on both ends.
+- Stack: React 18 (Vite + TypeScript + Tailwind CSS v3) frontend + Node.js/Express API + MySQL 8.4, orchestrated with Docker Compose. ESM on both ends.
 - Package manager: npm (per-package `package-lock.json` in `backend/` and `frontend/`; no workspace).
 - Main commands:
   - Full stack: `docker compose up --build` (frontend :5173, API :4000, MySQL 127.0.0.1:3306).

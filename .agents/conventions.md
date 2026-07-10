@@ -6,12 +6,13 @@
 - 2-space indent, single quotes for JS strings, trailing commas in multiline literals (inferred from existing source).
 - Express handlers wrap async in `asyncH` (`backend/src/middleware/errors.js`); throw `HttpError(status, message)` for client errors. `errorHandler` renders `{ error }` JSON.
 - SQL is hand-written, lowercase keywords, parameterized with `?` placeholders. Dynamic `WHERE` clauses are built as `where[]` + `params[]` arrays, joined at the end (see `transactions.service.js`).
-- Frontend styling is one file: `frontend/src/styles/global.css` with design tokens. No CSS-in-JS, no Tailwind. Reuse tokens/classes; do not add a stylesheet per component.
+- Frontend styling is Tailwind utility classes via `tailwind.config.js` which extends the theme with custom colors (`paper`, `ink`, `muted`, `hairline`, `accent`, `accent-deep`, `accent-soft`, `neg`) and fonts (`font-ui`, `font-display`). `global.css` contains only `@tailwind` directives, `@layer base` resets for body/code/input/select, and `prefers-reduced-motion`. Add custom CSS to `global.css` only when Tailwind cannot express the style.
 - Comments are sparse and explain "why", not "what" (see `api/client.js` header comment, schema section banners). Default: no comments.
 
 ## Naming
 
-- Files: `kebab-case` for modules (`transactions.service.js`, `ProfileContext.jsx` is the established JSX exception). Routes: `<domain>.routes.js`. Services: `<domain>.service.js`.
+- Frontend extensions: `.tsx` for components, `.ts` for plain modules. Backend stays `.js`/`.jsx` (no TypeScript).
+- Files: `kebab-case` for modules (`transactions.service.js`, `ProfileContext.tsx` is the established exception). Routes: `<domain>.routes.js`. Services: `<domain>.service.js`.
 - Export style: backend services use `export async function name(...)`; frontend React components are default exports.
 - DB: `snake_case` identifiers. Tables plural (`profiles`, `accounts`, `transactions`); FK columns `<table_singular>_id` (`profile_id`, `account_id`, `recurring_rule_id`). Unique keys `uq_<table>_<cols>`.
 - URLs: scoped routes under `/api/profiles/:profileId/...`. Ingest is the exception at `/api/ingest`.
@@ -19,7 +20,7 @@
 ## Imports
 
 - Backend: absolute-ish via relative paths (`../db/pool.js`, `../services/transactions.service.js`). No path aliases configured.
-- Frontend: relative imports. `api/client.js` exports the single `api` object; features import `useFetch` from `../hooks/useFetch` and `api` from `../api/client`. No bare-specifier aliases.
+- Frontend: relative imports with `.js` extension (Vite convention for TS imports) — e.g. `from './Modal.js'`, `from '../../hooks/useFetch.js'`. `api/client.ts` exports the single `api` object; features import `useFetch` from `../hooks/useFetch` and `api` from `../api/client`. No bare-specifier aliases.
 - Node built-ins and npm packages first, then local modules (inferred; keep stable).
 
 ## Tests
