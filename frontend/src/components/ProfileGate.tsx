@@ -6,7 +6,7 @@ export default function ProfileGate() {
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
       <span className="font-display font-semibold text-[34px] tracking-[-0.02em]">
-        hucha<span className="text-accent">.</span>
+        HoneyHold<span className="text-accent">.</span>
       </span>
       <p className="my-[14px] mb-7 text-muted">Who is keeping the books?</p>
       <div className="flex gap-3 flex-wrap justify-center">

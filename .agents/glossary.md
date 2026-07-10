@@ -2,8 +2,7 @@
 
 ## Terms
 
-- **hucha** — the project name (Spanish for "piggy bank" / household cash box). Repo folder historically suggested as `hucha/`; the actual app names are `hucha-backend` and `hucha-frontend` in their `package.json`.
-- **HoneyHold** — repo/workspace directory name (the outer folder). Not referenced by the app config.
+- **HoneyHold** — the project name (Spanish for "piggy bank" / household cash box). Both the repo/workspace directory and the app names in `package.json` (`HoneyHold-backend`, `HoneyHold-frontend`).
 - **Profile** — a data scope (not an identity). Root of the scope hierarchy: `profiles` → `accounts` → `transactions`. Every scoped endpoint lives under `/api/profiles/:profileId/…`.
 - **Account** — a profile-owned ledger container with a `kind` (checking, savings, trading, investment, cash, other) and `initial_balance`.
 - **Transaction** — one ledger row. `type` is `income` or `expense`; `amount` is stored as the positive magnitude, sign implied by `type` (expenses are not stored negative). `txn_date` is `YYYY-MM-DD`. `source` is `manual` or `automated`.

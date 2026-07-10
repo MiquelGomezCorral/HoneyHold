@@ -13,7 +13,7 @@ interface ProfileContextValue {
 }
 
 const Ctx = createContext<ProfileContextValue | null>(null);
-const STORAGE_KEY = 'hucha.profileId';
+const STORAGE_KEY = 'HoneyHold.profileId';
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profiles, setProfiles] = useState<Profile[] | null>(null);

@@ -20,7 +20,7 @@ export default function MobileHome({ onAdd }: Props) {
     <div className="min-h-dvh flex flex-col p-[18px_20px_calc(20px+env(safe-area-inset-bottom))]">
       <div className="flex justify-between items-center gap-2.5">
         <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">
-          hucha<span className="text-accent">.</span>
+          HoneyHold<span className="text-accent">.</span>
         </span>
         <ProfileSwitcher />
       </div>

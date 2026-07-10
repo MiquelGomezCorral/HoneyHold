@@ -1,4 +1,4 @@
-# hucha · a local-first household ledger
+# HoneyHold · a local-first household ledger
 
 Minimal personal finance for a two-person household. React + Node.js + MySQL,
 deployed locally with Docker Compose. No accounts, no cloud, no ads — a
@@ -25,7 +25,7 @@ delete it before first boot for a clean ledger. To re-initialize from scratch:
 ## Project structure
 
 ```
-hucha/
+HoneyHold/
 ├── docker-compose.yml          # db + backend + frontend + db-backup
 ├── .env.example
 ├── backups/                    # dumps land here (bind mount)

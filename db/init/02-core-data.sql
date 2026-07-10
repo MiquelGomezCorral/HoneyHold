@@ -1,7 +1,7 @@
 -- ============================================================================
 
 SET NAMES utf8mb4;
--- hucha · core data (required)
+-- HoneyHold · core data (required)
 -- The three profiles and their accounts, global tags, starter goals.
 -- ============================================================================
 

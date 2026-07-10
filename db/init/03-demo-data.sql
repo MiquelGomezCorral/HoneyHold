@@ -1,7 +1,7 @@
 -- ============================================================================
 
 SET NAMES utf8mb4;
--- hucha · demo data (OPTIONAL — delete this file for a clean start)
+-- HoneyHold · demo data (OPTIONAL — delete this file for a clean start)
 -- A few transactions per profile, one recurring rule, two pending inbox
 -- entries, so every view has content on first boot.
 -- ============================================================================

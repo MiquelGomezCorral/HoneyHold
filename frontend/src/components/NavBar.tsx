@@ -19,9 +19,13 @@ export default function NavBar({ onAdd }: Props) {
 
   return (
     <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 bg-paper border-b border-hairline">
-      <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">
-        hucha<span className="text-accent">.</span>
-      </span>
+      <div className="flex items-center gap-2">
+        <img src="/assets/icons/bee-blue.svg" alt="HoneyHold" className="h-[1.7em] w-auto inline-block align-middle" />
+        <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">
+          HoneyHold
+          <span className="text-accent">.</span>
+        </span>
+      </div>
       <nav className="flex gap-1" aria-label="Main">
         <NavLink to="/" end className={tab}>
           Overview

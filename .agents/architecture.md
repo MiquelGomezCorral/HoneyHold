@@ -11,7 +11,7 @@
 ## Layout
 
 ```
-hucha/
+HoneyHold/
 ├── docker-compose.yml          # db + backend + frontend + db-backup
 ├── .env.example                # the config contract (MySQL creds, INGEST_TOKEN, backup cron/retention)
 ├── 01-schema.sql               # canonical schema copy at repo root
@@ -21,7 +21,7 @@ hucha/
 │   └── backup/                 # Dockerfile + backup.sh + entrypoint.sh for the cron sidecar
 ├── backend/
 │   ├── Dockerfile
-│   ├── package.json            # name: hucha-backend
+│   ├── package.json            # name: HoneyHold-backend
 │   ├── scripts/simulate-bank-feed.js
 │   └── src/
 │       ├── server.js           # boot + scheduleMaterializer(); SIGINT/SIGTERM graceful
@@ -50,7 +50,7 @@ hucha/
 │       └── utils/dates.js       # monthRange and date helpers
 └── frontend/
     ├── Dockerfile
-    ├── package.json            # name: hucha-frontend
+    ├── package.json            # name: HoneyHold-frontend
     ├── vite.config.js          # VITE_API_PROXY → backend:4000
     └── src/
         ├── main.jsx, App.jsx    # routing root

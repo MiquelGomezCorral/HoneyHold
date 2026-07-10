@@ -1,5 +1,5 @@
 -- ============================================================================
--- hucha · MySQL 8 schema
+-- HoneyHold · MySQL 8 schema
 -- Runs automatically on the first boot of the db container (empty volume).
 -- ============================================================================
 
