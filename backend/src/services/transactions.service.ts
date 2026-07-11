@@ -16,13 +16,13 @@ interface TransactionRow extends RowDataPacket {
   counterparty: string | null;
   is_fixed: number;
   source: string;
-  account_name: string;
+  account_name: string | null;
   tag_name: string | null;
 }
 
 interface TxnInput {
   profile_id: number;
-  account_id: number;
+  account_id: number | null;
   type: string;
   amount: number;
   txn_date: string;
@@ -65,7 +65,7 @@ export async function listTransactions(profileId: number, query: ListQuery) {
     `SELECT t.id, t.type, t.amount, t.txn_date, t.concept, t.counterparty,
             t.is_fixed, t.source, a.name AS account_name, tg.name AS tag_name
        FROM transactions t
-       JOIN accounts a ON a.id = t.account_id
+       LEFT JOIN accounts a ON a.id = t.account_id
        LEFT JOIN tags tg ON tg.id = t.tag_id
       WHERE ${where.join(' AND ')}
       ORDER BY t.txn_date DESC, t.id DESC

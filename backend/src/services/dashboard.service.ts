@@ -52,7 +52,7 @@ export async function getDashboard(profileId: number, year: number, month: numbe
     pool.query<TypeTotalRow[]>(
       `SELECT type, COALESCE(SUM(amount), 0) AS total
          FROM transactions
-        WHERE profile_id = ? AND txn_date >= ? AND txn_date < ?
+        WHERE profile_id = ? AND account_id IS NOT NULL AND txn_date >= ? AND txn_date < ?
         GROUP BY type`,
       [profileId, mStart, mEnd]
     ).then(([r]) => r),
@@ -60,7 +60,7 @@ export async function getDashboard(profileId: number, year: number, month: numbe
     pool.query<FixedRow[]>(
       `SELECT is_fixed, COALESCE(SUM(amount), 0) AS total
          FROM transactions
-        WHERE profile_id = ? AND type = 'expense' AND txn_date >= ? AND txn_date < ?
+        WHERE profile_id = ? AND account_id IS NOT NULL AND type = 'expense' AND txn_date >= ? AND txn_date < ?
         GROUP BY is_fixed`,
       [profileId, mStart, mEnd]
     ).then(([r]) => r),
@@ -69,7 +69,7 @@ export async function getDashboard(profileId: number, year: number, month: numbe
       `SELECT COALESCE(tg.name, 'Untagged') AS label, SUM(t.amount) AS value
          FROM transactions t
          LEFT JOIN tags tg ON tg.id = t.tag_id
-        WHERE t.profile_id = ? AND t.type = 'expense' AND t.txn_date >= ? AND t.txn_date < ?
+        WHERE t.profile_id = ? AND t.account_id IS NOT NULL AND t.type = 'expense' AND t.txn_date >= ? AND t.txn_date < ?
         GROUP BY label
         ORDER BY value DESC`,
       [profileId, mStart, mEnd]
@@ -78,7 +78,7 @@ export async function getDashboard(profileId: number, year: number, month: numbe
     pool.query<YtdRow[]>(
       `SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) AS net
          FROM transactions
-        WHERE profile_id = ? AND txn_date >= ? AND txn_date < ?`,
+        WHERE profile_id = ? AND account_id IS NOT NULL AND txn_date >= ? AND txn_date < ?`,
       [profileId, yStart, yEnd]
     ).then(([r]) => r[0]?.net ?? 0),
 

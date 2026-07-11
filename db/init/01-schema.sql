@@ -76,7 +76,7 @@ CREATE TABLE recurring_rules (
 CREATE TABLE transactions (
   id                BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
   profile_id        TINYINT UNSIGNED NOT NULL,
-  account_id        INT UNSIGNED     NOT NULL,
+  account_id        INT UNSIGNED     NULL,
   type              ENUM('income','expense') NOT NULL,
   amount            DECIMAL(12,2)    NOT NULL,
   txn_date          DATE             NOT NULL,
