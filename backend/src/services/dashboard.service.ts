@@ -36,6 +36,11 @@ interface MonthNetRow extends RowDataPacket {
   net: number;
 }
 
+interface SnapshotBalanceRow extends RowDataPacket {
+  month: number;
+  balance: number;
+}
+
 export async function getDashboard(profileId: number, year: number, month: number) {
   const [mStart, mEnd] = monthRange(year, month);
   const [yStart, yEnd] = yearRange(year);
@@ -122,7 +127,17 @@ export async function getDashboard(profileId: number, year: number, month: numbe
 export async function getBalanceSeries(profileId: number, year: number) {
   const [yStart, yEnd] = yearRange(year);
 
-  const [base, txnRows, transferRows] = await Promise.all([
+  const [snapshotRows, base, txnRows, transferRows] = await Promise.all([
+    pool.query<SnapshotBalanceRow[]>(
+      `SELECT s.month, COALESCE(SUM(s.balance), 0) AS balance
+         FROM account_balance_snapshots s
+         JOIN accounts a ON a.id = s.account_id AND a.profile_id = ? AND a.is_active = 1
+        WHERE s.year = ?
+        GROUP BY s.month
+        ORDER BY s.month`,
+      [profileId, year]
+    ).then(([r]) => r),
+
     pool.query<RowDataPacket[]>(
       `SELECT COALESCE(SUM(initial_balance), 0) AS base
          FROM accounts WHERE profile_id = ? AND is_active = 1`,
@@ -130,15 +145,15 @@ export async function getBalanceSeries(profileId: number, year: number) {
     ).then(([r]) => Number(r[0]?.base ?? 0)),
 
     pool.query<MonthNetRow[]>(
-      // Attribute by account ownership (account_id -> accounts.profile_id) so the
-      // series matches the account-balance total shown in the Balance section.
+      // Account-owned rows use account profile; imported aggregate rows have no account.
       `SELECT CASE WHEN t.txn_date < ? THEN 0 ELSE MONTH(t.txn_date) END AS m,
               COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE -t.amount END), 0) AS net
          FROM transactions t
-         JOIN accounts a ON a.id = t.account_id AND a.profile_id = ? AND a.is_active = 1
+         LEFT JOIN accounts a ON a.id = t.account_id AND a.profile_id = ? AND a.is_active = 1
         WHERE t.txn_date < ?
+          AND ((t.account_id IS NULL AND t.profile_id = ?) OR a.id IS NOT NULL)
         GROUP BY m`,
-      [yStart, profileId, yEnd]
+      [yStart, profileId, yEnd, profileId]
     ).then(([r]) => r),
 
     pool.query<MonthNetRow[]>(
@@ -158,6 +173,16 @@ export async function getBalanceSeries(profileId: number, year: number) {
 
   const delta = new Array(13).fill(0);
   for (const row of [...txnRows, ...transferRows]) delta[Number(row.m)] += Number(row.net);
+
+  if (snapshotRows.length) {
+    const byMonth = new Map(snapshotRows.map((row) => [Number(row.month), Number(row.balance)]));
+    let running = 0;
+    return Array.from({ length: 12 }, (_, i) => {
+      running += delta[i + 1];
+      running = byMonth.get(i + 1) ?? running;
+      return { month: i + 1, balance: r2(running) };
+    });
+  }
 
   let running = base + delta[0];
   return Array.from({ length: 12 }, (_, i) => {
