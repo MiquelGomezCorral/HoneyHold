@@ -26,6 +26,17 @@
   }
 }
 
+html {
+  scrollbar-gutter: stable;
+  scrollbar-color: #bcd4e8 #f2f7fb;
+  scrollbar-width: thin;
+}
+
+html::-webkit-scrollbar { width: 8px; }
+html::-webkit-scrollbar-track { background: #f2f7fb; }
+html::-webkit-scrollbar-thumb { background-color: #d3e2ee; border-radius: 4px; transition: background-color 0.3s ease; }
+html::-webkit-scrollbar-thumb:hover { background-color: #5e7e99; }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
