@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PeriodNav from '../../components/PeriodNav.js';
 import Donut from '../../components/Donut.js';
+import Section from '../../components/Section.js';
 import GoalsPanel from './GoalsPanel.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
@@ -27,11 +28,7 @@ export default function DashboardView() {
         <PeriodNav year={period.year} month={period.month} onChange={setPeriod} />
       </div>
 
-      <section className="mt-12 border-t border-hairline pt-[14px]">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Balance</h2>
-          <span className="text-xs text-muted">All accounts, all time</span>
-        </div>
+      <Section title="Balance" summary="All accounts, all time">
         <div className="grid grid-cols-[1.1fr_1fr] gap-14 items-start max-lg:grid-cols-1 max-lg:gap-7">
           <p className={`m-0 font-display font-semibold text-[64px] leading-[1.05] tracking-[-0.02em] tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
             {money(totalBalance)}
@@ -48,12 +45,9 @@ export default function DashboardView() {
             ))}
           </ul>
         </div>
-      </section>
+      </Section>
 
-      <section className="mt-12 border-t border-hairline pt-[14px]">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">This month</h2>
-        </div>
+      <Section title="This month">
         <div className="flex gap-16 flex-wrap">
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted">Income</span>
@@ -68,12 +62,9 @@ export default function DashboardView() {
             <span className={`text-[26px] font-semibold tabular-nums${month.net >= 0 ? ' text-accent' : ' text-neg'}`}>{money(month.net)}</span>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="mt-12 border-t border-hairline pt-[14px]">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Where it goes</h2>
-        </div>
+      <Section title="Where it goes">
         <div className="grid grid-cols-2 gap-14 max-lg:grid-cols-1 max-lg:gap-7">
           <div>
             <h3 className="m-0 mb-2 text-sm font-semibold">Fixed vs. variable</h3>
@@ -84,15 +75,11 @@ export default function DashboardView() {
             <Donut data={byTag} emptyNote="Add an expense to see the breakdown." />
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="mt-12 border-t border-hairline pt-[14px]">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Goals</h2>
-          <span className="text-xs text-muted">{period.year}</span>
-        </div>
+      <Section title="Goals" summary={period.year}>
         <GoalsPanel goals={goals} year={period.year} />
-      </section>
+      </Section>
     </>
   );
 }

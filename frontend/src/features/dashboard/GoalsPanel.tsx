@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ProgressLine from '../../components/ProgressLine.js';
+import Button from '../../components/Button.js';
 import { api } from '../../api/client.js';
 import { useProfile } from '../../context/ProfileContext.js';
 
@@ -43,23 +44,23 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
 
   if (!editing) {
     return (
-      <button type="button" className="border-0 bg-none p-0 text-accent font-medium text-[13px] cursor-pointer underline underline-offset-[3px] decoration-hairline hover:decoration-accent"
+      <Button variant="link"
         onClick={() => { setValue(current ?? ''); setEditing(true); }}
       >
         {current == null ? 'Set target' : 'Edit target'}
-      </button>
+      </Button>
     );
   }
 
   return (
     <form className="flex gap-2 items-center" onSubmit={save}>
       <input type="number" inputMode="decimal" min="0" step="1" value={value} onChange={(e) => setValue(e.target.value)} autoFocus aria-label="Target amount" className="w-[130px]" />
-      <button type="submit" className="border-0 bg-accent text-white px-3 py-[6px] rounded-[9px] font-semibold text-xs cursor-pointer transition-colors hover:bg-accent-deep disabled:opacity-45 disabled:cursor-default" disabled={saving}>
+      <Button variant="primary" size="sm" type="submit" disabled={saving}>
         Save
-      </button>
-      <button type="button" className="bg-transparent text-accent px-3 py-[6px] rounded-[9px] font-semibold text-xs cursor-pointer transition-colors border border-hairline hover:bg-accent-soft" onClick={() => setEditing(false)}>
+      </Button>
+      <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
         Cancel
-      </button>
+      </Button>
       {error && <span className="text-neg text-sm">{error}</span>}
     </form>
   );

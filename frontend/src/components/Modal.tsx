@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import Button from './Button.js';
 
 interface Props {
   title: string;
@@ -31,9 +32,9 @@ export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Pr
       >
         <div className="flex justify-between items-center mb-[18px]">
           <h2 className="m-0 text-[17px] font-semibold">{title}</h2>
-          <button type="button" className="border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm cursor-pointer hover:text-ink hover:bg-accent-soft" onClick={onClose} aria-label="Close">
+          <Button variant="close" onClick={onClose} aria-label="Close">
             ✕
-          </button>
+          </Button>
         </div>
         {children}
       </div>

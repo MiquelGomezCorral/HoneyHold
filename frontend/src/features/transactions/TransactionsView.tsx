@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import PeriodNav from '../../components/PeriodNav.js';
+import Button from '../../components/Button.js';
+import Badge from '../../components/Badge.js';
+import EmptyState from '../../components/EmptyState.js';
+import Section from '../../components/Section.js';
+import SegmentedControl from '../../components/SegmentedControl.js';
+import { TableHeader, TableRow } from '../../components/Table.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { currentPeriod, money, shortDate, signedMoney } from '../../lib/format.js';
+import type { Column } from '../../components/Table.js';
 import type { Transaction, RecurringRule } from '../../types.js';
+import type { ReactNode } from 'react';
 
 const FILTERS = [
   { key: '', label: 'All' },
@@ -36,73 +44,72 @@ export default function TransactionsView() {
     bump();
   };
 
+  const columns: Column<Transaction>[] = [
+    { key: 'date', label: 'Date', align: 'left', cellKind: 'muted', render: (t) => shortDate(t.txn_date) },
+    {
+      key: 'concept', label: 'Concept', align: 'left', cellKind: 'text',
+      render: (t) => (
+        <>
+          {t.concept}
+          {t.is_fixed === 1 && <Badge className="ml-2">fixed</Badge>}
+          {t.source === 'automated' && <Badge className="ml-2">auto</Badge>}
+        </>
+      ),
+    },
+    { key: 'counterparty', label: 'Payer / payee', align: 'left', cellKind: 'muted', render: (t) => t.counterparty || '—' },
+    { key: 'tag', label: 'Tag', align: 'left', cellKind: 'muted', render: (t) => t.tag_name || '—' },
+    { key: 'account', label: 'Account', align: 'left', cellKind: 'muted', render: (t) => t.account_name },
+    {
+      key: 'amount', label: 'Amount', align: 'right', cellKind: 'amount',
+      cellClassName: (t) => t.type === 'income' ? 'text-accent' : '',
+      render: (t) => signedMoney(t.type, t.amount),
+    },
+    {
+      key: 'actions', label: '', align: 'none', cellKind: 'action',
+      render: (t) => (
+        <Button variant="close" onClick={() => remove(t.id)} aria-label={`Delete ${t.concept}`}>
+          ✕
+        </Button>
+      ),
+    },
+  ];
+
+  const getBgColor = (t: Transaction): 'Blue' | 'Green' | 'Red' | 'Yellow' | undefined => {
+    if (t.type === 'income') return 'Green';
+    if (t.type === 'expense') return 'Blue';
+    if (t.type === 'transference') return 'Yellow';
+    return undefined;
+  }
+
   return (
     <>
       <div className="flex items-center justify-between gap-4 pt-[22px]">
         <PeriodNav year={period.year} month={period.month} onChange={setPeriod} />
-        <div className="inline-flex gap-0.5 p-0.5 " role="group" aria-label="Filter by type">
-          {FILTERS.map((f) => (
-            <button key={f.key} type="button"
-              className={`border-0 px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-colors hover:text-ink${type === f.key ? ' bg-accent-soft text-ink font-semibold' : ' bg-transparent'}`}
-              onClick={() => setType(f.key)}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          ariaLabel="Filter by type"
+          items={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+          value={type}
+          onChange={setType}
+        />
       </div>
 
-      <section className="mt-12 border-t border-hairline pt-[14px]">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Ledger</h2>
-          <span className="text-xs text-muted">{rows ? `${rows.length} entries` : ''}</span>
-        </div>
+      <Section title="Ledger" summary={rows ? `${rows.length} entries` : undefined}>
         {error && <p className="text-neg text-sm">{error}</p>}
-        {rows && rows.length === 0 && <p className="text-muted text-sm">Nothing recorded this month. Add an entry to start the page.</p>}
+        {rows && rows.length === 0 && <EmptyState>Nothing recorded this month. Add an entry to start the page.</EmptyState>}
         {rows && rows.length > 0 && (
           <table className="w-full border-collapse text-[14.5px]">
-            <thead>
-              <tr>
-                <th className="text-left pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Date</th>
-                <th className="text-left pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Concept</th>
-                <th className="text-left pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Payer / payee</th>
-                <th className="text-left pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Tag</th>
-                <th className="text-left pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Account</th>
-                <th className="text-right pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted">Amount</th>
-                <th className="pr-3 pb-[9px] border-b border-hairline" aria-label="Actions" />
-              </tr>
-            </thead>
+            <TableHeader columns={columns} />
             <tbody>
               {rows.map((t) => (
-                <tr key={t.id}>
-                  <td className="py-[11px] pr-3 border-b border-hairline align-baseline tabular-nums text-muted">{shortDate(t.txn_date)}</td>
-                  <td className="py-[11px] pr-3 border-b border-hairline align-baseline">
-                    {t.concept}
-                    {t.is_fixed === 1 && <span className="inline-block ml-2 px-2 py-px border border-hairline rounded-full text-[11px] text-muted align-middle">fixed</span>}
-                    {t.source === 'automated' && <span className="inline-block ml-2 px-2 py-px border border-hairline rounded-full text-[11px] text-muted align-middle">auto</span>}
-                  </td>
-                  <td className="py-[11px] pr-3 border-b border-hairline align-baseline text-muted">{t.counterparty || '—'}</td>
-                  <td className="py-[11px] pr-3 border-b border-hairline align-baseline text-muted">{t.tag_name || '—'}</td>
-                  <td className="py-[11px] pr-3 border-b border-hairline align-baseline text-muted">{t.account_name}</td>
-                  <td className={`py-[11px] pr-3 border-b border-hairline align-baseline font-semibold whitespace-nowrap tabular-nums text-right${t.type === 'income' ? ' text-accent' : ''}`}>{signedMoney(t.type, t.amount)}</td>
-                  <td className="w-[34px] py-[11px] pr-3 border-b border-hairline align-baseline text-right">
-                    <button type="button" className="border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm cursor-pointer hover:text-ink hover:bg-accent-soft" onClick={() => remove(t.id)} aria-label={`Delete ${t.concept}`}>
-                      ✕
-                    </button>
-                  </td>
-                </tr>
+                <TableRow key={t.id} row={t} columns={columns} bgColor={getBgColor(t)} />
               ))}
             </tbody>
           </table>
         )}
-      </section>
+      </Section>
 
-      <section className="mt-12 border-t border-hairline pt-[14px]">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="m-0 text-[11px] font-semibold tracking-[0.14em] uppercase text-muted">Fixed rules</h2>
-          <span className="text-xs text-muted">Recurring entries created from &quot;Is fixed?&quot;</span>
-        </div>
-        {rules && rules.length === 0 && <p className="text-muted text-sm">No active rules. Turn on &quot;Is fixed?&quot; when adding an entry to create one.</p>}
+      <Section title="Fixed rules" summary="Recurring entries created from &quot;Is fixed?&quot;">
+        {rules && rules.length === 0 && <EmptyState>No active rules. Turn on &quot;Is fixed?&quot; when adding an entry to create one.</EmptyState>}
         {rules && rules.length > 0 && (
           <ul className="list-none m-0 p-0">
             {rules.map((r) => (
@@ -113,13 +120,13 @@ export default function TransactionsView() {
                 </span>
                 <span className="flex items-baseline gap-[18px]">
                   <span className={`font-semibold whitespace-nowrap tabular-nums${r.type === 'income' ? ' text-accent' : ''}`}>{signedMoney(r.type, r.amount)}</span>
-                  <button type="button" className="border-0 bg-none p-0 text-accent font-medium text-[13px] cursor-pointer underline underline-offset-[3px] decoration-hairline hover:decoration-accent" onClick={() => stopRule(r.id)}>Stop</button>
+                  <Button variant="link" onClick={() => stopRule(r.id)}>Stop</Button>
                 </span>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </Section>
     </>
   );
 }

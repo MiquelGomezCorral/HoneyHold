@@ -1,5 +1,6 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { money } from '../lib/format.js';
+import EmptyState from './EmptyState.js';
 import type { DonutSlice } from '../types.js';
 
 const BLUES = ['#1F6FAE', '#5D97C4', '#93BEDC', '#2E4E68', '#7FA6C1', '#C6DDEE', '#B3CCDE'];
@@ -13,7 +14,7 @@ export default function Donut({ data, emptyNote }: Props) {
   const slices = data.filter((d) => Number(d.value) > 0);
 
   if (!slices.length) {
-    return <p className="text-muted text-sm">{emptyNote}</p>;
+    return <EmptyState>{emptyNote}</EmptyState>;
   }
 
   return (

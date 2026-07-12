@@ -1,4 +1,5 @@
 import { useProfile } from '../context/ProfileContext.js';
+import Button from './Button.js';
 
 export default function ProfileGate() {
   const { profiles, setProfileId } = useProfile();
@@ -11,9 +12,9 @@ export default function ProfileGate() {
       <p className="my-[14px] mb-7 text-muted">Who is keeping the books?</p>
       <div className="flex gap-3 flex-wrap justify-center">
         {profiles?.map((p) => (
-          <button key={p.id} type="button" className="border border-hairline bg-transparent text-ink px-8 py-4 rounded-xl font-semibold text-base cursor-pointer transition-colors hover:bg-accent-soft hover:border-accent" onClick={() => setProfileId(p.id)}>
+          <Button key={p.id} variant="outline" onClick={() => setProfileId(p.id)}>
             {p.display_name}
-          </button>
+          </Button>
         ))}
       </div>
       <p className="mt-[26px] text-[13px] text-muted">You can switch profiles any time from the top bar.</p>

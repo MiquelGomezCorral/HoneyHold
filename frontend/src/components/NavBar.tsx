@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext.js';
 import { useFetch } from '../hooks/useFetch.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
+import Button from './Button.js';
 import Icon from './Icon.js';
 
 interface Props {
@@ -45,9 +46,9 @@ export default function NavBar({ onAdd }: Props) {
       </nav>
       <span className="flex-1" />
       <ProfileSwitcher />
-      <button type="button" className="border-0 bg-accent text-white px-4 py-[9px] rounded-[9px] font-semibold text-sm cursor-pointer transition-colors hover:bg-accent-deep disabled:opacity-45 disabled:cursor-default" onClick={onAdd}>
+      <Button onClick={onAdd}>
         Add entry
-      </button>
+      </Button>
     </header>
   );
 }

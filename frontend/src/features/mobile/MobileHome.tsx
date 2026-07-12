@@ -1,4 +1,5 @@
 import ProfileSwitcher from '../../components/ProfileSwitcher.js';
+import Button from '../../components/Button.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { currentPeriod, money } from '../../lib/format.js';
@@ -41,12 +42,12 @@ export default function MobileHome({ onAdd }: Props) {
       </div>
 
       <div className="mt-auto grid gap-3 pt-8">
-        <button type="button" className="bg-transparent text-accent px-4 py-[15px] rounded-xl font-semibold text-base cursor-pointer transition-colors border border-hairline hover:bg-accent-soft" onClick={() => onAdd('income')}>
+        <Button variant="ghost" size="lg" onClick={() => onAdd('income')}>
           Add income
-        </button>
-        <button type="button" className="border-0 bg-accent text-white px-4 py-[15px] rounded-xl font-semibold text-base cursor-pointer transition-colors hover:bg-accent-deep" onClick={() => onAdd('expense')}>
+        </Button>
+        <Button variant="primary" size="lg" onClick={() => onAdd('expense')}>
           Add expense
-        </button>
+        </Button>
       </div>
     </div>
   );
