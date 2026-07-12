@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { BG_COLORS, type BgColor } from '../lib/theme.js';
 
 export interface Column<T> {
   key: string;
@@ -36,17 +37,10 @@ export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   );
 }
 
-const BG_COLORS: Record<string, string> = {
-  Blue: 'bg-paper-blue',
-  Green: 'bg-paper-green',
-  Red: 'bg-paper-red',
-  Yellow: 'bg-paper-yellow',
-};
-
 interface TableRowProps<T> {
   row: T;
   columns: Column<T>[];
-  bgColor?: 'Blue' | 'Green' | 'Red' | 'Yellow';
+  bgColor?: BgColor;
 }
 
 export function TableRow<T>({ row, columns, bgColor }: TableRowProps<T>) {
