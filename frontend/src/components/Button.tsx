@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react';
 
-type ButtonVariant = 'primary' | 'ghost' | 'close' | 'link' | 'outline' | 'nav';
+type ButtonVariant = 'primary' | 'ghost' | 'close' | 'danger' | 'link' | 'outline' | 'nav';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -29,6 +29,11 @@ const VARIANT_CLASSES: Record<ButtonVariant, Record<ButtonSize, string>> = {
     sm: 'border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm hover:text-ink hover:bg-accent-soft',
     md: 'border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm hover:text-ink hover:bg-accent-soft',
     lg: 'border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm hover:text-ink hover:bg-accent-soft',
+  },
+  danger: {
+    sm: 'border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm hover:bg-paper-red hover:text-neg',
+    md: 'border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm hover:bg-paper-red hover:text-neg',
+    lg: 'border-0 bg-none px-2 py-1 rounded-[7px] text-muted text-sm hover:bg-paper-red hover:text-neg',
   },
   link: {
     sm: 'border-0 bg-none p-0 text-accent font-medium text-[13px] underline underline-offset-[3px] decoration-hairline hover:decoration-accent',

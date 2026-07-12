@@ -108,7 +108,7 @@ export default function TransactionsView() {
     {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
       render: (t) => (
-        <Button variant="close" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
+        <Button variant="danger" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
           ✕
         </Button>
       ),
