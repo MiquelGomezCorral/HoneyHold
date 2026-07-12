@@ -20,8 +20,7 @@ CREATE TABLE accounts (
   id              INT UNSIGNED     NOT NULL AUTO_INCREMENT,
   profile_id      TINYINT UNSIGNED NOT NULL,
   name            VARCHAR(64)      NOT NULL,
-  kind            ENUM('checking','savings','trading','investment','cash','other')
-                                   NOT NULL DEFAULT 'checking',
+  kind            ENUM('checking','savings','trading','investment','cash', 'company', 'other')      NOT NULL DEFAULT 'checking',
   initial_balance DECIMAL(12,2)    NOT NULL DEFAULT 0.00,
   is_active       TINYINT(1)       NOT NULL DEFAULT 1,
   created_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,

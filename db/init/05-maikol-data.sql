@@ -57,33 +57,19 @@ INSERT INTO accounts (profile_id, name, kind) VALUES
   (2, 'Caixa',     'checking'),
   (2, 'Revolut',   'checking'),
   (2, 'Trade',     'trading'),
-  (2, 'Cash',      'cash');
--- ── Clean up placeholder demo data on the accounts this file makes real ─────
--- 03-demo-data.sql seeded one sample transaction each on Honey 1's BBVA,
--- Revolut, Cash and Trade. All four accounts get authoritative balances below,
--- so the demo rows would silently corrupt them if left in place.
-DELETE FROM transactions
- WHERE profile_id = 2 AND source = 'manual' AND concept IN
-   ('Monthly salary', 'Weekly groceries', 'Dinner out', 'Index fund contribution');
+  (2, 'Cash',      'cash'),
+  (2, 'Cobee-Comida', 'company'),
+  (2, 'Cobee-Transporte', 'company');
 
--- ── New accounts ─────────────────────────────────────────────────────────
--- Cobee: a real account (Spain's employee meal/benefits prepaid card) not in
---   the original seed list.
---   to hold the category ledger that the source only tracks in aggregate.
-INSERT INTO accounts (profile_id, name, kind) VALUES
-  (2, 'Cobee-Comida', 'other'),
-  (2, 'Cobee-Transporte', 'other');
 
 -- ── Tags (scoped to Honey 1, matching the sheet's own category names) ──────
-INSERT INTO tags (profile_id, name) VALUES
-  (2, 'Clase'),
-  (2, 'Comida'),
-  (2, 'Gente'),
-  (2, 'Ingresos'),
-  (2, 'Invest'),
-  (2, 'Otros'),
-  (2, 'Tech'),
-  (2, 'Transporte');
+-- INSERT INTO tags (profile_id, name) VALUES
+--   (2, 'Comida'),
+--   (2, 'Ingresos'),
+--   (2, 'Invest'),
+--   (2, 'Otros'),
+--   (2, 'Tech'),
+--   (2, 'Transporte');
 
 -- ── Current account balances (from the July 2026 / latest block) ───────────
 -- Set directly from the sheet's own account-balance table — no transaction

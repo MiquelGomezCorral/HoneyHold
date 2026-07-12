@@ -9,23 +9,26 @@ INSERT INTO profiles (id, slug, display_name) VALUES
   (2, 'honey-1', 'Honey 1'),
   (3, 'honey-2', 'Honey 2');
 
--- Shared
-INSERT INTO accounts (profile_id, name, kind) VALUES
-  (1, 'Joint account',  'checking'),
-  (1, 'Household cash', 'cash');
-
 
 -- Global tags (profile_id NULL → visible to every profile)
 INSERT INTO tags (profile_id, name) VALUES
-  (NULL, 'Salary'),
-  (NULL, 'Groceries'),
-  (NULL, 'Rent'),
-  (NULL, 'Utilities'),
-  (NULL, 'Transport'),
-  (NULL, 'Leisure'),
-  (NULL, 'Health'),
-  (NULL, 'Investments'),
-  (NULL, 'Other');
+  (NULL, 'Alquiler'),
+  (NULL, 'Salud'),
+  (NULL, 'Inversión'),
+  (NULL, 'Bizum'),
+  (NULL, 'Comida'),
+  (NULL, 'Entretenimiento'),
+  (NULL, 'Honey'),
+  (NULL, 'Nómina'),
+  (NULL, 'Devolución'),
+  (NULL, 'Regalos'),
+  (NULL, 'Ropa'),
+  (NULL, 'Gente'),
+  (NULL, 'Tecnología'),
+  (NULL, 'Transporte'),
+  (NULL, 'Belleza'),
+  (NULL, 'Clase'),
+  (NULL, 'Otros');
 
 -- Starter goals for the current year (editable from the dashboard)
 INSERT INTO goals (profile_id, period, year, target_amount) VALUES

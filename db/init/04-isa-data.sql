@@ -43,20 +43,8 @@ DELETE FROM transactions
    AND counterparty = 'Studio XYZ';
 
 -- ── Tags (scoped to Honey 2) ─────────────────────────────────────────────
-INSERT INTO tags (profile_id, name) VALUES
-  (3, 'Belleza'),
-  (3, 'Bizum'),
-  (3, 'Comida'),
-  (3, 'Devolución'),
-  (3, 'Entretenimiento'),
-  (3, 'Gasolina'),
-  (3, 'Honey'),
-  (3, 'Nómina'),
-  (3, 'Otros'),
-  (3, 'Regalos'),
-  (3, 'Ropa'),
-  (3, 'Tecnología'),
-  (3, 'Transporte');
+-- INSERT INTO tags (profile_id, name) VALUES
+--   (3, 'Belleza'),
 
 -- ── Opening balance ──────────────────────────────────────────────────────
 -- 'Resumen Mensual'!F2: balance carried into January 2026, before any of the
