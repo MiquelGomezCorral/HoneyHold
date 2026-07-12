@@ -9,6 +9,7 @@ import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { todayISO } from '../../lib/format.js';
+import { TEXT_LIMITS } from '../../lib/config.js';
 import type { InboxEntry, Account } from '../../types.js';
 
 interface Draft {
@@ -77,10 +78,10 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
           <input id={`ib-date-${entry.id}`} type="date" value={draft.txn_date} onChange={set('txn_date')} />
         </Field>
         <Field label="Concept" htmlFor={`ib-concept-${entry.id}`} colSpan={2}>
-          <input id={`ib-concept-${entry.id}`} type="text" value={draft.concept} onChange={set('concept')} />
+          <input id={`ib-concept-${entry.id}`} type="text" value={draft.concept} onChange={set('concept')} maxLength={TEXT_LIMITS.concept} />
         </Field>
         <Field label="Payer / payee" htmlFor={`ib-who-${entry.id}`}>
-          <input id={`ib-who-${entry.id}`} type="text" value={draft.counterparty} onChange={set('counterparty')} />
+          <input id={`ib-who-${entry.id}`} type="text" value={draft.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
         </Field>
         <Field label="Amount (€)" htmlFor={`ib-amount-${entry.id}`}>
           <input id={`ib-amount-${entry.id}`} type="number" inputMode="decimal" step="0.01" min="0.01" value={draft.amount} onChange={set('amount')} />
@@ -99,7 +100,7 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
           placeholder="Choose an account…"
         />
         <Field label="Tag" htmlFor={`ib-tag-${entry.id}`}>
-          <input id={`ib-tag-${entry.id}`} type="text" value={draft.tag} onChange={set('tag')} placeholder="Optional" />
+          <input id={`ib-tag-${entry.id}`} type="text" value={draft.tag} onChange={set('tag')} maxLength={TEXT_LIMITS.tag} placeholder="Optional" />
         </Field>
       </div>
 

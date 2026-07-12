@@ -10,6 +10,7 @@ import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { todayISO } from '../../lib/format.js';
+import { TEXT_LIMITS } from '../../lib/config.js';
 import type { Account, EntryType } from '../../types.js';
 
 const FREQUENCIES = ['weekly', 'monthly', 'quarterly', 'yearly'];
@@ -163,7 +164,7 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
         </div>
 
         <Field label="Concept" htmlFor="tm-concept">
-          <input id="tm-concept" type="text" value={form.concept} onChange={setConcept} placeholder={form.type === 'transfer' ? 'Transfer Savings → Checking' : 'Groceries at Mercadona'} required />
+          <input id="tm-concept" type="text" value={form.concept} onChange={setConcept} maxLength={TEXT_LIMITS.concept} placeholder={form.type === 'transfer' ? 'Transfer Savings → Checking' : 'Groceries at Mercadona'} required />
         </Field>
 
         {form.type === 'transfer' ? (
@@ -197,10 +198,10 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
           <>
             <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
               <Field label={form.type === 'income' ? 'Payer' : 'Payee'} htmlFor="tm-who">
-                <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} />
+                <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
               </Field>
               <Field label="Tag" htmlFor="tm-tag">
-                <input id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} placeholder="Pick or type a new one" />
+                <input id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} maxLength={TEXT_LIMITS.tag} placeholder="Pick or type a new one" />
                 <datalist id="tm-tags">
                   {tags?.map((t) => <option key={t.id} value={t.name} />)}
                 </datalist>
