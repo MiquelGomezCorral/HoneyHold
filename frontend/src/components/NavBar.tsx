@@ -37,6 +37,9 @@ export default function NavBar({ onAdd }: Props) {
         <NavLink to="/" end className={tab}>
           Overview
         </NavLink>
+        <NavLink to="/monthly" className={tab}>
+          Monthly
+        </NavLink>
         <NavLink to="/transactions" className={tab}>
           Transactions
         </NavLink>

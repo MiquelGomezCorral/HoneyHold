@@ -31,6 +31,11 @@ interface YtdRow extends RowDataPacket {
   net: number;
 }
 
+interface MonthNetRow extends RowDataPacket {
+  m: number;
+  net: number;
+}
+
 export async function getDashboard(profileId: number, year: number, month: number) {
   const [mStart, mEnd] = monthRange(year, month);
   const [yStart, yEnd] = yearRange(year);
@@ -107,4 +112,56 @@ export async function getDashboard(profileId: number, year: number, month: numbe
       annual: { target: goals.annual, actual: r2(ytdRows) },
     },
   };
+}
+
+/**
+ * Cumulative end-of-month balance for every month of `year`.
+ * Bucket 0 folds in the opening balance (initial balances + everything before
+ * the year); buckets 1‑12 are that month's net movement, then we run a total.
+ */
+export async function getBalanceSeries(profileId: number, year: number) {
+  const [yStart, yEnd] = yearRange(year);
+
+  const [base, txnRows, transferRows] = await Promise.all([
+    pool.query<RowDataPacket[]>(
+      `SELECT COALESCE(SUM(initial_balance), 0) AS base
+         FROM accounts WHERE profile_id = ? AND is_active = 1`,
+      [profileId]
+    ).then(([r]) => Number(r[0]?.base ?? 0)),
+
+    pool.query<MonthNetRow[]>(
+      // Attribute by account ownership (account_id -> accounts.profile_id) so the
+      // series matches the account-balance total shown in the Balance section.
+      `SELECT CASE WHEN t.txn_date < ? THEN 0 ELSE MONTH(t.txn_date) END AS m,
+              COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE -t.amount END), 0) AS net
+         FROM transactions t
+         JOIN accounts a ON a.id = t.account_id AND a.profile_id = ? AND a.is_active = 1
+        WHERE t.txn_date < ?
+        GROUP BY m`,
+      [yStart, profileId, yEnd]
+    ).then(([r]) => r),
+
+    pool.query<MonthNetRow[]>(
+      `SELECT CASE WHEN tr.txn_date < ? THEN 0 ELSE MONTH(tr.txn_date) END AS m,
+              COALESCE(SUM(
+                CASE WHEN ain.id  IS NOT NULL THEN tr.amount ELSE 0 END
+              - CASE WHEN aout.id IS NOT NULL THEN tr.amount ELSE 0 END
+              ), 0) AS net
+         FROM transfers tr
+         LEFT JOIN accounts ain  ON ain.id  = tr.to_account_id   AND ain.profile_id  = ? AND ain.is_active  = 1
+         LEFT JOIN accounts aout ON aout.id = tr.from_account_id AND aout.profile_id = ? AND aout.is_active = 1
+        WHERE (ain.id IS NOT NULL OR aout.id IS NOT NULL) AND tr.txn_date < ?
+        GROUP BY m`,
+      [yStart, profileId, profileId, yEnd]
+    ).then(([r]) => r),
+  ]);
+
+  const delta = new Array(13).fill(0);
+  for (const row of [...txnRows, ...transferRows]) delta[Number(row.m)] += Number(row.net);
+
+  let running = base + delta[0];
+  return Array.from({ length: 12 }, (_, i) => {
+    running += delta[i + 1];
+    return { month: i + 1, balance: r2(running) };
+  });
 }

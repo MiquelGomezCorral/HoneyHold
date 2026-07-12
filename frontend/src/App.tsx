@@ -6,6 +6,7 @@ import NavBar from './components/NavBar.js';
 import ProfileGate from './components/ProfileGate.js';
 import TransactionModal from './features/transactions/TransactionModal.js';
 import DashboardView from './features/dashboard/DashboardView.js';
+import MonthlyView from './features/monthly/MonthlyView.js';
 import TransactionsView from './features/transactions/TransactionsView.js';
 import InboxView from './features/inbox/InboxView.js';
 import MobileHome from './features/mobile/MobileHome.js';
@@ -39,6 +40,7 @@ export default function App() {
           <main className="max-w-[1040px] mx-auto px-8 pb-24 pt-2.5">
             <Routes>
               <Route path="/" element={<DashboardView />} />
+              <Route path="/monthly" element={<MonthlyView />} />
               <Route path="/transactions" element={<TransactionsView />} />
               <Route path="/inbox" element={<InboxView />} />
               <Route path="*" element={<Navigate to="/" replace />} />

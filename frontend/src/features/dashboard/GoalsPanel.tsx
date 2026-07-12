@@ -66,22 +66,32 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
   );
 }
 
+type GoalPeriod = 'monthly' | 'annual';
+
 interface Props {
   goals: Goals;
   year: number;
+  show?: GoalPeriod[];
 }
 
-export default function GoalsPanel({ goals, year }: Props) {
+export default function GoalsPanel({ goals, year, show = ['monthly', 'annual'] }: Props) {
   const { bump } = useProfile();
+
+  const lines: Record<GoalPeriod, { label: string; goal: Goals[GoalPeriod] }> = {
+    monthly: { label: 'Monthly savings', goal: goals.monthly },
+    annual: { label: `Saved in ${year}`, goal: goals.annual },
+  };
 
   return (
     <div>
-      <ProgressLine label="Monthly savings" actual={goals.monthly.actual} target={goals.monthly.target}>
-        <TargetEditor period="monthly" year={year} current={goals.monthly.target} onSaved={bump} />
-      </ProgressLine>
-      <ProgressLine label={`Saved in ${year}`} actual={goals.annual.actual} target={goals.annual.target}>
-        <TargetEditor period="annual" year={year} current={goals.annual.target} onSaved={bump} />
-      </ProgressLine>
+      {show.map((period) => {
+        const { label, goal } = lines[period];
+        return (
+          <ProgressLine key={period} label={label} actual={goal.actual} target={goal.target}>
+            <TargetEditor period={period} year={year} current={goal.target} onSaved={bump} />
+          </ProgressLine>
+        );
+      })}
     </div>
   );
 }
