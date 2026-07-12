@@ -1,7 +1,8 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import PeriodNav from '../../components/PeriodNav.js';
 import Button from '../../components/Button.js';
 import Badge from '../../components/Badge.js';
+import ConfirmModal from '../../components/ConfirmModal.js';
 import EmptyState from '../../components/EmptyState.js';
 import Icon from '../../components/Icon.js';
 import Section from '../../components/Section.js';
@@ -26,6 +27,7 @@ export default function TransactionsView() {
   const { profileId, version, bump } = useProfile();
   const [period, setPeriod] = useState(currentPeriod);
   const [type, setType] = useState<EntryType | ''>('');
+  const [confirm, setConfirm] = useState<{ kind: 'delete'; entry: LedgerEntry } | { kind: 'stop'; ruleId: number } | null>(null);
 
   const transactionQuery = `year=${period.year}&month=${period.month}${type === 'income' || type === 'expense' ? `&type=${type}` : ''}`;
   const transferQuery = `year=${period.year}&month=${period.month}`;
@@ -50,17 +52,21 @@ export default function TransactionsView() {
   const rows = getRows();
   const error = transactionError || transferError;
 
-  const remove = async (entry: LedgerEntry) => {
-    if (!window.confirm('Delete this entry from the ledger?')) return;
-    await api.del(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`);
-    bump();
-  };
+  const remove = (entry: LedgerEntry) => setConfirm({ kind: 'delete', entry });
 
-  const stopRule = async (id: number) => {
-    if (!window.confirm('Stop this fixed rule? Past entries stay in the ledger.')) return;
-    await api.del(`/recurring/${id}`);
+  const stopRule = (id: number) => setConfirm({ kind: 'stop', ruleId: id });
+
+  const handleConfirm = useCallback(async () => {
+    if (!confirm) return;
+    if (confirm.kind === 'delete') {
+      const { entry } = confirm;
+      await api.del(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`);
+    } else {
+      await api.del(`/recurring/${confirm.ruleId}`);
+    }
+    setConfirm(null);
     bump();
-  };
+  }, [confirm]);
 
   const columns: Column<LedgerEntry>[] = [
     {
@@ -123,7 +129,7 @@ export default function TransactionsView() {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
       width: LEDGER_COLUMN_WIDTHS.actions,
       render: (t) => (
-        <Button variant="danger" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
+        <Button variant="danger" size="sm" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
           ✕
         </Button>
       ),
@@ -191,6 +197,22 @@ export default function TransactionsView() {
           </ul>
         )}
       </Section>
+
+      {confirm && (
+        <ConfirmModal
+          open
+          title={confirm.kind === 'delete' ? 'Delete entry?' : 'Stop fixed rule?'}
+          message={
+            confirm.kind === 'delete'
+              ? 'Delete this entry from the ledger?'
+              : 'Stop this fixed rule? Past entries stay in the ledger.'
+          }
+          confirmLabel={confirm.kind === 'delete' ? 'Delete' : 'Stop'}
+          variant={confirm.kind === 'delete' ? 'danger-active' : 'primary'}
+          onConfirm={handleConfirm}
+          onCancel={() => setConfirm(null)}
+        />
+      )}
     </>
   );
 }
