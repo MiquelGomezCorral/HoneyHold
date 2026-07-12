@@ -1,3 +1,8 @@
+export const VERSION = '0.0.1';
+export const FRONTEND_VERSION = '0.0.1';
+export const BACKEND_VERSION = '0.0.1';
+
+
 export const TEXT_LIMITS = {
   concept: 255,
   counterparty: 255,

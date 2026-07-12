@@ -1,6 +1,9 @@
 import { NavLink } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext.js';
 import { useFetch } from '../hooks/useFetch.js';
+import { useState } from 'react';
+import { VERSION, FRONTEND_VERSION, BACKEND_VERSION } from '../lib/config.js';
+import Modal from './Modal.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
 import Button from './Button.js';
 import Icon from './Icon.js';
@@ -15,19 +18,21 @@ export default function NavBar({ onAdd }: Props) {
     profileId ? `/profiles/${profileId}/inbox/count` : null,
     [profileId, version]
   );
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const tab = ({ isActive }: { isActive: boolean }) =>
     `px-3 py-[7px] rounded-lg text-muted font-medium no-underline transition-colors hover:text-ink${isActive ? ' text-ink bg-accent-soft' : ''}`;
 
   return (
+    <>
     <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 border-hairline backdrop-blur-md border-b-2">
-      <div className="flex items-center gap-2">
+      <button className="flex items-center gap-2 cursor-pointer" onClick={() => setAboutOpen(true)}>
         <Icon type="color" src="bee-blue" title="HoneyHold" className="h-[1.7em] w-auto" />
         <span className="font-display font-semibold text-xl tracking-[-0.02em]">
           HoneyHold
           <span className="text-accent">.</span>
         </span>
-      </div>
+      </button>
       <nav className="flex gap-1" aria-label="Main">
         <NavLink to="/" end className={tab}>
           Overview
@@ -49,6 +54,22 @@ export default function NavBar({ onAdd }: Props) {
       <Button onClick={onAdd}>
         Add entry
       </Button>
+
     </header>
+      {aboutOpen && (
+      <Modal title={"About HoneyHold" + ` (${VERSION})`} onClose={() => setAboutOpen(false)}>
+        <p className="text-sm text-muted mb-4">
+          Personal finance ledger — track income, expenses, and transfers across multiple profiles. <br />
+          {`Frontend v${FRONTEND_VERSION}. Backend v${BACKEND_VERSION}.`}
+        </p>
+        <dl className="text-sm space-y-2">
+          <dt className="font-semibold">Stack</dt>
+          <dd className="text-muted ml-0">React 18 + TypeScript + Tailwind + MySQL 8.4</dd>
+          <dt className="font-semibold">Design</dt>
+          <dd className="text-muted ml-0">Local-first, no auth, multi-profile</dd>
+        </dl>
+      </Modal>
+    )}
+    </>
   );
 }
