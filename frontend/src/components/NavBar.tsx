@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext.js';
 import { useFetch } from '../hooks/useFetch.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
+import Icon from './Icon.js';
 
 interface Props {
   onAdd: () => void;
@@ -20,7 +21,7 @@ export default function NavBar({ onAdd }: Props) {
   return (
     <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 bg-paper-blue border-b border-hairline">
       <div className="flex items-center gap-2">
-        <img src="/assets/icons/bee-blue.svg" alt="HoneyHold" className="h-[1.7em] w-auto inline-block align-middle" />
+        <Icon type="color" src="bee-blue" title="HoneyHold" className="h-[1.7em] w-auto" />
         <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">
           HoneyHold
           <span className="text-accent">.</span>
