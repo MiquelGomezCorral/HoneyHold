@@ -28,7 +28,7 @@ export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Pr
         aria-label={title}
       >
         <div className="flex justify-between items-center mb-[18px]">
-          <h2 className="m-0 text-[17px] font-semibold">{title}</h2>
+          <h2 className="m-0 text-base font-semibold">{title}</h2>
           <Button variant="close" onClick={onClose} aria-label="Close">
             ✕
           </Button>

@@ -23,7 +23,7 @@ export default function NavBar({ onAdd }: Props) {
     <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 border-hairline backdrop-blur-md border-b-2">
       <div className="flex items-center gap-2">
         <Icon type="color" src="bee-blue" title="HoneyHold" className="h-[1.7em] w-auto" />
-        <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">
+        <span className="font-display font-semibold text-xl tracking-[-0.02em]">
           HoneyHold
           <span className="text-accent">.</span>
         </span>

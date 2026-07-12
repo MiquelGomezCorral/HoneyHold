@@ -6,7 +6,7 @@ export default function ProfileGate() {
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
-      <span className="font-display font-semibold text-[34px] tracking-[-0.02em]">
+      <span className="font-display font-semibold text-3xl tracking-[-0.02em]">
         HoneyHold<span className="text-accent">.</span>
       </span>
       <p className="my-[14px] mb-7 text-muted">Who is keeping the books?</p>
@@ -17,7 +17,7 @@ export default function ProfileGate() {
           </Button>
         ))}
       </div>
-      <p className="mt-[26px] text-[13px] text-muted">You can switch profiles any time from the top bar.</p>
+      <p className="mt-[26px] text-xs text-muted">You can switch profiles any time from the top bar.</p>
     </div>
   );
 }

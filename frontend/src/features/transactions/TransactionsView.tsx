@@ -138,7 +138,7 @@ export default function TransactionsView() {
         {error && <p className="text-neg text-sm">{error}</p>}
         {rows && rows.length === 0 && <EmptyState>Nothing recorded this month. Add an entry to start the page.</EmptyState>}
         {rows && rows.length > 0 && (
-          <table className="w-full border-collapse text-[14.5px]">
+          <table className="w-full border-collapse text-sm">
             <TableHeader columns={columns} />
             <tbody>
               {rows.map((t, idx) => {

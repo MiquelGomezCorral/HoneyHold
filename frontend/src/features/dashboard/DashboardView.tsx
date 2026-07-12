@@ -30,7 +30,7 @@ export default function DashboardView() {
 
       <Section title="Balance" summary="All accounts, all time">
         <div className="grid grid-cols-[1.1fr_1fr] gap-14 items-start max-lg:grid-cols-1 max-lg:gap-7">
-          <p className={`m-0 font-display font-semibold text-[64px] leading-[1.05] tracking-[-0.02em] tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
+          <p className={`m-0 font-display font-semibold text-6xl leading-[1.05] tracking-[-0.02em] tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
             {money(totalBalance)}
           </p>
           <ul className="list-none mt-1 p-0">
@@ -51,15 +51,15 @@ export default function DashboardView() {
         <div className="flex gap-16 flex-wrap">
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted">Income</span>
-            <span className="text-[26px] font-semibold tabular-nums text-accent">{money(month.income)}</span>
+            <span className="text-2xl font-semibold tabular-nums text-accent">{money(month.income)}</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted">Expenses</span>
-            <span className="text-[26px] font-semibold tabular-nums">{money(month.expense)}</span>
+            <span className="text-2xl font-semibold tabular-nums">{money(month.expense)}</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted">Net</span>
-            <span className={`text-[26px] font-semibold tabular-nums${month.net >= 0 ? ' text-accent' : ' text-neg'}`}>{money(month.net)}</span>
+            <span className={`text-2xl font-semibold tabular-nums${month.net >= 0 ? ' text-accent' : ' text-neg'}`}>{money(month.net)}</span>
           </div>
         </div>
       </Section>

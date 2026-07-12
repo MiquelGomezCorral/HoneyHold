@@ -20,7 +20,7 @@ export default function MobileHome({ onAdd }: Props) {
   return (
     <div className="min-h-dvh flex flex-col p-[18px_20px_calc(20px+env(safe-area-inset-bottom))]">
       <div className="flex justify-between items-center gap-2.5">
-        <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">
+        <span className="font-display font-semibold text-xl tracking-[-0.02em]">
           HoneyHold<span className="text-accent">.</span>
         </span>
         <ProfileSwitcher />
@@ -34,7 +34,7 @@ export default function MobileHome({ onAdd }: Props) {
           {data ? money(data.totalBalance) : '—'}
         </p>
         {data && (
-          <p className="mt-3 text-muted text-[14.5px] tabular-nums">
+          <p className="mt-3 text-muted text-sm tabular-nums">
             <span className="text-accent">{money(data.month.income)}</span> in ·{' '}
             <span className="text-ink font-semibold">{money(data.month.expense)}</span> out this month
           </p>
