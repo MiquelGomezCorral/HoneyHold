@@ -18,11 +18,15 @@ export const monthLabel = (year: number, month: number) =>
 export const shortDate = (iso: string) =>
   new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
+const dbTimestamp = (value: string) =>
+  new Date(value.includes('T') ? value : `${value.replace(' ', 'T')}Z`);
+
 export const timeStamp = (iso: string) =>
-  new Date(iso).toLocaleTimeString('en-GB', {
+  dbTimestamp(iso).toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    timeZone: 'Europe/Madrid',
   });
 
 export const compareLedgerEntries = (a: { txn_date: string; created_at: string; id: number }, b: typeof a) =>
