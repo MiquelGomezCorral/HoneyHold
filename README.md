@@ -18,10 +18,30 @@ docker compose up --build
 | MySQL     | 127.0.0.1:3306          |
 
 First boot initializes the schema and seed data from `db/init/` (only when the
-`db_data` volume is empty). `03-demo-data.sql` is optional demo content —
-delete it before first boot for a clean ledger. To re-initialize from scratch:
-`docker compose down -v && docker compose up --build`.
+`db_data` volume is empty). `04-isa-data.sql` and `05-maikol-data.sql` are real
+imported ledger data; delete them before first boot for a clean slate.
+To re-initialize from scratch: `docker compose down -v && docker compose up --build`.
 
+
+
+## Development
+
+### Reset everything (wipe DB + rebuild)
+```bash
+docker compose down -v && docker compose up --build
+```
+
+### Host-side install (when Docker node_modules are root-owned)
+After `docker compose up --build`, the Docker container creates `node_modules` as root.
+If you get permission errors running `bun i` / `npm i` on the host:
+
+```bash
+# Backend
+sudo rm -rf backend/node_modules && cd backend && npm install
+
+# Frontend (same issue)
+sudo rm -rf frontend/node_modules && cd frontend && npm install
+```
 ## Project structure
 
 ```
@@ -33,26 +53,27 @@ HoneyHold/
 │   ├── init/                   # runs on first boot, in order
 │   │   ├── 01-schema.sql
 │   │   ├── 02-core-data.sql    # profiles, accounts, tags, starter goals
-│   │   └── 03-demo-data.sql    # optional demo content
+│   │   ├── 04-isa-data.sql     # real ledger: Honey 2 (Jan-Jul 2026)
+│   │   └── 05-maikol-data.sql  # real ledger: Honey 1 (Dec 2025-Jul 2026)
 │   └── backup/                 # cron + mysqldump sidecar image
 ├── backend/
 │   ├── scripts/
 │   │   └── simulate-bank-feed.js
 │   └── src/
-│       ├── server.js           # boot + materializer schedule
-│       ├── app.js              # express wiring
-│       ├── config/  db/  middleware/  utils/
+│       ├── server.ts           # boot + materializer schedule
+│       ├── app.ts              # express wiring
+│       ├── config/  db/  middleware/  types/  utils/
 │       ├── routes/             # thin HTTP layer, one file per domain
 │       ├── services/           # all SQL + business rules live here
-│       └── jobs/materialize.js # recurring rules → real transactions
+│       └── jobs/materialize.ts # recurring rules → real transactions
 └── frontend/
     └── src/
-        ├── api/client.js       # the only place fetch() is called
-        ├── context/ProfileContext.jsx  # active scope + refetch signal
-        ├── hooks/  lib/  components/
+        ├── api/client.ts       # the only place fetch() is called
+        ├── context/ProfileContext.tsx  # active scope + refetch signal
+        ├── hooks/  lib/  components/  types/
         ├── features/
         │   ├── dashboard/  transactions/  inbox/  mobile/
-        └── styles/global.css   # design tokens + all styling
+        └── styles/global.css   # @tailwind directives + resets
 ```
 
 **Layering:** routes stay thin (parse, delegate, respond); services own SQL

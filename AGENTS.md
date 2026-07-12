@@ -48,11 +48,11 @@ Package manager: npm with independent `package-lock.json` in `backend/` and `fro
 
 ### Traps
 
-- **Schema only initializes on empty `db_data` volume.** Editing `db/init/*.sql` after first boot requires `docker compose down -v`, which destroys data.
-- **`03-demo-data.sql` is optional.** Delete it before first boot for a clean ledger.
-- **Backend is TypeScript.** Dev uses `tsx watch`, not nodemon. `.agents/conventions.md` may say ".js" — that's stale.
+- **DB inits only on empty volume.** `db/init/*.sql` runs once. `04-isa-data.sql` and `05-maikol-data.sql` are real imported ledger data (not optional). `03-demo-data.sql` was removed; if you need clean data, delete `04` and `05` before first boot. Editing after first boot requires `docker compose down -v` (destroys data).
+- **Backend is TypeScript.** Dev uses `tsx watch`, not nodemon. `.agents/conventions.md` says ".js" — **stale**. `.agents/workflow.md` says "nodemon" — **stale**.
+- **Frontend is TypeScript** (`*.tsx`/`*.ts`). Imports use `.js` extension (Vite convention: `from './Modal.js'` resolves `Modal.tsx`).
 - **Frontend runs Vite dev server** in compose, not a production build.
-- **No test runner, no lint config** present anywhere. Verify manually.
+- **No test runner, no lint config, no CI** present anywhere. Verify manually.
 - **MySQL port 3306 is localhost-only** (`127.0.0.1:3306` in compose).
 - **Install separately** — `npm install` in `backend/` and `frontend/` independently.
 

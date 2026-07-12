@@ -10,7 +10,7 @@ interface TagRow extends RowDataPacket {
 export async function listTags(profileId: number) {
   const [rows] = await pool.query<TagRow[]>(
     `SELECT id, name, profile_id
-       FROM tags
+      FROM tags
       WHERE profile_id IS NULL OR profile_id = ?
       ORDER BY name`,
     [profileId]
