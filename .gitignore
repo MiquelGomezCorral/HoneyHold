@@ -42,3 +42,6 @@ next-env.d.ts
 
 backups/
 !backups/.gitkeep
+
+docs/files.zip
+docs/hucha.zip
