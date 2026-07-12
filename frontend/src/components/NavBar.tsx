@@ -18,7 +18,7 @@ export default function NavBar({ onAdd }: Props) {
     `px-3 py-[7px] rounded-lg text-muted font-medium no-underline transition-colors hover:text-ink${isActive ? ' text-ink bg-accent-soft' : ''}`;
 
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 bg-paper border-b border-hairline">
+    <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 bg-paper-blue border-b border-hairline">
       <div className="flex items-center gap-2">
         <img src="/assets/icons/bee-blue.svg" alt="HoneyHold" className="h-[1.7em] w-auto inline-block align-middle" />
         <span className="font-display font-semibold text-[22px] tracking-[-0.02em]">

@@ -4,9 +4,10 @@ interface Props {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  bgColor?: 'Blue' | 'Green' | 'Red' | 'Yellow';
 }
 
-export default function Modal({ title, onClose, children }: Props) {
+export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Props) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -19,7 +20,11 @@ export default function Modal({ title, onClose, children }: Props) {
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full max-w-[460px] max-h-[calc(100vh-40px)] overflow-auto bg-paper border border-hairline rounded-[14px] p-[22px_24px_20px] max-sm:max-w-none max-sm:max-h-[92dvh] max-sm:rounded-t-[16px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0"
+        className={`w-full max-w-[460px] max-h-[calc(100vh-40px)] overflow-auto border border-hairline rounded-[14px] p-[22px_24px_20px] max-sm:max-w-none max-sm:max-h-[92dvh] max-sm:rounded-t-[16px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0 
+          ${bgColor === 'Blue' && 'bg-paper-blue'}
+          ${bgColor === 'Green' && 'bg-paper-green'} 
+          ${bgColor === 'Red' && 'bg-paper-red'} 
+          ${bgColor === 'Yellow' && 'bg-paper-yellow'}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}

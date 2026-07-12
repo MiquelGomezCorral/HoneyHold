@@ -86,7 +86,7 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
   };
 
   return (
-    <Modal title="Add entry" onClose={onClose}>
+    <Modal title="Add entry" onClose={onClose} bgColor={form.type === 'income' ? 'Green' : 'Blue'}>
       <form className="flex flex-col gap-4" onSubmit={submit}>
         <div className="flex gap-0.5 p-0.5 border border-hairline rounded-[10px]" role="group" aria-label="Entry type">
           <button type="button"

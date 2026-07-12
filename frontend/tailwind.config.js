@@ -4,8 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        paper: '#f2f7fb',
-        'paper-raise': '#fafcfe',
+        'paper-blue': '#f2f7fb',
+        'paper-blue-raise': '#fafcfe',
+        'paper-green': '#f3fbf2',
+        'paper-yellow': '#fbfbf2',
+        'paper-red': '#fbf2f2',
         ink: '#16324a',
         muted: '#5e7e99',
         hairline: '#d3e2ee',
