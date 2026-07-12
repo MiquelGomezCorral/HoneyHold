@@ -6,7 +6,7 @@
 - 2-space indent, single quotes for JS strings, trailing commas in multiline literals (inferred from existing source).
 - Express handlers wrap async in `asyncH` (`backend/src/middleware/errors.js`); throw `HttpError(status, message)` for client errors. `errorHandler` renders `{ error }` JSON.
 - SQL is hand-written, lowercase keywords, parameterized with `?` placeholders. Dynamic `WHERE` clauses are built as `where[]` + `params[]` arrays, joined at the end (see `transactions.service.js`).
-- Frontend styling is Tailwind utility classes via `tailwind.config.js` which extends the theme with custom colors (`paper`, `ink`, `muted`, `hairline`, `accent`, `accent-deep`, `accent-soft`, `neg`) and fonts (`font-ui`, `font-display`). `global.css` contains only `@tailwind` directives, `@layer base` resets for body/code/input/select, and `prefers-reduced-motion`. Add custom CSS to `global.css` only when Tailwind cannot express the style.
+- Frontend styling is Tailwind utility classes via `tailwind.config.js` which extends the theme with custom colors (`paper-blue`, `ink`, `muted`, `hairline`, `accent`, `accent-deep`, `accent-soft`, `neg`) and fonts (`font-ui`, `font-display`). `global.css` contains only `@tailwind` directives, `@layer base` resets for body/code/input/select, and `prefers-reduced-motion`. Add custom CSS to `global.css` only when Tailwind cannot express the style.
 - Comments are sparse and explain "why", not "what" (see `api/client.js` header comment, schema section banners). Default: no comments.
 
 ## Naming

@@ -10,7 +10,7 @@
 - **Materializer** — `backend/src/jobs/materialize.js`. Turns due `recurring_rules` into `transactions` rows and advances `next_due`. Schedule: on boot, every 12h, and immediately after a rule is created.
 - **Inbox** — staging area for automated entries. External feeds push to `POST /api/ingest`; rows land in `inbox_entries` (unique on `(source, external_id)` so re-deliveries dedupe). A human edits and Approves (→ transaction, `source='automated'`) or Rejects.
 - **Ingest** — the single automation entry point: `POST /api/ingest` with header `x-ingest-token: <INGEST_TOKEN>`. The JSON contract is documented in the README (`source`, `external_id`, `amount` (negative = expense), `date`, `concept`, `counterparty`, optional `profile_slug`/`account_name` routing hints, `raw` JSON).
-- **`profile_slug`** — short opaque identifier for a profile (e.g. `honey-1`); used as an optional routing hint in ingest payloads.
+- **`profile_slug`** — short opaque identifier for a profile (e.g. `maikol`); used as an optional routing hint in ingest payloads.
 - **`source`** — provenance tag on both `inbox_entries` and `transactions`. `manual` = user-typed; `automated` = approved from inbox; external feed strings like `openbanking:bbva` identify the origin feed.
 - **`db-backup`** — Docker Compose sidecar (same `mysql:8.4` base image) running real cron + `mysqldump` into `./backups/`, pruned by `BACKUP_RETENTION_DAYS`.
 - **`VITE_API_PROXY`** — env var telling the Vite dev server where the backend is (`http://backend:4000` in compose); the browser only ever sees `/api`.
