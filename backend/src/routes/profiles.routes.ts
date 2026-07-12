@@ -7,6 +7,7 @@ import * as dashboard from '../services/dashboard.service.js';
 import * as goals from '../services/goals.service.js';
 import * as inbox from '../services/inbox.service.js';
 import * as recurring from '../services/recurring.service.js';
+import * as transfers from '../services/transfers.service.js';
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router.use('/:profileId', (req, _res, next) => {
 });
 
 router.get('/:profileId/accounts', asyncH(async (req, res) =>
-  res.json(await profiles.listAccounts(req.profileId!))));
+  res.json(await profiles.listAccounts(req.profileId!, req.query.include_cross === '1'))));
 
 router.get('/:profileId/tags', asyncH(async (req, res) =>
   res.json(await tags.listTags(req.profileId!))));
@@ -34,6 +35,12 @@ router.get('/:profileId/dashboard', asyncH(async (req, res) => {
 
 router.get('/:profileId/transactions', asyncH(async (req, res) =>
   res.json(await txns.listTransactions(req.profileId!, req.query as Record<string, string>))));
+
+router.get('/:profileId/transfers', asyncH(async (req, res) =>
+  res.json(await transfers.listTransfers(req.profileId!, req.query as Record<string, string>))));
+
+router.post('/:profileId/transfers', asyncH(async (req, res) =>
+  res.status(201).json(await transfers.createFromModal(req.profileId!, req.body))));
 
 router.get('/:profileId/recurring', asyncH(async (req, res) =>
   res.json(await recurring.listRules(req.profileId!))));

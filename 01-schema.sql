@@ -86,9 +86,9 @@ CREATE TABLE transactions (
   is_fixed          TINYINT(1)       NOT NULL DEFAULT 0,
   source            ENUM('manual','recurring','automated') NOT NULL DEFAULT 'manual',
   recurring_rule_id INT UNSIGNED     NULL,
-  created_at        TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at        TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP
-                                     ON UPDATE CURRENT_TIMESTAMP,
+  created_at        TIMESTAMP(6)     NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at        TIMESTAMP(6)     NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+                                     ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (id),
   KEY idx_txn_scope_date (profile_id, txn_date),
   KEY idx_txn_account (account_id),
@@ -101,6 +101,33 @@ CREATE TABLE transactions (
   CONSTRAINT fk_txn_rule FOREIGN KEY (recurring_rule_id)
     REFERENCES recurring_rules (id) ON DELETE SET NULL,
   CONSTRAINT chk_txn_amount CHECK (amount > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ── Transfers (money moved between owned accounts; not income/expense) ───────
+CREATE TABLE transfers (
+  id                 BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  creator_profile_id TINYINT UNSIGNED NOT NULL,
+  from_account_id    INT UNSIGNED     NOT NULL,
+  to_account_id      INT UNSIGNED     NOT NULL,
+  amount             DECIMAL(12,2)    NOT NULL,
+  txn_date           DATE             NOT NULL,
+  concept            VARCHAR(255)     NOT NULL,
+  tag_id             INT UNSIGNED     NULL,
+  source             ENUM('manual','automated') NOT NULL DEFAULT 'manual',
+  created_at         TIMESTAMP(6)     NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (id),
+  KEY idx_transfer_date (txn_date),
+  KEY idx_transfer_from (from_account_id),
+  KEY idx_transfer_to (to_account_id),
+  CONSTRAINT fk_transfer_creator FOREIGN KEY (creator_profile_id)
+    REFERENCES profiles (id) ON DELETE RESTRICT,
+  CONSTRAINT fk_transfer_from FOREIGN KEY (from_account_id)
+    REFERENCES accounts (id) ON DELETE RESTRICT,
+  CONSTRAINT fk_transfer_to FOREIGN KEY (to_account_id)
+    REFERENCES accounts (id) ON DELETE RESTRICT,
+  CONSTRAINT fk_transfer_tag FOREIGN KEY (tag_id)
+    REFERENCES tags (id) ON DELETE SET NULL,
+  CONSTRAINT chk_transfer CHECK (from_account_id <> to_account_id AND amount > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ── Inbox (staging area for automated ingestion) ────────────────────────────

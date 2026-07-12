@@ -9,11 +9,12 @@ import DashboardView from './features/dashboard/DashboardView.js';
 import TransactionsView from './features/transactions/TransactionsView.js';
 import InboxView from './features/inbox/InboxView.js';
 import MobileHome from './features/mobile/MobileHome.js';
+import type { EntryType } from './types.js';
 
 export default function App() {
   const { profiles, profileId, loadError } = useProfile();
   const isMobile = useIsMobile();
-  const [modal, setModal] = useState<{ type: 'income' | 'expense' } | null>(null);
+  const [modal, setModal] = useState<{ type: EntryType } | null>(null);
 
   if (loadError) {
     return (
@@ -26,7 +27,7 @@ export default function App() {
   if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
   if (!profileId) return <ProfileGate />;
 
-  const openAdd = (type: 'income' | 'expense' = 'expense') => setModal({ type });
+  const openAdd = (type: EntryType = 'expense') => setModal({ type });
 
   return (
     <>

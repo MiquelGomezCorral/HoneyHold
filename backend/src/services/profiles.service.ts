@@ -13,6 +13,8 @@ interface AccountRow extends RowDataPacket {
   name: string;
   kind: string;
   initial_balance: string;
+  profile_id: number;
+  profile_name: string;
 }
 
 export async function listProfiles() {
@@ -22,12 +24,27 @@ export async function listProfiles() {
   return rows;
 }
 
-export async function listAccounts(profileId: number) {
+export async function listAccounts(profileId: number, includeCross = false) {
+  if (includeCross) {
+    const [rows] = await pool.query<AccountRow[]>(
+      `SELECT a.id, a.name, a.kind, a.initial_balance,
+              a.profile_id, p.display_name AS profile_name
+         FROM accounts a
+         JOIN profiles p ON p.id = a.profile_id
+        WHERE a.is_active = 1
+        ORDER BY a.profile_id <> ?, p.display_name, a.name`,
+      [profileId]
+    );
+    return rows;
+  }
+
   const [rows] = await pool.query<AccountRow[]>(
-    `SELECT id, name, kind, initial_balance
-       FROM accounts
-      WHERE profile_id = ? AND is_active = 1
-      ORDER BY name`,
+    `SELECT a.id, a.name, a.kind, a.initial_balance,
+            a.profile_id, p.display_name AS profile_name
+       FROM accounts a
+       JOIN profiles p ON p.id = a.profile_id
+      WHERE a.profile_id = ? AND a.is_active = 1
+      ORDER BY a.name`,
     [profileId]
   );
   return rows;

@@ -1,40 +1,57 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import PeriodNav from '../../components/PeriodNav.js';
 import Button from '../../components/Button.js';
 import Badge from '../../components/Badge.js';
 import EmptyState from '../../components/EmptyState.js';
+import Icon from '../../components/Icon.js';
 import Section from '../../components/Section.js';
 import SegmentedControl from '../../components/SegmentedControl.js';
-import { TableHeader, TableRow } from '../../components/Table.js';
+import { DateDivider, TableHeader, TableRow } from '../../components/Table.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
-import { currentPeriod, money, shortDate, signedMoney } from '../../lib/format.js';
-import type { Column } from '../../components/Table.js';
-import type { Transaction, RecurringRule } from '../../types.js';
-import type { ReactNode } from 'react';
+import { accountLabel, compareLedgerEntries, currentPeriod, entryMoney, shortDate, signedMoney, timeStamp } from '../../lib/format.js';
 
-const FILTERS = [
+import type { Column } from '../../components/Table.js';
+import type { EntryType, LedgerEntry, RecurringRule, Transaction, Transfer } from '../../types.js';
+const FILTERS: { key: EntryType | ''; label: string }[] = [
   { key: '', label: 'All' },
   { key: 'income', label: 'Income' },
   { key: 'expense', label: 'Expenses' },
+  { key: 'transfer', label: 'Transfers' },
 ];
 
 export default function TransactionsView() {
   const { profileId, version, bump } = useProfile();
   const [period, setPeriod] = useState(currentPeriod);
-  const [type, setType] = useState('');
+  const [type, setType] = useState<EntryType | ''>('');
 
-  const query = `year=${period.year}&month=${period.month}${type ? `&type=${type}` : ''}`;
-  const { data: rows, error } = useFetch<Transaction[]>(
-    `/profiles/${profileId}/transactions?${query}`,
+  const transactionQuery = `year=${period.year}&month=${period.month}${type === 'income' || type === 'expense' ? `&type=${type}` : ''}`;
+  const transferQuery = `year=${period.year}&month=${period.month}`;
+  const { data: transactionRows, error: transactionError } = useFetch<Transaction[]>(
+    type === 'transfer' ? null : `/profiles/${profileId}/transactions?${transactionQuery}`,
+    [profileId, period.year, period.month, type, version]
+  );
+  const { data: transferRows, error: transferError } = useFetch<Transfer[]>(
+    type === 'income' || type === 'expense' ? null : `/profiles/${profileId}/transfers?${transferQuery}`,
     [profileId, period.year, period.month, type, version]
   );
   const { data: rules } = useFetch<RecurringRule[]>(`/profiles/${profileId}/recurring`, [profileId, version]);
 
-  const remove = async (id: number) => {
+  function getRows() {
+    if (type === 'transfer' || type === 'income' || type === 'expense') {
+      if (type === 'transfer') return transferRows;
+      return transactionRows;
+    }
+    if (!transactionRows || !transferRows) return null;
+    return [...transactionRows, ...transferRows].sort(compareLedgerEntries);
+  }
+  const rows = getRows();
+  const error = transactionError || transferError;
+
+  const remove = async (entry: LedgerEntry) => {
     if (!window.confirm('Delete this entry from the ledger?')) return;
-    await api.del(`/transactions/${id}`);
+    await api.del(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`);
     bump();
   };
 
@@ -44,42 +61,66 @@ export default function TransactionsView() {
     bump();
   };
 
-  const columns: Column<Transaction>[] = [
-    { key: 'date', label: 'Date', align: 'left', cellKind: 'muted', render: (t) => shortDate(t.txn_date) },
+  const columns: Column<LedgerEntry>[] = [
+    {
+      key: 'date', label: 'Date', align: 'left', cellKind: 'muted',
+      render: (t) => timeStamp(t.created_at),
+    },
     {
       key: 'concept', label: 'Concept', align: 'left', cellKind: 'text',
       render: (t) => (
         <>
           {t.concept}
-          {t.is_fixed === 1 && <Badge className="ml-2">fixed</Badge>}
+          {t.type !== 'transfer' && t.is_fixed === 1 && <Badge className="ml-2">fixed</Badge>}
           {t.source === 'automated' && <Badge className="ml-2">auto</Badge>}
         </>
       ),
     },
-    { key: 'counterparty', label: 'Payer / payee', align: 'left', cellKind: 'muted', render: (t) => t.counterparty || '—' },
-    { key: 'tag', label: 'Tag', align: 'left', cellKind: 'muted', render: (t) => t.tag_name || '—' },
-    { key: 'account', label: 'Account', align: 'left', cellKind: 'muted', render: (t) => t.account_name },
+    {
+      key: 'counterparty', label: 'Payer / payee', align: 'left', cellKind: 'muted',
+      render: (t) => t.type === 'transfer'
+        ? <span className="inline-flex items-center gap-1.5">
+          <Icon src="arrows-left-right" type="white" className="inline-flex h-4 w-4 align-[-3px]" title="Transfer" />
+          Transfer
+        </span>
+        : t.counterparty || '—',
+    },
+    { key: 'tag', label: 'Tag', align: 'left', cellKind: 'muted', render: (t) => t.type === 'transfer' ? t.tag_name || 'Transference' : t.tag_name || '—' },
+    {
+      key: 'account', label: 'Account', align: 'left', cellKind: 'muted',
+      render: (t) => {
+        if (t.type === 'transfer') {
+          const crossProfile = t.from_profile_id !== t.to_profile_id;
+          return `${accountLabel(t.from_account_name, crossProfile ? t.from_profile_name : null)} → ${accountLabel(t.to_account_name, crossProfile ? t.to_profile_name : null)}`;
+        }
+
+        if (!t.account_name) return '—';
+        return t.account_profile_id && t.account_profile_id !== profileId
+          ? accountLabel(t.account_name, t.account_profile_name)
+          : t.account_name;
+      },
+    },
     {
       key: 'amount', label: 'Amount', align: 'right', cellKind: 'amount',
       cellClassName: (t) => t.type === 'income' ? 'text-accent' : '',
-      render: (t) => signedMoney(t.type, t.amount),
+      render: (t) => entryMoney(t.type, t.amount),
     },
     {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
       render: (t) => (
-        <Button variant="close" onClick={() => remove(t.id)} aria-label={`Delete ${t.concept}`}>
+        <Button variant="close" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
           ✕
         </Button>
       ),
     },
   ];
 
-  const getBgColor = (t: Transaction): 'Blue' | 'Green' | 'Red' | 'Yellow' | undefined => {
+  const getBgColor = (t: LedgerEntry): 'Blue' | 'Green' | 'Red' | 'Yellow' | undefined => {
     if (t.type === 'income') return 'Green';
     if (t.type === 'expense') return 'Blue';
-    if (t.type === 'transference') return 'Yellow';
+    if (t.type === 'transfer') return 'Yellow';
     return undefined;
-  }
+  };
 
   return (
     <>
@@ -100,9 +141,16 @@ export default function TransactionsView() {
           <table className="w-full border-collapse text-[14.5px]">
             <TableHeader columns={columns} />
             <tbody>
-              {rows.map((t) => (
-                <TableRow key={t.id} row={t} columns={columns} bgColor={getBgColor(t)} />
-              ))}
+              {rows.map((t, idx) => {
+                const previousDate = idx > 0 ? rows[idx - 1].txn_date : '';
+
+                return (
+                  <Fragment key={`${t.type}-${t.id}`}>
+                    {t.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(t.txn_date)}</DateDivider>}
+                    <TableRow row={t} columns={columns} bgColor={getBgColor(t)} />
+                  </Fragment>
+                );
+              })}
             </tbody>
           </table>
         )}

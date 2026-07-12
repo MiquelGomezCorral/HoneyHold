@@ -1,7 +1,7 @@
 import { pool } from '../db/pool.js';
 import { HttpError } from '../middleware/errors.js';
 import { monthRange } from '../utils/dates.js';
-import { accountInProfile } from './profiles.service.js';
+import { accountById } from './profiles.service.js';
 import { resolveTagId } from './tags.service.js';
 import { createRule } from './recurring.service.js';
 import { materializeRule } from '../jobs/materialize.js';
@@ -12,11 +12,14 @@ interface TransactionRow extends RowDataPacket {
   type: string;
   amount: number;
   txn_date: string;
+  created_at: string;
   concept: string;
   counterparty: string | null;
   is_fixed: number;
   source: string;
   account_name: string | null;
+  account_profile_id: number | null;
+  account_profile_name: string | null;
   tag_name: string | null;
 }
 
@@ -62,13 +65,16 @@ export async function listTransactions(profileId: number, query: ListQuery) {
   }
 
   const [rows] = await pool.query<TransactionRow[]>(
-    `SELECT t.id, t.type, t.amount, t.txn_date, t.concept, t.counterparty,
-            t.is_fixed, t.source, a.name AS account_name, tg.name AS tag_name
+    `SELECT t.id, t.type, t.amount, t.txn_date, t.created_at, t.concept, t.counterparty,
+            t.is_fixed, t.source, a.name AS account_name,
+            a.profile_id AS account_profile_id,
+            p.display_name AS account_profile_name, tg.name AS tag_name
        FROM transactions t
        LEFT JOIN accounts a ON a.id = t.account_id
+       LEFT JOIN profiles p ON p.id = a.profile_id
        LEFT JOIN tags tg ON tg.id = t.tag_id
       WHERE ${where.join(' AND ')}
-      ORDER BY t.txn_date DESC, t.id DESC
+      ORDER BY t.txn_date DESC, t.created_at DESC, t.id DESC
       LIMIT ${Math.max(1, Math.min(Number(limit) || 200, 1000))}`,
     params
   );
@@ -116,9 +122,9 @@ export async function createFromModal(input: {
   } | null;
 }) {
   const amount = validate(input as Parameters<typeof validate>[0]);
-  const profileId = Number(input.profile_id);
   const accountId = Number(input.account_id);
-  await accountInProfile(accountId, profileId);
+  const account = await accountById(accountId);
+  const profileId = Number(account.profile_id);
   const tagId = await resolveTagId(profileId, input.tag);
 
   const recurrence = input.is_fixed ? input.recurrence : null;

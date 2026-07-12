@@ -28,6 +28,7 @@ INSERT INTO tags (profile_id, name) VALUES
   (NULL, 'Transporte'),
   (NULL, 'Belleza'),
   (NULL, 'Clase'),
+  (NULL, 'Transference'),
   (NULL, 'Otros');
 
 -- Starter goals for the current year (editable from the dashboard)

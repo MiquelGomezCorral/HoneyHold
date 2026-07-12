@@ -9,20 +9,49 @@ export interface Account {
   name: string;
   kind: string;
   balance: number;
+  profile_id?: number;
+  profile_name?: string;
 }
+
+export type EntryType = 'income' | 'expense' | 'transfer';
 
 export interface Transaction {
   id: number;
   type: 'income' | 'expense';
   amount: number;
   txn_date: string;
+  created_at: string;
   concept: string;
   counterparty: string | null;
   tag_name: string | null;
   account_name: string;
+  account_profile_id: number | null;
+  account_profile_name: string | null;
   is_fixed: number;
   source: string;
 }
+
+export interface Transfer {
+  id: number;
+  type: 'transfer';
+  amount: number;
+  txn_date: string;
+  created_at: string;
+  concept: string;
+  source: string;
+  creator_profile_id: number;
+  from_account_id: number;
+  from_account_name: string;
+  from_profile_id: number;
+  from_profile_name: string;
+  to_account_id: number;
+  to_account_name: string;
+  to_profile_id: number;
+  to_profile_name: string;
+  tag_name: string | null;
+}
+
+export type LedgerEntry = Transaction | Transfer;
 
 export interface RecurringRule {
   id: number;

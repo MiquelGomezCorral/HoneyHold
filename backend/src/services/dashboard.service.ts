@@ -40,6 +40,8 @@ export async function getDashboard(profileId: number, year: number, month: numbe
       `SELECT a.id, a.name, a.kind,
               a.initial_balance
               + COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE -t.amount END), 0)
+              + COALESCE((SELECT SUM(amount) FROM transfers WHERE to_account_id = a.id), 0)
+              - COALESCE((SELECT SUM(amount) FROM transfers WHERE from_account_id = a.id), 0)
               AS balance
          FROM accounts a
          LEFT JOIN transactions t ON t.account_id = a.id

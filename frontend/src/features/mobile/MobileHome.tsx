@@ -3,10 +3,10 @@ import Button from '../../components/Button.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { currentPeriod, money } from '../../lib/format.js';
-import type { DashboardData } from '../../types.js';
+import type { DashboardData, EntryType } from '../../types.js';
 
 interface Props {
-  onAdd: (type: 'income' | 'expense') => void;
+  onAdd: (type: EntryType) => void;
 }
 
 export default function MobileHome({ onAdd }: Props) {
@@ -44,6 +44,9 @@ export default function MobileHome({ onAdd }: Props) {
       <div className="mt-auto grid gap-3 pt-8">
         <Button variant="ghost" size="lg" onClick={() => onAdd('income')}>
           Add income
+        </Button>
+        <Button variant="outline" size="lg" onClick={() => onAdd('transfer')}>
+          Add transfer
         </Button>
         <Button variant="primary" size="lg" onClick={() => onAdd('expense')}>
           Add expense

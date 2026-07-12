@@ -65,10 +65,10 @@ interface CellProps {
 }
 
 const CELL_CLASSES: Record<CellKind, string> = {
-  text: 'py-[11px] pr-3 border-b border-hairline align-baseline',
-  muted: 'py-[11px] pr-3 border-b border-hairline align-baseline text-muted',
-  amount: 'py-[11px] pr-3 border-b border-hairline align-baseline font-semibold whitespace-nowrap tabular-nums text-right',
-  action: 'w-[34px] py-[11px] pr-3 border-b border-hairline align-baseline text-right',
+  text: 'py-[11px] pr-3 align-baseline',
+  muted: 'py-[11px] pr-3 align-baseline text-muted',
+  amount: 'py-[11px] pr-3 align-baseline font-semibold whitespace-nowrap tabular-nums text-right',
+  action: 'w-[34px] py-[11px] pr-3 align-baseline text-right',
 };
 
 export default function Cell({ kind = 'text', className, children }: CellProps) {
@@ -77,4 +77,17 @@ export default function Cell({ kind = 'text', className, children }: CellProps) 
     : CELL_CLASSES[kind];
 
   return <td className={final}>{children}</td>;
+}
+
+export function DateDivider({ children, colSpan }: { children: ReactNode; colSpan: number }) {
+  return (
+    <tr>
+      <td colSpan={colSpan} className="pt-5 pb-0">
+        <div className="flex items-center gap-3 text-sm font-semibold tracking-[0.12em] uppercase text-muted">
+          <span>{children}</span>
+          <span className="h-px flex-1 bg-hairline" />
+        </div>
+      </td>
+    </tr>
+  );
 }
