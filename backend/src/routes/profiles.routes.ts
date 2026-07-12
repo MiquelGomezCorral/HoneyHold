@@ -33,6 +33,11 @@ router.get('/:profileId/dashboard', asyncH(async (req, res) => {
   res.json(await dashboard.getDashboard(req.profileId!, year, month));
 }));
 
+router.get('/:profileId/balance-series', asyncH(async (req, res) => {
+  const year = Number(req.query.year) || new Date().getFullYear();
+  res.json(await dashboard.getBalanceSeries(req.profileId!, year));
+}));
+
 router.get('/:profileId/transactions', asyncH(async (req, res) =>
   res.json(await txns.listTransactions(req.profileId!, req.query as Record<string, string>))));
 
