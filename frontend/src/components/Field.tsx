@@ -14,7 +14,7 @@ export default function Field({ label, htmlFor, children, colSpan, className }: 
 
   return (
     <div className={`flex flex-col gap-1.5 min-w-0${colClass}${extra}`}>
-      <label htmlFor={htmlFor} className="text-[11px] font-semibold tracking-[0.1em] uppercase text-muted">
+      <label htmlFor={htmlFor} className="text-xs font-semibold tracking-[0.1em] uppercase text-muted">
         {label}
       </label>
       {children}

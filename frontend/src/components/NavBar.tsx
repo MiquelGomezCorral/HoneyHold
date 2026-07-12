@@ -38,7 +38,7 @@ export default function NavBar({ onAdd }: Props) {
         <NavLink to="/inbox" className={tab}>
           Inbox
           {inbox != null && inbox.count > 0 && (
-            <span className="inline-block min-w-[18px] ml-[7px] px-[6px] py-[1px] rounded-full bg-accent text-white text-[11px] font-semibold text-center">
+            <span className="inline-block min-w-[18px] ml-[7px] px-[6px] py-[1px] rounded-full bg-accent text-white text-xs font-semibold text-center">
               {inbox.count}
             </span>
           )}

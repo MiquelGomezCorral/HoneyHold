@@ -17,7 +17,7 @@ interface TableHeaderProps<T> {
 export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   const headerClass = (align: Column<T>['align']) => {
     if (align === 'none') return 'pr-3 pb-[9px] border-b border-hairline';
-    return `pr-3 pb-[9px] border-b border-hairline text-[11px] font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
+    return `pr-3 pb-[9px] border-b border-hairline text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
   };
 
   return (
