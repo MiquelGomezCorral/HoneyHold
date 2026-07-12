@@ -80,8 +80,9 @@ export default function Button({
   type = 'button',
   ...rest
 }: ButtonProps) {
-  const padClass = square ? SQUARE_CLASSES[size] : PAD_CLASSES[size];
-  const classes = `cursor-pointer transition-colors ${padClass} ${VARIANT_CLASSES[variant][size]}`;
+  const isSized = !['nav', 'link'].includes(variant);
+  const padClass = isSized ? (square ? SQUARE_CLASSES[size] : PAD_CLASSES[size]) : '';
+  const classes = `cursor-pointer transition-colors inline-flex items-center justify-center ${padClass} ${VARIANT_CLASSES[variant][size]}`;
   const final = className ? `${classes} ${className}` : classes;
 
   return (
