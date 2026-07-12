@@ -92,7 +92,7 @@ export default function TransactionsView() {
       truncate: true,
       render: (t) => t.type === 'transfer'
         ? <span className="inline-flex items-center gap-1.5">
-          <Icon src="arrows-left-right" type="white" className="inline-flex h-4 w-4 align-[-3px]" title="Transfer" />
+          <Icon src="arrows-left-right" type="black" className="inline-flex h-4 w-4 align-[-3px]" title="Transfer" />
           Transfer
         </span>
         : t.counterparty || '—',

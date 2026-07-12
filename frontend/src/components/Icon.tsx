@@ -6,7 +6,7 @@ export interface IconProps {
   text?: string;
   disabled?: boolean;
   hover?: boolean;
-  type?: 'white' | 'color' | 'country' | 'tech-white';
+  type?: 'white' | 'color' | 'country' | 'tech-white' | 'black';
   glowing?: boolean;
   className?: string;
 }
