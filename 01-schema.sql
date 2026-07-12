@@ -19,7 +19,7 @@ CREATE TABLE profiles (
 CREATE TABLE accounts (
   id              INT UNSIGNED     NOT NULL AUTO_INCREMENT,
   profile_id      TINYINT UNSIGNED NOT NULL,
-  name            VARCHAR(64)      NOT NULL,
+  name            VARCHAR(255)     NOT NULL,
   kind            ENUM('checking','savings','trading','investment','cash','other')
                                    NOT NULL DEFAULT 'checking',
   initial_balance DECIMAL(12,2)    NOT NULL DEFAULT 0.00,
@@ -35,7 +35,7 @@ CREATE TABLE accounts (
 CREATE TABLE tags (
   id         INT UNSIGNED     NOT NULL AUTO_INCREMENT,
   profile_id TINYINT UNSIGNED NULL,
-  name       VARCHAR(48)      NOT NULL,
+  name       VARCHAR(255)     NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_tags_profile_name (profile_id, name),
   CONSTRAINT fk_tags_profile FOREIGN KEY (profile_id)
@@ -52,7 +52,7 @@ CREATE TABLE recurring_rules (
   type         ENUM('income','expense') NOT NULL,
   amount       DECIMAL(12,2)    NOT NULL,
   concept      VARCHAR(255)     NOT NULL,
-  counterparty VARCHAR(128)     NULL,
+  counterparty VARCHAR(255)     NULL,
   tag_id       INT UNSIGNED     NULL,
   frequency    ENUM('weekly','monthly','quarterly','yearly') NOT NULL,
   start_date   DATE             NOT NULL,
