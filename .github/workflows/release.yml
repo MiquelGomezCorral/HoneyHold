@@ -64,7 +64,7 @@ jobs:
           node-version: 20
 
       - name: Install release tooling
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Semantic Release
         env:
