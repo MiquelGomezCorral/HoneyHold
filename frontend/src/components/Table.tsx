@@ -5,6 +5,8 @@ export interface Column<T> {
   key: string;
   label: string;
   align: 'left' | 'right' | 'none';
+  width?: string;
+  truncate?: boolean;
   cellKind: CellKind;
   cellClassName?: (row: T) => string;
   render: (row: T) => ReactNode;
@@ -16,8 +18,8 @@ interface TableHeaderProps<T> {
 
 export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   const headerClass = (align: Column<T>['align']) => {
-    if (align === 'none') return 'pr-3 pb-[9px]';
-    return `pr-3 pb-[9px] text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
+    if (align === 'none') return 'pr-3 pb-[9px] pt-2';
+    return `pt-2 pr-3 pb-[9px] text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
   };
 
   return (
@@ -37,6 +39,16 @@ export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   );
 }
 
+export function TableColGroup<T>({ columns }: TableHeaderProps<T>) {
+  return (
+    <colgroup>
+      {columns.map((col) => (
+        <col key={col.key} style={col.width ? { width: col.width } : undefined} />
+      ))}
+    </colgroup>
+  );
+}
+
 interface TableRowProps<T> {
   row: T;
   columns: Column<T>[];
@@ -47,7 +59,7 @@ export function TableRow<T>({ row, columns, bgColor }: TableRowProps<T>) {
   return (
     <tr className={bgColor ? BG_COLORS[bgColor] ?? '' : ''}>
       {columns.map((col) => (
-        <Cell key={col.key} kind={col.cellKind} className={col.cellClassName?.(row)}>
+        <Cell key={col.key} kind={col.cellKind} className={col.cellClassName?.(row)} truncate={col.truncate}>
           {col.render(row)}
         </Cell>
       ))}
@@ -61,6 +73,7 @@ export type CellKind = 'text' | 'muted' | 'amount' | 'action';
 interface CellProps {
   kind?: CellKind;
   className?: string;
+  truncate?: boolean;
   children: ReactNode;
 }
 
@@ -71,12 +84,16 @@ const CELL_CLASSES: Record<CellKind, string> = {
   action: 'w-[34px] py-[11px] pr-3 align-baseline text-right',
 };
 
-export default function Cell({ kind = 'text', className, children }: CellProps) {
+export default function Cell({ kind = 'text', className, truncate, children }: CellProps) {
   const final = className
     ? `${CELL_CLASSES[kind]} ${className}`
     : CELL_CLASSES[kind];
 
-  return <td className={final}>{children}</td>;
+  return (
+    <td className={final}>
+      {truncate ? <div className="truncate">{children}</div> : children}
+    </td>
+  );
 }
 
 export function DateDivider({ children, colSpan }: { children: ReactNode; colSpan: number }) {

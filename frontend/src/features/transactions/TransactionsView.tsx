@@ -6,11 +6,12 @@ import EmptyState from '../../components/EmptyState.js';
 import Icon from '../../components/Icon.js';
 import Section from '../../components/Section.js';
 import SegmentedControl from '../../components/SegmentedControl.js';
-import { DateDivider, TableHeader, TableRow } from '../../components/Table.js';
+import { DateDivider, TableColGroup, TableHeader, TableRow } from '../../components/Table.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { accountLabel, compareLedgerEntries, currentPeriod, entryMoney, shortDate, signedMoney, timeStamp } from '../../lib/format.js';
+import { LEDGER_COLUMN_WIDTHS } from '../../lib/config.js';
 
 import type { Column } from '../../components/Table.js';
 import type { EntryType, LedgerEntry, RecurringRule, Transaction, Transfer } from '../../types.js';
@@ -64,10 +65,13 @@ export default function TransactionsView() {
   const columns: Column<LedgerEntry>[] = [
     {
       key: 'date', label: 'Date', align: 'left', cellKind: 'muted',
+      width: LEDGER_COLUMN_WIDTHS.date,
       render: (t) => timeStamp(t.created_at),
     },
     {
       key: 'concept', label: 'Concept', align: 'left', cellKind: 'text',
+      width: LEDGER_COLUMN_WIDTHS.concept,
+      truncate: true,
       render: (t) => (
         <>
           {t.concept}
@@ -78,6 +82,8 @@ export default function TransactionsView() {
     },
     {
       key: 'counterparty', label: 'Payer / payee', align: 'left', cellKind: 'muted',
+      width: LEDGER_COLUMN_WIDTHS.counterparty,
+      truncate: true,
       render: (t) => t.type === 'transfer'
         ? <span className="inline-flex items-center gap-1.5">
           <Icon src="arrows-left-right" type="white" className="inline-flex h-4 w-4 align-[-3px]" title="Transfer" />
@@ -85,9 +91,16 @@ export default function TransactionsView() {
         </span>
         : t.counterparty || '—',
     },
-    { key: 'tag', label: 'Tag', align: 'left', cellKind: 'muted', render: (t) => t.type === 'transfer' ? t.tag_name || 'Transference' : t.tag_name || '—' },
+    {
+      key: 'tag', label: 'Tag', align: 'left', cellKind: 'muted',
+      width: LEDGER_COLUMN_WIDTHS.tag,
+      truncate: true,
+      render: (t) => t.type === 'transfer' ? t.tag_name || 'Transference' : t.tag_name || '—',
+    },
     {
       key: 'account', label: 'Account', align: 'left', cellKind: 'muted',
+      width: LEDGER_COLUMN_WIDTHS.account,
+      truncate: true,
       render: (t) => {
         if (t.type === 'transfer') {
           const crossProfile = t.from_profile_id !== t.to_profile_id;
@@ -102,11 +115,13 @@ export default function TransactionsView() {
     },
     {
       key: 'amount', label: 'Amount', align: 'right', cellKind: 'amount',
+      width: LEDGER_COLUMN_WIDTHS.amount,
       cellClassName: (t) => t.type === 'income' ? 'text-accent' : '',
       render: (t) => entryMoney(t.type, t.amount),
     },
     {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
+      width: LEDGER_COLUMN_WIDTHS.actions,
       render: (t) => (
         <Button variant="danger" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
           ✕
@@ -138,7 +153,8 @@ export default function TransactionsView() {
         {error && <p className="text-neg text-sm">{error}</p>}
         {rows && rows.length === 0 && <EmptyState>Nothing recorded this month. Add an entry to start the page.</EmptyState>}
         {rows && rows.length > 0 && (
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full table-fixed border-collapse text-sm">
+            <TableColGroup columns={columns} />
             <TableHeader columns={columns} />
             <tbody>
               {rows.map((t, idx) => {
