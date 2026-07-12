@@ -36,6 +36,13 @@ export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   );
 }
 
+const BG_COLORS: Record<string, string> = {
+  Blue: 'bg-paper-blue',
+  Green: 'bg-paper-green',
+  Red: 'bg-paper-red',
+  Yellow: 'bg-paper-yellow',
+};
+
 interface TableRowProps<T> {
   row: T;
   columns: Column<T>[];
@@ -44,12 +51,7 @@ interface TableRowProps<T> {
 
 export function TableRow<T>({ row, columns, bgColor }: TableRowProps<T>) {
   return (
-    <tr className={
-      `${bgColor === 'Blue' && 'bg-paper-blue'}
-        ${bgColor === 'Green' && 'bg-paper-green'} 
-        ${bgColor === 'Red' && 'bg-paper-red'} 
-        ${bgColor === 'Yellow' && 'bg-paper-yellow'}`
-      }>
+    <tr className={bgColor ? BG_COLORS[bgColor] ?? '' : ''}>
       {columns.map((col) => (
         <Cell key={col.key} kind={col.cellKind} className={col.cellClassName?.(row)}>
           {col.render(row)}
