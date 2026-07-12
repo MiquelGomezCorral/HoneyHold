@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext.js';
 import { useFetch } from '../hooks/useFetch.js';
 import { useState } from 'react';
-import { VERSION, FRONTEND_VERSION, BACKEND_VERSION } from '../lib/config.js';
+import { VERSION } from '../lib/config.js';
 import Modal from './Modal.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
 import Button from './Button.js';
@@ -63,7 +63,6 @@ export default function NavBar({ onAdd }: Props) {
       <Modal title={"About HoneyHold" + ` (${VERSION})`} onClose={() => setAboutOpen(false)}>
         <p className="text-sm text-muted mb-4">
           Personal finance ledger — track income, expenses, and transfers across multiple profiles. <br />
-          {`Frontend v${FRONTEND_VERSION}. Backend v${BACKEND_VERSION}.`}
         </p>
         <dl className="text-sm space-y-2">
           <dt className="font-semibold">Stack</dt>
