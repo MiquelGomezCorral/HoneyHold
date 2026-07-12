@@ -183,7 +183,7 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
               onClick={() => setForm((f) => ({ ...f, from_account_id: String(toAccountId), to_account_id: String(fromAccountId) }))}
               aria-label="Swap transfer accounts"
             >
-              <Icon src="arrows-left-right" type="white" className="h-5 w-5" title="Swap accounts" />;
+              <Icon src="arrows-left-right" type="white" className="h-5 w-5" title="Swap accounts" />
             </Button>
             <AccountSelect
               id="tm-to-account"
