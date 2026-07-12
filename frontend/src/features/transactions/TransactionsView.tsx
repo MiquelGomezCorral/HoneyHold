@@ -155,7 +155,7 @@ export default function TransactionsView() {
         />
       </div>
 
-      <Section title="Ledger" summary={rows ? `${rows.length} entries` : undefined}>
+      <Section title="Ledger" summary={rows ? `${rows.length} entries` : undefined} hideBorder>
         {error && <p className="text-neg text-sm">{error}</p>}
         {rows && rows.length === 0 && <EmptyState>Nothing recorded this month. Add an entry to start the page.</EmptyState>}
         {rows && rows.length > 0 && (
