@@ -110,7 +110,7 @@ x-ingest-token: <INGEST_TOKEN>
    "date": "2026-07-05",              // required, YYYY-MM-DD
    "concept": "CARD PURCHASE …",
    "counterparty": "Consum",
-   "profile_slug": "honey-1",         // optional routing hints
+   "profile_slug": "maikol",         // optional routing hints
    "account_name": "BBVA",
    "raw": { … } }]                    // stored verbatim as JSON
 ```

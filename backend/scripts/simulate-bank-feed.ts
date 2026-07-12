@@ -7,7 +7,7 @@ const items = [
   {
     source: 'demo-bank',
     external_id: `sim-${batch}-1`,
-    profile_slug: 'honey-1',
+    profile_slug: 'maikol',
     account_name: 'BBVA',
     amount: -23.4,
     date: today,
@@ -18,7 +18,7 @@ const items = [
   {
     source: 'demo-bank',
     external_id: `sim-${batch}-2`,
-    profile_slug: 'honey-2',
+    profile_slug: 'isa',
     account_name: 'Imagine',
     amount: -9.99,
     date: today,

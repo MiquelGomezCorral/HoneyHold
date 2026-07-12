@@ -6,8 +6,8 @@ SET NAMES utf8mb4;
 -- ============================================================================
 INSERT INTO profiles (id, slug, display_name) VALUES
   (1, 'shared',  'Shared'),
-  (2, 'honey-1', 'Honey 1'),
-  (3, 'honey-2', 'Honey 2');
+  (2, 'maikol', 'Maikol'),
+  (3, 'isa', 'Isa');
 
 
 -- Global tags (profile_id NULL → visible to every profile)
