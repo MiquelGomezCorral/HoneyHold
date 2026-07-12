@@ -40,10 +40,10 @@ export default function TransactionsView() {
     <>
       <div className="flex items-center justify-between gap-4 pt-[22px]">
         <PeriodNav year={period.year} month={period.month} onChange={setPeriod} />
-        <div className="inline-flex gap-0.5 p-0.5 border border-hairline rounded-[10px]" role="group" aria-label="Filter by type">
+        <div className="inline-flex gap-0.5 p-0.5 " role="group" aria-label="Filter by type">
           {FILTERS.map((f) => (
             <button key={f.key} type="button"
-              className={`border-0 bg-transparent px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-colors hover:text-ink${type === f.key ? ' bg-accent-soft text-ink font-semibold' : ''}`}
+              className={`border-0 px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-colors hover:text-ink${type === f.key ? ' bg-accent-soft text-ink font-semibold' : ' bg-transparent'}`}
               onClick={() => setType(f.key)}
             >
               {f.label}
