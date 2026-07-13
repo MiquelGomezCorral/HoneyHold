@@ -42,6 +42,8 @@ interface TxnInput {
 interface ListQuery {
   year?: string;
   month?: string;
+  from?: string;
+  to?: string;
   type?: string;
   accountId?: string;
   limit?: string;
@@ -65,11 +67,20 @@ interface ModalTransactionInput {
 }
 
 export async function listTransactions(profileId: number, query: ListQuery) {
-  const { year, month, type, accountId, limit } = query;
+  const { year, month, from, to, type, accountId, limit } = query;
   const where = ['t.profile_id = ?'];
   const params: (string | number)[] = [profileId];
 
-  if (year && month) {
+  if (from || to) {
+    if (from) {
+      where.push('t.txn_date >= ?');
+      params.push(from);
+    }
+    if (to) {
+      where.push('t.txn_date <= ?');
+      params.push(to);
+    }
+  } else if (year && month) {
     const [start, end] = monthRange(Number(year), Number(month));
     where.push('t.txn_date >= ? AND t.txn_date < ?');
     params.push(start, end);
