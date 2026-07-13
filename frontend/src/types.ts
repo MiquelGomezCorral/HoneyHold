@@ -23,6 +23,7 @@ export interface Transaction {
   created_at: string;
   concept: string;
   counterparty: string | null;
+  account_id: number | null;
   tag_name: string | null;
   account_name: string;
   account_profile_id: number | null;

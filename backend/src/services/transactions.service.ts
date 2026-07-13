@@ -15,7 +15,9 @@ interface TransactionRow extends RowDataPacket {
   created_at: string;
   concept: string;
   counterparty: string | null;
+  account_id: number | null;
   is_fixed: number;
+  recurring_rule_id: number | null;
   source: string;
   account_name: string | null;
   account_profile_id: number | null;
@@ -45,6 +47,23 @@ interface ListQuery {
   limit?: string;
 }
 
+interface ModalTransactionInput {
+  profile_id: string | number;
+  account_id: string | number;
+  type: string;
+  amount: unknown;
+  txn_date: string;
+  concept: string;
+  counterparty?: string | null;
+  tag?: string | null;
+  is_fixed?: boolean;
+  recurrence?: {
+    frequency?: string;
+    start_date?: string;
+    end_date?: string;
+  } | null;
+}
+
 export async function listTransactions(profileId: number, query: ListQuery) {
   const { year, month, type, accountId, limit } = query;
   const where = ['t.profile_id = ?'];
@@ -66,7 +85,7 @@ export async function listTransactions(profileId: number, query: ListQuery) {
 
   const [rows] = await pool.query<TransactionRow[]>(
     `SELECT t.id, t.type, t.amount, t.txn_date, t.created_at, t.concept, t.counterparty,
-            t.is_fixed, t.source, a.name AS account_name,
+            t.account_id, t.is_fixed, t.recurring_rule_id, t.source, a.name AS account_name,
             a.profile_id AS account_profile_id,
             p.display_name AS account_profile_name, tg.name AS tag_name
        FROM transactions t
@@ -105,23 +124,8 @@ export async function insertTransaction(txn: TxnInput): Promise<number> {
   return result.insertId;
 }
 
-export async function createFromModal(input: {
-  profile_id: string | number;
-  account_id: string | number;
-  type: string;
-  amount: unknown;
-  txn_date: string;
-  concept: string;
-  counterparty?: string | null;
-  tag?: string | null;
-  is_fixed?: boolean;
-  recurrence?: {
-    frequency?: string;
-    start_date?: string;
-    end_date?: string;
-  } | null;
-}) {
-  const amount = validate(input as Parameters<typeof validate>[0]);
+export async function createFromModal(input: ModalTransactionInput) {
+  const amount = validate(input);
   const accountId = Number(input.account_id);
   const account = await accountById(accountId);
   const profileId = Number(account.profile_id);
@@ -159,6 +163,55 @@ export async function createFromModal(input: {
     tag_id: tagId,
     is_fixed: !!input.is_fixed,
   });
+  return { kind: 'transaction' as const, id };
+}
+
+export async function updateFromModal(id: number, input: ModalTransactionInput) {
+  const [existing] = await pool.query<TransactionRow[]>(
+    'SELECT id, is_fixed, recurring_rule_id FROM transactions WHERE id = ?',
+    [id]
+  );
+  if (!existing.length) throw new HttpError(404, 'Transaction not found');
+
+  const amount = validate(input);
+  const accountId = Number(input.account_id);
+  const account = await accountById(accountId);
+  const profileId = Number(account.profile_id);
+  const tagId = await resolveTagId(profileId, input.tag);
+
+  let recurringRuleId = input.is_fixed ? existing[0].recurring_rule_id : null;
+  const recurrence = input.is_fixed ? input.recurrence : null;
+  if (input.is_fixed && !existing[0].is_fixed && recurrence?.frequency) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(recurrence.start_date || '')) {
+      throw new HttpError(400, 'Recurrence start date must be YYYY-MM-DD');
+    }
+    recurringRuleId = await createRule({
+      profile_id: profileId,
+      account_id: accountId,
+      type: input.type,
+      amount,
+      concept: input.concept.trim(),
+      counterparty: input.counterparty,
+      tag_id: tagId,
+      frequency: recurrence.frequency,
+      start_date: recurrence.start_date!,
+      end_date: recurrence.end_date,
+    });
+    await materializeRule(recurringRuleId);
+  }
+
+  await pool.query<ResultSetHeader>(
+    `UPDATE transactions
+        SET profile_id = ?, account_id = ?, type = ?, amount = ?, txn_date = ?,
+            concept = ?, counterparty = ?, tag_id = ?, is_fixed = ?, recurring_rule_id = ?
+      WHERE id = ?`,
+    [
+      profileId, accountId, input.type, amount, input.txn_date,
+      input.concept.trim(), input.counterparty?.trim() || null, tagId,
+      input.is_fixed ? 1 : 0, recurringRuleId, id,
+    ]
+  );
+
   return { kind: 'transaction' as const, id };
 }
 

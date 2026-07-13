@@ -116,6 +116,32 @@ export async function createFromModal(profileId: number, input: {
   return { kind: 'transfer' as const, id: result.insertId };
 }
 
+export async function updateFromModal(id: number, input: {
+  from_account_id: string | number;
+  to_account_id: string | number;
+  amount: unknown;
+  txn_date: string;
+  concept: string;
+}) {
+  const amount = validate(input);
+  const fromAccountId = Number(input.from_account_id);
+  const toAccountId = Number(input.to_account_id);
+  if (!Number.isInteger(fromAccountId) || !Number.isInteger(toAccountId)) throw new HttpError(400, 'Pick both accounts');
+  if (fromAccountId === toAccountId) throw new HttpError(400, 'Pick two different accounts');
+
+  await Promise.all([accountById(fromAccountId), accountById(toAccountId)]);
+  const tagId = await resolveTransferTagId();
+
+  const [result] = await pool.query<ResultSetHeader>(
+    `UPDATE transfers
+        SET from_account_id = ?, to_account_id = ?, amount = ?, txn_date = ?, concept = ?, tag_id = ?
+      WHERE id = ?`,
+    [fromAccountId, toAccountId, amount, input.txn_date, input.concept.trim(), tagId, id]
+  );
+  if (!result.affectedRows) throw new HttpError(404, 'Transfer not found');
+  return { kind: 'transfer' as const, id };
+}
+
 export async function deleteTransfer(id: number) {
   const [result] = await pool.query<ResultSetHeader>('DELETE FROM transfers WHERE id = ?', [id]);
   if (!result.affectedRows) throw new HttpError(404, 'Transfer not found');
