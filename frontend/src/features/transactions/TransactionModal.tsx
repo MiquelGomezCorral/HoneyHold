@@ -11,7 +11,7 @@ import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { todayISO } from '../../lib/format.js';
 import { TEXT_LIMITS } from '../../lib/config.js';
-import type { Account, EntryType } from '../../types.js';
+import type { Account, EntryType, LedgerEntry } from '../../types.js';
 
 const FREQUENCIES = ['weekly', 'monthly', 'quarterly', 'yearly'];
 
@@ -32,30 +32,52 @@ interface FormState {
 
 interface Props {
   defaultType?: EntryType;
+  entry?: LedgerEntry;
   onClose: () => void;
 }
 
+const blankForm = (type: EntryType): FormState => ({
+  type,
+  amount: '',
+  txn_date: todayISO(),
+  concept: '',
+  counterparty: '',
+  tag: '',
+  account_id: '',
+  from_account_id: '',
+  to_account_id: '',
+  is_fixed: false,
+  frequency: 'monthly',
+  start_date: todayISO(),
+});
 
-export default function TransactionModal({ defaultType = 'expense', onClose }: Props) {
+const formFromEntry = (entry: LedgerEntry): FormState => ({
+  ...blankForm(entry.type),
+  amount: String(entry.amount),
+  txn_date: entry.txn_date,
+  concept: entry.concept,
+  tag: entry.tag_name || '',
+  start_date: entry.txn_date,
+  ...(entry.type === 'transfer'
+    ? {
+      from_account_id: String(entry.from_account_id),
+      to_account_id: String(entry.to_account_id),
+    }
+    : {
+      counterparty: entry.counterparty || '',
+      account_id: entry.account_id ? String(entry.account_id) : '',
+      is_fixed: entry.is_fixed === 1,
+    }),
+});
+
+export default function TransactionModal({ defaultType = 'expense', entry, onClose }: Props) {
   const { profileId, bump } = useProfile();
   const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=1`, [profileId]);
   const { data: tags } = useFetch<{ id: number; name: string }[]>(`/profiles/${profileId}/tags`, [profileId]);
+  const editing = !!entry;
 
-  const [form, setForm] = useState<FormState>(() => ({
-    type: defaultType,
-    amount: '',
-    txn_date: todayISO(),
-    concept: '',
-    counterparty: '',
-    tag: '',
-    account_id: '',
-    from_account_id: '',
-    to_account_id: '',
-    is_fixed: false,
-    frequency: 'monthly',
-    start_date: todayISO(),
-  }));
-  const [conceptEdited, setConceptEdited] = useState(defaultType !== 'transfer');
+  const [form, setForm] = useState<FormState>(() => entry ? formFromEntry(entry) : blankForm(defaultType));
+  const [conceptEdited, setConceptEdited] = useState(editing || defaultType !== 'transfer');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,9 +107,12 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
     setForm((f) => ({ ...f, concept: `Transfer ${fromAccount.name} → ${toAccount.name}` }));
   }, [form.type, conceptEdited, fromAccount, toAccount]);
 
-  function changeType(type: EntryType) {
-    setConceptEdited(type !== 'transfer' || !!form.concept.trim());
-    setForm((f) => ({ ...f, type, is_fixed: type === 'transfer' ? false : f.is_fixed }));
+  const changeType = (type: EntryType) => {
+    setConceptEdited(editing || type !== 'transfer' || !!form.concept.trim());
+    setForm((f) => ({ ...f, type }));
+  // function changeType(type: EntryType) {
+  //   setConceptEdited(type !== 'transfer' || !!form.concept.trim());
+  //   setForm((f) => ({ ...f, type, is_fixed: type === 'transfer' ? false : f.is_fixed }));
   };
 
   function setConcept(e: React.ChangeEvent<HTMLInputElement>) {
@@ -109,29 +134,36 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
 
     setSaving(true);
     try {
-      if (form.type === 'transfer') {
-        await api.post(`/profiles/${profileId}/transfers`, {
-          from_account_id: Number(fromAccountId),
-          to_account_id: Number(toAccountId),
-          amount: Number(form.amount),
-          txn_date: form.txn_date,
-          concept: form.concept,
-        });
+      const transferBody = {
+        type: form.type,
+        profile_id: profileId,
+        from_account_id: Number(fromAccountId),
+        to_account_id: Number(toAccountId),
+        amount: Number(form.amount),
+        txn_date: form.txn_date,
+        concept: form.concept,
+      };
+      const transactionBody = {
+        profile_id: profileId,
+        account_id: Number(accountId),
+        type: form.type,
+        amount: Number(form.amount),
+        txn_date: form.txn_date,
+        concept: form.concept,
+        counterparty: form.counterparty,
+        tag: form.tag,
+        is_fixed: form.is_fixed,
+        recurrence: form.is_fixed
+          ? { frequency: form.frequency, start_date: form.start_date }
+          : null,
+      };
+
+      if (entry) {
+        await api.put(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`, form.type === 'transfer' ? transferBody : transactionBody);
+      } else if (form.type === 'transfer') {
+        await api.post(`/profiles/${profileId}/transfers`, transferBody);
       } else {
-        await api.post('/transactions', {
-          profile_id: profileId,
-          account_id: Number(accountId),
-          type: form.type,
-          amount: Number(form.amount),
-          txn_date: form.txn_date,
-          concept: form.concept,
-          counterparty: form.counterparty,
-          tag: form.tag,
-          is_fixed: form.is_fixed,
-          recurrence: form.is_fixed
-            ? { frequency: form.frequency, start_date: form.start_date }
-            : null,
-        });
+        await api.post('/transactions', transactionBody);
       }
       bump();
       onClose();
@@ -142,7 +174,7 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
   };
 
   return (
-    <Modal title="Add entry" onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
+    <Modal title={editing ? 'Edit entry' : 'Add entry'} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
       <form className="flex flex-col gap-4" onSubmit={submit}>
         <SegmentedControl
           ariaLabel="Entry type"
@@ -248,10 +280,10 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
 
         {error && <p className="m-0 text-sm text-neg" role="alert">{error}</p>}
 
-        <div className="flex justify-end gap-2.5 mt-1">
+        <div className="flex justify-between gap-2.5 mt-1">
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
           <Button type="submit" disabled={saving}>
-            {saving ? 'Saving…' : form.type === 'income' ? 'Add income' : form.type === 'transfer' ? 'Add transfer' : 'Add expense'}
+            {saving ? 'Saving…' : editing ? 'Save changes' : form.type === 'income' ? 'Add income' : form.type === 'transfer' ? 'Add transfer' : 'Add expense'}
           </Button>
         </div>
       </form>
