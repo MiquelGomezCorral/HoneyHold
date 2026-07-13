@@ -4,6 +4,17 @@
 
 None yet. No recurring failures are recorded for this project.
 
+## Known Gaps
+
+- **Editing a fixed/recurring row's rule fields has no effect on the recurring rule.**
+  Symptom: opening a fixed (recurring) transaction in the edit modal shows the fixed toggle on, but `frequency` always defaults to `"monthly"` and `start_date` to today. Changing these and saving silently ignores them — the recurring rule is never updated.
+
+  Why: two layers compound.
+  1. Frontend `TransactionModal.formFromEntry()` does not load recurring-rule fields (`frequency`, `start_date`) from the linked rule — it only reads the transaction row, which lacks any rule metadata. The modal defaults `frequency: 'monthly'`, so the user always sees a wrong value.
+  2. Backend `updateFromModal()` in `transactions.service.ts` only creates a *new* rule when the row transitions from `is_fixed=0 → 1`. If the row already has `is_fixed=1` and `recurring_rule_id`, the recurrence payload is read but discarded — the existing rule is never updated; only `recurring_rule_id` is preserved in the transaction row.
+
+  Fixing this requires: adding rule metadata (frequency, start_date) to the transaction list response, preloading them in the edit form, and adding an `updateRule` service that modifies the linked `recurring_rules` row when the rule's fields change.
+
 When one is found, record: **symptom**, **cause**, **fix**, and any **trap** (e.g. an order-dependent step, a container that must be rebuilt, an env var that must be set first).
 
 ## Traps (general, observed from the repo layout)
