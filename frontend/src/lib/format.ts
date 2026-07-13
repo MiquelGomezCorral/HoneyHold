@@ -1,3 +1,5 @@
+import { LedgerEntry } from "../types";
+
 const eur = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 
 export const money = (v: number | string) => eur.format(Number(v) || 0);
@@ -5,8 +7,11 @@ export const money = (v: number | string) => eur.format(Number(v) || 0);
 export const signedMoney = (type: 'income' | 'expense', v: number | string) =>
   `${type === 'income' ? '+' : '\u2212'}\u2009${money(v)}`; // \u2009 is a thin space and \u2212 is a minus sign (not a hyphen)
 
-export const entryMoney = (type: 'income' | 'expense' | 'transfer', v: number | string) =>
-  type === 'transfer' ? money(v) : signedMoney(type, v);
+export const entryMoney = (t: LedgerEntry, profileId: number | null) => {
+  if (t.type !== 'transfer') return signedMoney(t.type, t.amount);
+  if (t.from_profile_id === t.to_profile_id) return money(t.amount);
+  return signedMoney(t.from_profile_id === profileId ? 'expense' : 'income', t.amount);
+}
 
 export const monthLabel = (year: number, month: number) =>
   new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString('en-GB', {
