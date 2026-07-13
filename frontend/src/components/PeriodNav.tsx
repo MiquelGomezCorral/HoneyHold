@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function PeriodNav({ year, month, onChange }: Props) {
-  const shift = (delta: number) => {
+  function shift(delta: number) {
     let m = month + delta;
     let y = year;
     if (m < 1) { m = 12; y -= 1; }

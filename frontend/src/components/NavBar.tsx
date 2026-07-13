@@ -20,13 +20,14 @@ export default function NavBar({ onAdd }: Props) {
   );
   const [aboutOpen, setAboutOpen] = useState(false);
 
-  const tab = ({ isActive }: { isActive: boolean }) =>
-    `px-3 py-[7px] rounded-lg text-muted font-medium no-underline transition-colors hover:text-ink${isActive ? ' text-ink bg-accent-soft' : ''}`;
+  function tab({ isActive }: { isActive: boolean }) {
+    return `px-3 py-[7px] rounded-lg text-muted font-medium no-underline transition-[color,background-color,transform] duration-150 active:duration-75 active:scale-95 hover:text-ink${isActive ? ' text-ink bg-accent-soft' : ''}`;
+  }
 
   return (
     <>
     <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 border-hairline backdrop-blur-md border-b-2">
-      <button className="flex items-center gap-2 cursor-pointer" onClick={() => setAboutOpen(true)}>
+      <button className="flex items-center gap-2 cursor-pointer transition-[transform] duration-150 active:duration-75 active:scale-95" onClick={() => setAboutOpen(true)}>
         <Icon type="color" src="bee-blue" title="HoneyHold" className="h-[1.7em] w-auto" />
         <span className="font-display font-semibold text-xl tracking-[-0.02em]">
           HoneyHold
