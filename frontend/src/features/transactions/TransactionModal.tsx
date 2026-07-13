@@ -152,7 +152,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         amount: Number(form.amount),
         txn_date: form.txn_date,
         concept: form.concept,
-        counterparty: form.counterparty,
+        counterparty: form.counterparty.slice(0, TEXT_LIMITS.counterparty),
         tag: form.tag,
         is_fixed: form.is_fixed,
         recurrence: form.is_fixed
@@ -196,9 +196,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
           <Field label="Amount (€)" htmlFor="tm-amount">
             <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
           </Field>
-          <Field label="Date" htmlFor="tm-date">
-            <input id="tm-date" type="date" value={form.txn_date} onChange={set('txn_date')} required />
-          </Field>
+          <DateField id="tm-date" label="Date" value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} />
         </div>
 
         <Field label="Concept" htmlFor="tm-concept">
