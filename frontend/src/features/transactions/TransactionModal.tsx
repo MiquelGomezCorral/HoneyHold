@@ -274,9 +274,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{f[0].toUpperCase() + f.slice(1)}</option>)}
                 </select>
               </Field>
-              <Field label="Starts on" htmlFor="tm-start">
-                <input id="tm-start" type="date" value={form.start_date} onChange={set('start_date')} required />
-              </Field>
+              <DateField id="tm-start" label="Starts on" value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} />
             </div>
             <p className="m-0 text-xs text-muted">Past occurrences since the start date are added right away.</p>
           </div>
