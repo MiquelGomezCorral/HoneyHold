@@ -21,7 +21,7 @@ export default function NavBar({ onAdd }: Props) {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   function tab({ isActive }: { isActive: boolean }) {
-    return `px-3 py-[7px] rounded-lg text-muted font-medium no-underline transition-[color,background-color,transform] duration-150 active:duration-75 active:scale-95 hover:text-ink${isActive ? ' text-ink bg-accent-soft' : ''}`;
+    return `px-3 py-[7px] rounded-lg text-muted font-medium no-underline transition-[color,background-color,transform] duration-300 active:duration-75 active:scale-95 hover:text-ink${isActive ? ' text-ink bg-accent-soft' : ''}`;
   }
 
   return (

@@ -21,14 +21,14 @@ export default function AccountSelect({
   placeholder,
   className,
 }: AccountSelectProps) {
-  const { profileId } = useProfile();
+  const { profileId, profile } = useProfile();
   const groups = accounts.reduce<{ key: string; label: string; accounts: Account[] }[]>((acc, account) => {
     const key = `${account.profile_id ?? 'none'}:${account.profile_name ?? 'Accounts'}`;
     let group = acc.find((g) => g.key === key);
     if (!group) {
       group = {
         key,
-        label: account.profile_id === profileId ? 'Current profile' : account.profile_name || 'Accounts',
+        label: account.profile_id === profileId ? profile?.display_name || account.profile_name || 'Accounts' : account.profile_name || 'Accounts',
         accounts: [],
       };
       acc.push(group);

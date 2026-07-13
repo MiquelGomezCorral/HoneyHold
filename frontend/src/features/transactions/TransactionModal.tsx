@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Modal from '../../components/Modal.js';
 import Button from '../../components/Button.js';
 import Field from '../../components/Field.js';
@@ -80,6 +80,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
   const [conceptEdited, setConceptEdited] = useState(editing || defaultType !== 'transfer');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
   function set(key: keyof FormState) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -119,6 +120,11 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
     setConceptEdited(true);
     setForm((f) => ({ ...f, concept: e.target.value }));
   };
+
+  function openTagPicker() {
+    tagInputRef.current?.focus();
+    tagInputRef.current?.showPicker?.();
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -235,10 +241,15 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
                 <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
               </Field>
               <Field label="Tag" htmlFor="tm-tag">
-                <input id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} maxLength={TEXT_LIMITS.tag} placeholder="Pick or type a new one" />
-                <datalist id="tm-tags">
-                  {tags?.map((t) => <option key={t.id} value={t.name} />)}
-                </datalist>
+                <div className="relative">
+                  <input ref={tagInputRef} id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} maxLength={TEXT_LIMITS.tag} placeholder="Pick or type a new one" className="pr-10" />
+                  <button type="button" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted transition-[color,background-color] duration-300 hover:bg-accent-soft hover:text-ink" onClick={openTagPicker} aria-label="Open tag list">
+                    <Icon src="caret-down" type="black" className="h-4 w-4 opacity-70" title="Open tag list" />
+                  </button>
+                  <datalist id="tm-tags">
+                    {tags?.map((t) => <option key={t.id} value={t.name} />)}
+                  </datalist>
+                </div>
               </Field>
             </div>
 
