@@ -23,7 +23,7 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const save = async (e: React.FormEvent) => {
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);

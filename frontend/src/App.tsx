@@ -28,7 +28,7 @@ export default function App() {
   if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
   if (!profileId) return <ProfileGate />;
 
-  const openAdd = (type: EntryType = 'expense') => setModal({ type });
+  function openAdd(type: EntryType = 'expense') { setModal({ type }); }
 
   return (
     <>
