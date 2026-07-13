@@ -190,7 +190,7 @@ export default function TransactionsView() {
                 </span>
                 <span className="flex items-baseline gap-[18px]">
                   <span className={`font-semibold whitespace-nowrap tabular-nums${r.type === 'income' ? ' text-accent' : ''}`}>{signedMoney(r.type, r.amount)}</span>
-                  <Button variant="link" onClick={() => stopRule(r.id)}>Stop</Button>
+                  <Button variant="danger-active" size="sm" onClick={() => stopRule(r.id)}>Stop</Button>
                 </span>
               </li>
             ))}
@@ -208,7 +208,7 @@ export default function TransactionsView() {
               : 'Stop this fixed rule? Past entries stay in the ledger.'
           }
           confirmLabel={confirm.kind === 'delete' ? 'Delete' : 'Stop'}
-          variant={confirm.kind === 'delete' ? 'danger-active' : 'primary'}
+          variant="danger-active"
           onConfirm={handleConfirm}
           onCancel={() => setConfirm(null)}
         />
