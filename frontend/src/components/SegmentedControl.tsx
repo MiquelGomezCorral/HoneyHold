@@ -21,7 +21,7 @@ export default function SegmentedControl<T extends string>({
   className,
 }: SegmentedControlProps<T>) {
   const extra = className ? ` ${className}` : '';
-  const btnClass = `px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-colors hover:text-ink${full ? ' flex-1' : ''}`;
+  const btnClass = `px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-[color,background-color,transform] duration-150 active:duration-75 active:scale-95 hover:text-ink${full ? ' flex-1' : ''}`;
   const activeClass = 'bg-accent-soft text-ink font-semibold';
 
   return (
