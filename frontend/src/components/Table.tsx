@@ -67,12 +67,12 @@ export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClic
   };
 
   const bgClass = bgColor ? BG_COLORS[bgColor] ?? '' : '';
-  const className = [
-    onClick ? 'cursor-pointer transition hover:brightness-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset' : '',
+  const trClass = [
+    onClick ? 'cursor-pointer transition-[filter,box-shadow,transform] duration-300 hover:brightness-[0.97] active:scale-[0.98] active:duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset' : '',
   ].filter(Boolean).join(' ');
 
   return (
-    <tr className={className} onClick={onClick ? () => onClick(row) : undefined} onKeyDown={handleKeyDown} tabIndex={onClick ? 0 : undefined} role={onClick ? 'button' : undefined}>
+    <tr className={trClass} onClick={onClick ? () => onClick(row) : undefined} onKeyDown={handleKeyDown} tabIndex={onClick ? 0 : undefined} role={onClick ? 'button' : undefined}>
       {columns.map((col, index) => (
         <Cell
           key={col.key}

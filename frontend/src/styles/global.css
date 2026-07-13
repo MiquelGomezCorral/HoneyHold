@@ -26,7 +26,7 @@
   }
 
   input[type="date"]::-webkit-calendar-picker-indicator {
-    @apply rounded cursor-pointer transition-colors;
+    @apply rounded cursor-pointer transition-colors duration-300;
   }
 
   input[type="date"]::-webkit-calendar-picker-indicator:hover {

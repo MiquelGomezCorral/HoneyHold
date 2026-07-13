@@ -243,7 +243,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
               <Field label="Tag" htmlFor="tm-tag">
                 <div className="relative">
                   <input ref={tagInputRef} id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} maxLength={TEXT_LIMITS.tag} placeholder="Pick or type a new one" className="pr-10" />
-                  <button type="button" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted hover:bg-accent-soft hover:text-ink" onClick={openTagPicker} aria-label="Open tag list">
+                  <button type="button" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted transition-[color,background-color] duration-300 hover:bg-accent-soft hover:text-ink" onClick={openTagPicker} aria-label="Open tag list">
                     <Icon src="caret-down" type="black" className="h-4 w-4 opacity-70" title="Open tag list" />
                   </button>
                   <datalist id="tm-tags">
