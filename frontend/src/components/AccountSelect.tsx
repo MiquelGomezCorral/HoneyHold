@@ -1,4 +1,4 @@
-import Field from './Field.js';
+import SelectField from './SelectField.js';
 import { useProfile } from '../context/ProfileContext.js';
 import type { Account } from '../types.js';
 
@@ -22,37 +22,22 @@ export default function AccountSelect({
   className,
 }: AccountSelectProps) {
   const { profileId, profile } = useProfile();
-  const groups = accounts.reduce<{ key: string; label: string; accounts: Account[] }[]>((acc, account) => {
+  const groups = accounts.reduce<{ key: string; label: string; options: { value: number; label: string }[] }[]>((acc, account) => {
     const key = `${account.profile_id ?? 'none'}:${account.profile_name ?? 'Accounts'}`;
     let group = acc.find((g) => g.key === key);
     if (!group) {
       group = {
         key,
         label: account.profile_id === profileId ? profile?.display_name || account.profile_name || 'Accounts' : account.profile_name || 'Accounts',
-        accounts: [],
+        options: [],
       };
       acc.push(group);
     }
-    group.accounts.push(account);
+    group.options.push({ value: account.id, label: account.name });
     return acc;
   }, []);
 
   return (
-    <Field label={label} htmlFor={id} className={className}>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {placeholder != null && <option value="">{placeholder}</option>}
-        {groups.map((group) => (
-          <optgroup key={group.key} label={group.label}>
-            {group.accounts.map((a) => (
-              <option key={a.id} value={a.id}>{a.name}</option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
-    </Field>
+    <SelectField id={id} label={label} value={value} groups={groups} onChange={onChange} placeholder={placeholder} className={className} />
   );
 }

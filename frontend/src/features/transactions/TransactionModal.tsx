@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Modal from '../../components/Modal.js';
 import Button from '../../components/Button.js';
 import Field from '../../components/Field.js';
 import Icon from '../../components/Icon.js';
 import Toggle from '../../components/Toggle.js';
 import AccountSelect from '../../components/AccountSelect.js';
+import DateField from '../../components/DateField.js';
 import SegmentedControl from '../../components/SegmentedControl.js';
+import SelectField from '../../components/SelectField.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
@@ -80,7 +82,6 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
   const [conceptEdited, setConceptEdited] = useState(editing || defaultType !== 'transfer');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const tagInputRef = useRef<HTMLInputElement>(null);
 
   function set(key: keyof FormState) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -121,11 +122,6 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
     setForm((f) => ({ ...f, concept: e.target.value }));
   };
 
-  function openTagPicker() {
-    tagInputRef.current?.focus();
-    tagInputRef.current?.showPicker?.();
-  }
-
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -156,7 +152,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         amount: Number(form.amount),
         txn_date: form.txn_date,
         concept: form.concept,
-        counterparty: form.counterparty,
+        counterparty: form.counterparty.slice(0, TEXT_LIMITS.counterparty),
         tag: form.tag,
         is_fixed: form.is_fixed,
         recurrence: form.is_fixed
@@ -179,6 +175,8 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
     }
   };
 
+  const tagOptions = tags?.map((t) => ({ value: t.name, label: t.name })) ?? [];
+
   return (
     <Modal title={editing ? 'Edit entry' : 'Add entry'} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
       <form className="flex flex-col gap-4" onSubmit={submit}>
@@ -198,9 +196,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
           <Field label="Amount (€)" htmlFor="tm-amount">
             <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
           </Field>
-          <Field label="Date" htmlFor="tm-date">
-            <input id="tm-date" type="date" value={form.txn_date} onChange={set('txn_date')} required />
-          </Field>
+          <DateField id="tm-date" label="Date" value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} />
         </div>
 
         <Field label="Concept" htmlFor="tm-concept">
@@ -240,17 +236,14 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
               <Field label={form.type === 'income' ? 'Payer' : 'Payee'} htmlFor="tm-who">
                 <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
               </Field>
-              <Field label="Tag" htmlFor="tm-tag">
-                <div className="relative">
-                  <input ref={tagInputRef} id="tm-tag" type="text" list="tm-tags" value={form.tag} onChange={set('tag')} maxLength={TEXT_LIMITS.tag} placeholder="Pick or type a new one" className="pr-10" />
-                  <button type="button" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted transition-[color,background-color] duration-300 hover:bg-accent-soft hover:text-ink" onClick={openTagPicker} aria-label="Open tag list">
-                    <Icon src="caret-down" type="black" className="h-4 w-4 opacity-70" title="Open tag list" />
-                  </button>
-                  <datalist id="tm-tags">
-                    {tags?.map((t) => <option key={t.id} value={t.name} />)}
-                  </datalist>
-                </div>
-              </Field>
+              <SelectField
+                id="tm-tag"
+                label="Tag"
+                value={form.tag}
+                groups={[{ key: 'tags', options: tagOptions }]}
+                
+                onChange={(v) => setForm((f) => ({ ...f, tag: v.slice(0, TEXT_LIMITS.tag) }))}
+              />
             </div>
 
             <AccountSelect
@@ -281,9 +274,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{f[0].toUpperCase() + f.slice(1)}</option>)}
                 </select>
               </Field>
-              <Field label="Starts on" htmlFor="tm-start">
-                <input id="tm-start" type="date" value={form.start_date} onChange={set('start_date')} required />
-              </Field>
+              <DateField id="tm-start" label="Starts on" value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} />
             </div>
             <p className="m-0 text-xs text-muted">Past occurrences since the start date are added right away.</p>
           </div>

@@ -3,7 +3,7 @@ export const VERSION = '0.1.0';
 
 export const TEXT_LIMITS = {
   concept: 255,
-  counterparty: 255,
+  counterparty: 128,
   tag: 255,
   accountName: 255,
 } as const;
