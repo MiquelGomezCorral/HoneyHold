@@ -17,18 +17,19 @@ interface TableHeaderProps<T> {
 }
 
 export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
-  function headerClass(align: Column<T>['align']) {
-    if (align === 'none') return 'pr-3 pb-[9px] pt-2';
-    return `pt-2 pr-3 pb-[9px] text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
+  function headerClass(align: Column<T>['align'], index: number) {
+    const padClass = index === 0 ? 'pl-3 pr-3' : 'pr-3';
+    if (align === 'none') return `${padClass} pb-[9px] pt-2`;
+    return `pt-2 ${padClass} pb-[9px] text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
   };
 
   return (
     <thead className="sticky top-16 z-[2] bg-paper-blue shadow-[0_2px_0_0_#d3e2ee]">
       <tr>
-        {columns.map((col) => (
+        {columns.map((col, index) => (
           <th
             key={col.key}
-            className={headerClass(col.align)}
+            className={headerClass(col.align, index)}
             aria-label={col.label || undefined}
           >
             {col.label}
@@ -53,13 +54,25 @@ interface TableRowProps<T> {
   row: T;
   columns: Column<T>[];
   bgColor?: BgColor;
+  position?: 'single' | 'first' | 'middle' | 'last';
 }
 
-export function TableRow<T>({ row, columns, bgColor }: TableRowProps<T>) {
+export function TableRow<T>({ row, columns, bgColor, position = 'middle' }: TableRowProps<T>) {
+  const bgClass = bgColor ? BG_COLORS[bgColor] ?? '' : '';
+
   return (
-    <tr className={bgColor ? BG_COLORS[bgColor] ?? '' : ''}>
-      {columns.map((col) => (
-        <Cell key={col.key} kind={col.cellKind} className={col.cellClassName?.(row)} truncate={col.truncate}>
+    <tr>
+      {columns.map((col, index) => (
+        <Cell
+          key={col.key}
+          kind={col.cellKind}
+          className={col.cellClassName?.(row)}
+          truncate={col.truncate}
+          bgClass={bgClass}
+          index={index}
+          total={columns.length}
+          position={position}
+        >
           {col.render(row)}
         </Cell>
       ))}
@@ -74,6 +87,10 @@ interface CellProps {
   kind?: CellKind;
   className?: string;
   truncate?: boolean;
+  bgClass?: string;
+  index?: number;
+  total?: number;
+  position?: TableRowProps<unknown>['position'];
   children: ReactNode;
 }
 
@@ -84,10 +101,16 @@ const CELL_CLASSES: Record<CellKind, string> = {
   action: 'w-[34px] py-[11px] pr-3 align-baseline text-right',
 };
 
-export default function Cell({ kind = 'text', className, truncate, children }: CellProps) {
-  const final = className
-    ? `${CELL_CLASSES[kind]} ${className}`
-    : CELL_CLASSES[kind];
+export default function Cell({ kind = 'text', className, truncate, bgClass, index = 0, total = 1, position = 'middle', children }: CellProps) {
+  const padClass = index === 0 ? 'pl-3' : '';
+  const roundedClass = [
+    bgClass,
+    index === 0 && (position === 'single' || position === 'first') ? 'rounded-tl-lg' : '',
+    index === total - 1 && (position === 'single' || position === 'first') ? 'rounded-tr-lg' : '',
+    index === 0 && (position === 'single' || position === 'last') ? 'rounded-bl-lg' : '',
+    index === total - 1 && (position === 'single' || position === 'last') ? 'rounded-br-lg' : '',
+  ].filter(Boolean).join(' ');
+  const final = [CELL_CLASSES[kind], padClass, roundedClass, className].filter(Boolean).join(' ');
 
   return (
     <td className={final}>

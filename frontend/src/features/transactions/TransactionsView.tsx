@@ -159,17 +159,21 @@ export default function TransactionsView() {
         {error && <p className="text-neg text-sm">{error}</p>}
         {rows && rows.length === 0 && <EmptyState>Nothing recorded this month. Add an entry to start the page.</EmptyState>}
         {rows && rows.length > 0 && (
-          <table className="w-full table-fixed border-collapse text-sm">
+          <table className="w-full table-fixed border-separate border-spacing-0 text-sm">
             <TableColGroup columns={columns} />
             <TableHeader columns={columns} />
             <tbody>
               {rows.map((t, idx) => {
                 const previousDate = idx > 0 ? rows[idx - 1].txn_date : '';
+                const nextDate = idx < rows.length - 1 ? rows[idx + 1].txn_date : '';
+                const rowPosition = t.txn_date !== previousDate
+                  ? t.txn_date !== nextDate ? 'single' : 'first'
+                  : t.txn_date !== nextDate ? 'last' : 'middle';
 
                 return (
                   <Fragment key={`${t.type}-${t.id}`}>
                     {t.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(t.txn_date)}</DateDivider>}
-                    <TableRow row={t} columns={columns} bgColor={getBgColor(t)} />
+                    <TableRow row={t} columns={columns} bgColor={getBgColor(t)} position={rowPosition} />
                   </Fragment>
                 );
               })}
