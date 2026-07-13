@@ -82,7 +82,7 @@ export default function Button({
 }: ButtonProps) {
   const isSized = !['nav', 'link'].includes(variant);
   const padClass = isSized ? (square ? SQUARE_CLASSES[size] : PAD_CLASSES[size]) : '';
-  const classes = `cursor-pointer transition-[color,background-color,border-color,transform] duration-300 active:duration-75 active:scale-95 inline-flex items-center justify-center ${padClass} ${VARIANT_CLASSES[variant][size]}`;
+  const classes = `cursor-pointer transition-[color,background-color,border-color,transform] duration-300 active:duration-75 active:scale-95 disabled:active:scale-100 inline-flex items-center justify-center ${padClass} ${VARIANT_CLASSES[variant][size]}`;
   const final = className ? `${classes} ${className}` : classes;
 
   return (
