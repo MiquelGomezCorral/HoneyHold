@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import { BG_COLORS, type BgColor } from '../lib/theme.js';
 
 export interface Column<T> {
@@ -53,11 +53,24 @@ interface TableRowProps<T> {
   row: T;
   columns: Column<T>[];
   bgColor?: BgColor;
+  onClick?: (row: T) => void;
 }
 
-export function TableRow<T>({ row, columns, bgColor }: TableRowProps<T>) {
+export function TableRow<T>({ row, columns, bgColor, onClick }: TableRowProps<T>) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLTableRowElement>) => {
+    if (!onClick || event.target !== event.currentTarget) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    onClick(row);
+  };
+
+  const className = [
+    bgColor ? BG_COLORS[bgColor] ?? '' : '',
+    onClick ? 'cursor-pointer transition hover:brightness-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <tr className={bgColor ? BG_COLORS[bgColor] ?? '' : ''}>
+    <tr className={className} onClick={onClick ? () => onClick(row) : undefined} onKeyDown={handleKeyDown} tabIndex={onClick ? 0 : undefined} role={onClick ? 'button' : undefined}>
       {columns.map((col) => (
         <Cell key={col.key} kind={col.cellKind} className={col.cellClassName?.(row)} truncate={col.truncate}>
           {col.render(row)}

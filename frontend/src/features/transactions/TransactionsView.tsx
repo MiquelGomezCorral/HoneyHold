@@ -8,6 +8,7 @@ import Icon from '../../components/Icon.js';
 import Section from '../../components/Section.js';
 import SegmentedControl from '../../components/SegmentedControl.js';
 import { DateDivider, TableColGroup, TableHeader, TableRow } from '../../components/Table.js';
+import TransactionModal from './TransactionModal.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
@@ -27,6 +28,7 @@ export default function TransactionsView() {
   const { profileId, version, bump } = useProfile();
   const [period, setPeriod] = useState(currentPeriod);
   const [type, setType] = useState<EntryType | ''>('');
+  const [editing, setEditing] = useState<LedgerEntry | null>(null);
   const [confirm, setConfirm] = useState<{ kind: 'delete'; entry: LedgerEntry } | { kind: 'stop'; ruleId: number } | null>(null);
 
   const transactionQuery = `year=${period.year}&month=${period.month}${type === 'income' || type === 'expense' ? `&type=${type}` : ''}`;
@@ -129,7 +131,7 @@ export default function TransactionsView() {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
       width: LEDGER_COLUMN_WIDTHS.actions,
       render: (t) => (
-        <Button variant="danger" size="sm" onClick={() => remove(t)} aria-label={`Delete ${t.concept}`}>
+        <Button variant="danger" size="sm" onClick={(e) => { e.stopPropagation(); remove(t); }} aria-label={`Delete ${t.concept}`}>
           ✕
         </Button>
       ),
@@ -169,7 +171,7 @@ export default function TransactionsView() {
                 return (
                   <Fragment key={`${t.type}-${t.id}`}>
                     {t.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(t.txn_date)}</DateDivider>}
-                    <TableRow row={t} columns={columns} bgColor={getBgColor(t)} />
+                    <TableRow row={t} columns={columns} bgColor={getBgColor(t)} onClick={setEditing} />
                   </Fragment>
                 );
               })}
@@ -197,6 +199,8 @@ export default function TransactionsView() {
           </ul>
         )}
       </Section>
+
+      {editing && <TransactionModal entry={editing} onClose={() => setEditing(null)} />}
 
       {confirm && (
         <ConfirmModal
