@@ -32,7 +32,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<ProfileContextValue>(() => {
-    const setProfileId = (id: number) => {
+    function setProfileId(id: number) {
       localStorage.setItem(STORAGE_KEY, String(id));
       setProfileIdState(id);
     };
@@ -51,7 +51,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
-export const useProfile = () => {
+export function useProfile() {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('useProfile must be used within ProfileProvider');
   return ctx;

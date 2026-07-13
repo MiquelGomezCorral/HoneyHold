@@ -52,9 +52,9 @@ export default function TransactionsView() {
   const rows = getRows();
   const error = transactionError || transferError;
 
-  const remove = (entry: LedgerEntry) => setConfirm({ kind: 'delete', entry });
+  function remove(entry: LedgerEntry) { setConfirm({ kind: 'delete', entry }); }
 
-  const stopRule = (id: number) => setConfirm({ kind: 'stop', ruleId: id });
+  function stopRule(id: number) { setConfirm({ kind: 'stop', ruleId: id }); }
 
   const handleConfirm = useCallback(async () => {
     if (!confirm) return;
@@ -136,7 +136,7 @@ export default function TransactionsView() {
     },
   ];
 
-  const getBgColor = (t: LedgerEntry): 'Blue' | 'Green' | 'Red' | 'Yellow' | undefined => {
+  function getBgColor(t: LedgerEntry): 'Blue' | 'Green' | 'Red' | 'Yellow' | undefined {
     if (t.type === 'income') return 'Green';
     if (t.type === 'expense') return 'Blue';
     if (t.type === 'transfer') return 'Yellow';

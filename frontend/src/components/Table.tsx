@@ -17,7 +17,7 @@ interface TableHeaderProps<T> {
 }
 
 export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
-  const headerClass = (align: Column<T>['align']) => {
+  function headerClass(align: Column<T>['align']) {
     if (align === 'none') return 'pr-3 pb-[9px] pt-2';
     return `pt-2 pr-3 pb-[9px] text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
   };

@@ -59,8 +59,10 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
+  function set(key: keyof FormState) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
+  }
 
   const accountId = useMemo(
     () => form.account_id || accounts?.[0]?.id || '',
@@ -83,17 +85,17 @@ export default function TransactionModal({ defaultType = 'expense', onClose }: P
     setForm((f) => ({ ...f, concept: `Transfer ${fromAccount.name} → ${toAccount.name}` }));
   }, [form.type, conceptEdited, fromAccount, toAccount]);
 
-  const changeType = (type: EntryType) => {
+  function changeType(type: EntryType) {
     setConceptEdited(type !== 'transfer' || !!form.concept.trim());
     setForm((f) => ({ ...f, type, is_fixed: type === 'transfer' ? false : f.is_fixed }));
   };
 
-  const setConcept = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function setConcept(e: React.ChangeEvent<HTMLInputElement>) {
     setConceptEdited(true);
     setForm((f) => ({ ...f, concept: e.target.value }));
   };
 
-  const submit = async (e: React.FormEvent) => {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!(Number(form.amount) > 0)) return setError('Enter an amount greater than zero.');

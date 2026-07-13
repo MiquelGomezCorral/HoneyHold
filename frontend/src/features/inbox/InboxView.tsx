@@ -35,10 +35,12 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const set = (key: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setDraft((d) => ({ ...d, [key]: e.target.value }));
+  function set(key: keyof Draft) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setDraft((d) => ({ ...d, [key]: e.target.value }));
+  }
 
-  const act = async (fn: () => Promise<unknown>) => {
+  async function act(fn: () => Promise<unknown>) {
     setBusy(true);
     setError(null);
     try {
@@ -48,10 +50,10 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
       setError((err as Error).message);
       setBusy(false);
     }
-  };
+  }
 
-  const approve = () =>
-    act(() =>
+  function approve() {
+    return act(() =>
       api.post(`/inbox/${entry.id}/approve`, {
         account_id: Number(draft.account_id),
         type: draft.type,
@@ -62,8 +64,10 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
         tag: draft.tag,
       })
     );
+  }
 
-  const reject = () => act(() => api.post(`/inbox/${entry.id}/reject`));
+  function reject() { return act(() => api.post(`/inbox/${entry.id}/reject`)); }
+
 
   return (
     <li className="py-5 border-b border-hairline last:border-b-0">
