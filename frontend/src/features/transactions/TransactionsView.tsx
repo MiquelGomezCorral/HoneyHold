@@ -123,7 +123,7 @@ export default function TransactionsView() {
       key: 'amount', label: 'Amount', align: 'right', cellKind: 'amount',
       width: LEDGER_COLUMN_WIDTHS.amount,
       cellClassName: (t) => t.type === 'income' ? 'text-accent' : '',
-      render: (t) => entryMoney(t.type, t.amount),
+      render: (t) => entryMoney(t, profileId),
     },
     {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
