@@ -12,6 +12,7 @@ import TransactionModal from './TransactionModal.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
+import { useI18n } from '../../i18n.js';
 import { currentPeriod, entryAccountText, entryIds, entryMoney, entryTag, money, scopedAccountLabel, shortDate, signedMoney, timeStamp } from '../../lib/format.js';
 import { searchItems, type SearchField } from '../../lib/search.js';
 import { DEFAULT_TRANSACTION_FILTERS, TRANSACTION_TYPE_FILTERS, dateParams, mergeLedgerRows, parseAmount, passesEntryFilters } from './transactionFilters.js';
@@ -20,6 +21,7 @@ import type { Account, EntryType, LedgerEntry, RecurringRule, Transaction, Trans
 
 export default function TransactionsView() {
   const { profileId, version, bump } = useProfile();
+  const { locale, t } = useI18n();
   const [period, setPeriod] = useState(currentPeriod);
   const [filters, setFilters] = useState<TransactionFilters>(DEFAULT_TRANSACTION_FILTERS);
   const [editing, setEditing] = useState<LedgerEntry | null>(null);
@@ -60,15 +62,16 @@ export default function TransactionsView() {
   })), [accounts, profileId]);
   const tagOptions = useMemo(() => (tags ?? []).map((tag) => ({ value: tag.name, label: tag.name })), [tags]);
 
+  const dateLocale = locale === 'es' ? 'es-ES' : 'en-GB';
   const searchFields = useMemo<SearchField<LedgerEntry>[]>(() => [
     { key: 'concept', score: 100, text: (entry) => entry.concept },
-    { key: 'tag', score: 70, text: (entry) => entryTag(entry) },
-    { key: 'counterparty', score: 70, text: (entry) => entry.type === 'transfer' ? 'Transfer' : entry.counterparty || '' },
+    { key: 'tag', score: 70, text: (entry) => entryTag(entry, t('transactions.transference')) },
+    { key: 'counterparty', score: 70, text: (entry) => entry.type === 'transfer' ? t('common.transfer') : entry.counterparty || '' },
     { key: 'account', score: 45, text: (entry) => entryAccountText(entry, profileId) },
     { key: 'amount', score: 25, text: (entry) => [String(entry.amount), money(entry.amount), entryMoney(entry, profileId)] },
-    { key: 'date', score: 15, text: (entry) => [entry.txn_date, shortDate(entry.txn_date), timeStamp(entry.created_at)] },
+    { key: 'date', score: 15, text: (entry) => [entry.txn_date, shortDate(entry.txn_date, dateLocale), timeStamp(entry.created_at)] },
     { key: 'ids', score: 5, exactOnly: true, text: entryIds },
-  ], [profileId]);
+  ], [dateLocale, profileId, t]);
 
   const shownRows = useMemo(() => {
     if (!rows) return null;
@@ -76,7 +79,7 @@ export default function TransactionsView() {
     return searchItems(narrowed, query, searchFields, { fuzzyDistance: 1, fuzzyWeight: 0.1 });
   }, [rows, selectedAccounts, selectedTags, minAmount, maxAmount, query, searchFields]);
   const summary = rows && shownRows
-    ? filtering ? `${shownRows.length}/${rows.length} entries` : `${shownRows.length} entries`
+    ? filtering ? t('transactions.filteredEntries', { shown: shownRows.length, total: rows.length }) : t('transactions.entries', { count: shownRows.length })
     : undefined;
 
   function remove(entry: LedgerEntry) { setConfirm({ kind: 'delete', entry }); }
@@ -105,8 +108,8 @@ export default function TransactionsView() {
       <div className="flex items-center justify-between gap-4 pt-6">
         <PeriodNav year={period.year} month={period.month} disabled={dateFilter.mode !== 'month'} onChange={setPeriod} />
         <SegmentedControl
-          ariaLabel="Filter by type"
-          items={TRANSACTION_TYPE_FILTERS.map((filter) => ({ value: filter.key, label: filter.label }))}
+          ariaLabel={t('transactions.filterByType')}
+          items={TRANSACTION_TYPE_FILTERS.map((filter) => ({ value: filter.key, label: t(filter.labelKey) }))}
           value={type}
           onChange={(value) => updateFilters({ type: value })}
         />
@@ -129,25 +132,25 @@ export default function TransactionsView() {
         }}
       />
 
-      <Section title="Ledger" summary={summary} hideBorder>
+      <Section title={t('transactions.ledger')} summary={summary} hideBorder>
         {error && <p className="text-neg text-sm">{error}</p>}
-        {shownRows && shownRows.length === 0 && <EmptyState>{filtering ? 'No entries match these filters.' : 'Nothing recorded this month. Add an entry to start the page.'}</EmptyState>}
+        {shownRows && shownRows.length === 0 && <EmptyState>{filtering ? t('transactions.noFilterMatches') : t('transactions.nothingRecorded')}</EmptyState>}
         {shownRows && shownRows.length > 0 && <LedgerTable rows={shownRows} profileId={profileId} onEdit={setEditing} onRemove={remove} />}
       </Section>
 
-      <Section title="Fixed rules" summary="Recurring entries created from &quot;Is fixed?&quot;">
-        {rules && rules.length === 0 && <EmptyState>No active rules. Turn on &quot;Is fixed?&quot; when adding an entry to create one.</EmptyState>}
+      <Section title={t('transactions.fixedRules')} summary={t('transactions.fixedRulesSummary')}>
+        {rules && rules.length === 0 && <EmptyState>{t('transactions.noActiveRules')}</EmptyState>}
         {rules && rules.length > 0 && (
           <ul className="list-none m-0 p-0">
             {rules.map((r) => (
               <li key={r.id} className="flex justify-between items-baseline gap-4 py-3 border-b border-hairline last:border-b-0">
                 <span>
                   {r.concept}
-                  <span className="ml-2 text-xs text-muted">{r.frequency} · {r.account_name} · next {shortDate(r.next_due)}</span>
+                  <span className="ml-2 text-xs text-muted">{t(`entryModal.frequencies.${r.frequency}`)} · {r.account_name} · {t('transactions.nextDue', { date: shortDate(r.next_due, dateLocale) })}</span>
                 </span>
                 <span className="flex items-baseline gap-4">
                   <span className={cn('font-semibold whitespace-nowrap tabular-nums', { 'text-accent': r.type === 'income' })}>{signedMoney(r.type, r.amount)}</span>
-                  <Button variant="danger-active" size="sm" onClick={() => stopRule(r.id)}>Stop</Button>
+                  <Button variant="danger-active" size="sm" onClick={() => stopRule(r.id)}>{t('transactions.stop')}</Button>
                 </span>
               </li>
             ))}
@@ -160,13 +163,13 @@ export default function TransactionsView() {
       {confirm && (
         <ConfirmModal
           open
-          title={confirm.kind === 'delete' ? 'Delete entry?' : 'Stop fixed rule?'}
+          title={confirm.kind === 'delete' ? t('transactions.deleteEntryTitle') : t('transactions.stopRuleTitle')}
           message={
             confirm.kind === 'delete'
-              ? 'Delete this entry from the ledger?'
-              : 'Stop this fixed rule? Past entries stay in the ledger.'
+              ? t('transactions.deleteEntryMessage')
+              : t('transactions.stopRuleMessage')
           }
-          confirmLabel={confirm.kind === 'delete' ? 'Delete' : 'Stop'}
+          confirmLabel={confirm.kind === 'delete' ? t('transactions.delete') : t('transactions.stop')}
           variant="danger-active"
           onConfirm={handleConfirm}
           onCancel={() => setConfirm(null)}

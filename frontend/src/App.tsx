@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from './context/ProfileContext.js';
 import { useIsMobile } from './hooks/useIsMobile.js';
-import { I18nProvider, getPreferredLocale, localeFromPathname, withLocalePath } from './i18n.js';
+import { I18nProvider, getPreferredLocale, localeFromPathname, useI18n, withLocalePath } from './i18n.js';
 import NavBar from './components/NavBar.js';
 import ProfileGate from './components/ProfileGate.js';
 import TransactionModal from './features/transactions/TransactionModal.js';
@@ -38,18 +38,19 @@ export default function App() {
 
 function LocalizedApp({ locale }: { locale: Locale }) {
   const { profiles, profileId, loadError } = useProfile();
+  const { t } = useI18n();
   const isMobile = useIsMobile();
   const [modal, setModal] = useState<{ type: EntryType } | null>(null);
 
   if (loadError) {
     return (
       <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
-        <p>{`Can't reach the API (${loadError}).`}</p>
-        <p className="text-muted text-sm">Is the backend container running? Try <code>docker compose up</code>, then reload.</p>
+        <p>{t('app.apiError', { error: loadError })}</p>
+        <p className="text-muted text-sm">{t('app.apiHelp', { command: 'docker compose up' })}</p>
       </div>
     );
   }
-  if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">Opening the books…</div>;
+  if (profiles === null) return <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">{t('app.openingBooks')}</div>;
   if (!profileId) return <ProfileGate />;
 
   function openAdd(type: EntryType = 'expense') { setModal({ type }); }

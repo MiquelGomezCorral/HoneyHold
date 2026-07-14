@@ -1,7 +1,195 @@
 {
+  "common": {
+    "loading": "Adding things up…",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "saveChanges": "Save changes",
+    "confirm": "Confirm",
+    "addEntry": "Add entry",
+    "addExpense": "Add expense",
+    "addIncome": "Add income",
+    "addTransfer": "Add transfer",
+    "expense": "Expense",
+    "income": "Income",
+    "transfer": "Transfer",
+    "expenses": "Expenses",
+    "transfers": "Transfers",
+    "all": "All",
+    "date": "Date",
+    "concept": "Concept",
+    "counterparty": "Payer / payee",
+    "amount": "Amount (€)",
+    "type": "Type",
+    "profile": "Profile",
+    "account": "Account",
+    "accounts": "Accounts",
+    "tag": "Tag",
+    "tags": "Tags",
+    "optional": "Optional",
+    "min": "Min",
+    "max": "Max",
+    "from": "From",
+    "to": "To",
+    "any": "Any",
+    "noMax": "No max",
+    "noMaximum": "No maximum"
+  },
   "languages": {
     "label": "Language",
     "en": "English",
     "es": "Spanish"
+  },
+  "app": {
+    "apiError": "Can't reach the API ({error}).",
+    "apiHelp": "Is the backend container running? Try {command}, then reload.",
+    "openingBooks": "Opening the books…"
+  },
+  "nav": {
+    "main": "Main",
+    "overview": "Overview",
+    "monthly": "Monthly",
+    "transactions": "Transactions",
+    "inbox": "Inbox"
+  },
+  "about": {
+    "title": "About HoneyHold ({version})",
+    "body": "Personal finance ledger — track income, expenses, and transfers across multiple profiles.",
+    "stack": "Stack",
+    "stackValue": "React 18 + TypeScript + Tailwind + MySQL 8.4",
+    "design": "Design",
+    "designValue": "Local-first, no auth, multi-profile"
+  },
+  "profileGate": {
+    "question": "Who is keeping the books?",
+    "hint": "You can switch profiles any time from the top bar."
+  },
+  "date": {
+    "openCalendar": "Open calendar",
+    "calendar": "{label} calendar",
+    "previousYear": "Previous year",
+    "previousMonth": "Previous month",
+    "nextYear": "Next year",
+    "nextMonth": "Next month",
+    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  },
+  "dashboard": {
+    "loadError": "Couldn't load the dashboard: {error}",
+    "balance": "Balance",
+    "allAccountsAllTime": "All accounts, all time",
+    "balanceOverYear": "Balance over {year}",
+    "balanceSummary": "Cumulative, end of month",
+    "goals": "Goals"
+  },
+  "chart": {
+    "loadError": "Couldn't load the chart: {error}",
+    "balance": "Balance",
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  },
+  "monthly": {
+    "thisMonth": "This month",
+    "net": "Net",
+    "whereItGoes": "Where it goes",
+    "fixedVsVariable": "Fixed vs. variable",
+    "spendingByTag": "Spending by tag",
+    "noExpenses": "No expenses this month yet.",
+    "addExpenseBreakdown": "Add an expense to see the breakdown."
+  },
+  "goals": {
+    "setTarget": "Set target",
+    "editTarget": "Edit target",
+    "targetAmount": "Target amount",
+    "monthlySavings": "Monthly savings",
+    "savedInYear": "Saved in {year}",
+    "noTarget": "No target set yet."
+  },
+  "mobile": {
+    "totalBalance": "Total balance",
+    "monthFlow": "{income} in · {expense} out this month"
+  },
+  "inbox": {
+    "received": "received {date}",
+    "unassigned": "unassigned",
+    "chooseAccount": "Choose an account…",
+    "rawPayload": "Raw payload",
+    "reject": "Reject",
+    "approve": "Approve",
+    "waiting": "{count} waiting for review",
+    "intro": "Automated entries land here first — nothing touches the ledger until you approve it.",
+    "empty": "Inbox zero. Push entries with the sample feed:"
+  },
+  "transactions": {
+    "filterByType": "Filter by type",
+    "entries": "{count} entries",
+    "filteredEntries": "{shown}/{total} entries",
+    "ledger": "Ledger",
+    "noFilterMatches": "No entries match these filters.",
+    "nothingRecorded": "Nothing recorded this month. Add an entry to start the page.",
+    "fixedRules": "Fixed rules",
+    "fixedRulesSummary": "Recurring entries created from \"Is fixed?\"",
+    "noActiveRules": "No active rules. Turn on \"Is fixed?\" when adding an entry to create one.",
+    "nextDue": "next {date}",
+    "stop": "Stop",
+    "deleteEntryTitle": "Delete entry?",
+    "stopRuleTitle": "Stop fixed rule?",
+    "deleteEntryMessage": "Delete this entry from the ledger?",
+    "stopRuleMessage": "Stop this fixed rule? Past entries stay in the ledger.",
+    "delete": "Delete",
+    "fixed": "fixed",
+    "auto": "auto",
+    "deleteEntryLabel": "Delete {concept}",
+    "transference": "Transfer"
+  },
+  "filters": {
+    "searchLedger": "Search ledger",
+    "searchPlaceholder": "Search concept, payer, tag, account, amount, date or ID",
+    "clear": "Clear filters",
+    "accountsCount": "Accounts · {count}",
+    "tagsCount": "Tags · {count}",
+    "noAccounts": "No accounts",
+    "noTags": "No tags",
+    "amount": "Amount",
+    "minAmount": "Minimum amount",
+    "maxAmount": "Maximum amount",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "allTime": "All time"
+  },
+  "entryModal": {
+    "editTitle": "Edit entry",
+    "addTitle": "Add entry",
+    "entryType": "Entry type",
+    "transferConcept": "Transfer {from} → {to}",
+    "transferPlaceholder": "Transfer Savings → Checking",
+    "conceptPlaceholder": "Groceries at Mercadona",
+    "pickAccount": "Pick account",
+    "swapTransferAccounts": "Swap transfer accounts",
+    "swapAccounts": "Swap accounts",
+    "payer": "Payer",
+    "payee": "Payee",
+    "isFixed": "Is fixed?",
+    "fixedHelp": "Repeats automatically as a recurring entry",
+    "frequency": "Frequency",
+    "startsOn": "Starts on",
+    "pastOccurrences": "Past occurrences since the start date are added right away.",
+    "frequencies": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    }
+  },
+  "validation": {
+    "dateFormat": "Date must be YYYY-MM-DD.",
+    "amountPositive": "Enter an amount greater than zero.",
+    "targetNonNegative": "Target must be a non-negative number.",
+    "typeIncomeExpense": "Type must be income or expense.",
+    "conceptRequired": "Enter a concept.",
+    "pickAccount": "Pick an account.",
+    "pickBothAccounts": "Pick both accounts.",
+    "pickDifferentAccounts": "Pick two different accounts.",
+    "pickAccountBeforeApprove": "Pick an account before approving.",
+    "checkFields": "Check the highlighted fields."
   }
 }

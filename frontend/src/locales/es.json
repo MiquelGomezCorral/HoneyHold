@@ -1,7 +1,195 @@
 {
+  "common": {
+    "loading": "Calculando…",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saveChanges": "Guardar cambios",
+    "confirm": "Confirmar",
+    "addEntry": "Añadir apunte",
+    "addExpense": "Añadir gasto",
+    "addIncome": "Añadir ingreso",
+    "addTransfer": "Añadir transferencia",
+    "expense": "Gasto",
+    "income": "Ingreso",
+    "transfer": "Transferencia",
+    "expenses": "Gastos",
+    "transfers": "Transferencias",
+    "all": "Todo",
+    "date": "Fecha",
+    "concept": "Concepto",
+    "counterparty": "Pag. / Dest.",
+    "amount": "Importe (€)",
+    "type": "Tipo",
+    "profile": "Perfil",
+    "account": "Cuenta",
+    "accounts": "Cuentas",
+    "tag": "Etiqueta",
+    "tags": "Etiquetas",
+    "optional": "Opcional",
+    "min": "Mín",
+    "max": "Máx",
+    "from": "Desde",
+    "to": "Hasta",
+    "any": "Cualquiera",
+    "noMax": "Sin máximo",
+    "noMaximum": "Sin máximo"
+  },
   "languages": {
     "label": "Idioma",
     "en": "Inglés",
     "es": "Español"
+  },
+  "app": {
+    "apiError": "No se puede conectar con la API ({error}).",
+    "apiHelp": "¿Está arrancado el contenedor del backend? Prueba {command} y recarga.",
+    "openingBooks": "Abriendo las cuentas…"
+  },
+  "nav": {
+    "main": "Principal",
+    "overview": "Resumen",
+    "monthly": "Mes",
+    "transactions": "Movimientos",
+    "inbox": "Bandeja"
+  },
+  "about": {
+    "title": "Sobre HoneyHold ({version})",
+    "body": "Libro de finanzas personales para seguir ingresos, gastos y transferencias entre varios perfiles.",
+    "stack": "Stack",
+    "stackValue": "React 18 + TypeScript + Tailwind + MySQL 8.4",
+    "design": "Diseño",
+    "designValue": "Local-first, sin auth, multiperfil"
+  },
+  "profileGate": {
+    "question": "¿Quién lleva las cuentas?",
+    "hint": "Puedes cambiar de perfil cuando quieras desde la barra superior."
+  },
+  "date": {
+    "openCalendar": "Abrir calendario",
+    "calendar": "Calendario de {label}",
+    "previousYear": "Año anterior",
+    "previousMonth": "Mes anterior",
+    "nextYear": "Año siguiente",
+    "nextMonth": "Mes siguiente",
+    "weekdays": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+  },
+  "dashboard": {
+    "loadError": "No se pudo cargar el resumen: {error}",
+    "balance": "Saldo",
+    "allAccountsAllTime": "Todas las cuentas, histórico completo",
+    "balanceOverYear": "Saldo en {year}",
+    "balanceSummary": "Acumulado a final de mes",
+    "goals": "Objetivos"
+  },
+  "chart": {
+    "loadError": "No se pudo cargar la gráfica: {error}",
+    "balance": "Saldo",
+    "months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+  },
+  "monthly": {
+    "thisMonth": "Este mes",
+    "net": "Neto",
+    "whereItGoes": "Dónde se va",
+    "fixedVsVariable": "Fijo vs. variable",
+    "spendingByTag": "Gasto por etiqueta",
+    "noExpenses": "Aún no hay gastos este mes.",
+    "addExpenseBreakdown": "Añade un gasto para ver el desglose."
+  },
+  "goals": {
+    "setTarget": "Fijar objetivo",
+    "editTarget": "Editar objetivo",
+    "targetAmount": "Importe objetivo",
+    "monthlySavings": "Ahorro mensual",
+    "savedInYear": "Ahorrado en {year}",
+    "noTarget": "Aún no hay objetivo."
+  },
+  "mobile": {
+    "totalBalance": "Saldo total",
+    "monthFlow": "{income} entran · {expense} salen este mes"
+  },
+  "inbox": {
+    "received": "recibido el {date}",
+    "unassigned": "sin asignar",
+    "chooseAccount": "Elige una cuenta…",
+    "rawPayload": "Datos originales",
+    "reject": "Rechazar",
+    "approve": "Aprobar",
+    "waiting": "{count} pendientes de revisar",
+    "intro": "Los apuntes automáticos llegan aquí primero: nada toca el libro hasta que lo apruebas.",
+    "empty": "Bandeja vacía. Puedes enviar apuntes con el feed de ejemplo:"
+  },
+  "transactions": {
+    "filterByType": "Filtrar por tipo",
+    "entries": "{count} apuntes",
+    "filteredEntries": "{shown}/{total} apuntes",
+    "ledger": "Libro",
+    "noFilterMatches": "Ningún apunte coincide con estos filtros.",
+    "nothingRecorded": "No hay apuntes este mes. Añade uno para empezar.",
+    "fixedRules": "Reglas fijas",
+    "fixedRulesSummary": "Apuntes recurrentes creados desde \"¿Es fijo?\"",
+    "noActiveRules": "No hay reglas activas. Activa \"¿Es fijo?\" al añadir un apunte para crear una.",
+    "nextDue": "próximo {date}",
+    "stop": "Parar",
+    "deleteEntryTitle": "¿Eliminar apunte?",
+    "stopRuleTitle": "¿Parar regla fija?",
+    "deleteEntryMessage": "¿Eliminar este apunte del libro?",
+    "stopRuleMessage": "¿Parar esta regla fija? Los apuntes pasados se quedan en el libro.",
+    "delete": "Eliminar",
+    "fixed": "fijo",
+    "auto": "auto",
+    "deleteEntryLabel": "Eliminar {concept}",
+    "transference": "Transferencia"
+  },
+  "filters": {
+    "searchLedger": "Buscar en el libro",
+    "searchPlaceholder": "Busca concepto, pagador, etiqueta, cuenta, importe, fecha o ID",
+    "clear": "Limpiar filtros",
+    "accountsCount": "Cuentas · {count}",
+    "tagsCount": "Etiquetas · {count}",
+    "noAccounts": "No hay cuentas",
+    "noTags": "No hay etiquetas",
+    "amount": "Importe",
+    "minAmount": "Importe mínimo",
+    "maxAmount": "Importe máximo",
+    "thisMonth": "Este mes",
+    "thisYear": "Este año",
+    "allTime": "Todo el historial"
+  },
+  "entryModal": {
+    "editTitle": "Editar apunte",
+    "addTitle": "Añadir apunte",
+    "entryType": "Tipo de apunte",
+    "transferConcept": "Transferencia {from} → {to}",
+    "transferPlaceholder": "Transferencia Ahorros → Corriente",
+    "conceptPlaceholder": "Compra en Mercadona",
+    "pickAccount": "Elige una cuenta",
+    "swapTransferAccounts": "Intercambiar cuentas de la transferencia",
+    "swapAccounts": "Intercambiar cuentas",
+    "payer": "Pagador",
+    "payee": "Destinatario",
+    "isFixed": "¿Es fijo?",
+    "fixedHelp": "Se repite automáticamente como apunte recurrente",
+    "frequency": "Frecuencia",
+    "startsOn": "Empieza el",
+    "pastOccurrences": "Los apuntes pasados desde la fecha de inicio se añaden al momento.",
+    "frequencies": {
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "yearly": "Anual"
+    }
+  },
+  "validation": {
+    "dateFormat": "La fecha debe tener formato YYYY-MM-DD.",
+    "amountPositive": "Introduce un importe mayor que cero.",
+    "targetNonNegative": "El objetivo debe ser un número positivo o cero.",
+    "typeIncomeExpense": "El tipo debe ser ingreso o gasto.",
+    "conceptRequired": "Introduce un concepto.",
+    "pickAccount": "Elige una cuenta.",
+    "pickBothAccounts": "Elige las dos cuentas.",
+    "pickDifferentAccounts": "Elige dos cuentas distintas.",
+    "pickAccountBeforeApprove": "Elige una cuenta antes de aprobar.",
+    "checkFields": "Revisa los campos marcados."
   }
 }

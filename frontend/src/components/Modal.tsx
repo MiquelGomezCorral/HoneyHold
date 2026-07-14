@@ -2,6 +2,7 @@ import cn from 'classnames';
 import { useEffect, type ReactNode } from 'react';
 import Button from './Button.js';
 import { BG_COLORS, type BgColor } from '../lib/theme.js';
+import { useI18n } from '../i18n.js';
 
 interface Props {
   title: string;
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Props) {
+  const { t } = useI18n();
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
     window.addEventListener('keydown', onKey);
@@ -33,7 +36,7 @@ export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Pr
       >
         <div className="flex justify-between items-center mb-5">
           <h2 className="m-0 text-base font-semibold">{title}</h2>
-          <Button variant="close" size="sm" onClick={onClose} aria-label="Close">
+          <Button variant="close" size="sm" onClick={onClose} aria-label={t('common.close')}>
             ✕
           </Button>
         </div>

@@ -6,6 +6,7 @@ import Icon from '../../components/Icon.js';
 import { DateDivider, TableColGroup, TableHeader, TableRow } from '../../components/Table.js';
 import { LEDGER_COLUMN_WIDTHS } from '../../lib/config.js';
 import { accountLabel, entryMoney, scopedAccountLabel, shortDate, timeStamp } from '../../lib/format.js';
+import { useI18n } from '../../i18n.js';
 import type { Column } from '../../components/Table.js';
 import type { LedgerEntry } from '../../types.js';
 
@@ -17,49 +18,51 @@ interface LedgerTableProps {
 }
 
 export default function LedgerTable({ rows, profileId, onEdit, onRemove }: LedgerTableProps) {
+  const { locale, t } = useI18n();
+  const dateLocale = locale === 'es' ? 'es-ES' : 'en-GB';
   const columns: Column<LedgerEntry>[] = [
     {
-      key: 'date', label: 'Date', align: 'left', cellKind: 'muted',
+      key: 'date', label: t('common.date'), align: 'left', cellKind: 'muted',
       width: LEDGER_COLUMN_WIDTHS.date,
       render: (entry) => timeStamp(entry.created_at),
     },
     {
-      key: 'concept', label: 'Concept', align: 'left', cellKind: 'text',
+      key: 'concept', label: t('common.concept'), align: 'left', cellKind: 'text',
       width: LEDGER_COLUMN_WIDTHS.concept,
       truncate: true,
       render: (entry) => (
         <>
           {entry.concept}
-          {entry.type !== 'transfer' && entry.is_fixed === 1 && <Badge className="ml-2">fixed</Badge>}
-          {entry.source === 'automated' && <Badge className="ml-2">auto</Badge>}
+          {entry.type !== 'transfer' && entry.is_fixed === 1 && <Badge className="ml-2">{t('transactions.fixed')}</Badge>}
+          {entry.source === 'automated' && <Badge className="ml-2">{t('transactions.auto')}</Badge>}
         </>
       ),
     },
     {
-      key: 'counterparty', label: 'Payer / payee', align: 'left', cellKind: 'muted',
+      key: 'counterparty', label: t('common.counterparty'), align: 'left', cellKind: 'muted',
       width: LEDGER_COLUMN_WIDTHS.counterparty,
       truncate: true,
       render: (entry) => entry.type === 'transfer'
         ? <span className="inline-flex items-center gap-1.5">
-          <Icon src="arrows-left-right" type="black" className="inline-flex h-4 w-4 align-[-3px]" title="Transfer" />
-          Transfer
+          <Icon src="arrows-left-right" type="black" className="inline-flex h-4 w-4 align-[-3px]" title={t('common.transfer')} />
+          {t('common.transfer')}
         </span>
         : entry.counterparty || '—',
     },
     {
-      key: 'tag', label: 'Tag', align: 'left', cellKind: 'muted',
+      key: 'tag', label: t('common.tag'), align: 'left', cellKind: 'muted',
       width: LEDGER_COLUMN_WIDTHS.tag,
       truncate: true,
-      render: (entry) => entry.type === 'transfer' ? entry.tag_name || 'Transference' : entry.tag_name || '—',
+      render: (entry) => entry.type === 'transfer' ? entry.tag_name || t('transactions.transference') : entry.tag_name || '—',
     },
     {
-      key: 'account', label: 'Account', align: 'left', cellKind: 'muted',
+      key: 'account', label: t('common.account'), align: 'left', cellKind: 'muted',
       width: LEDGER_COLUMN_WIDTHS.account,
       truncate: true,
       render: (entry) => accountCell(entry, profileId),
     },
     {
-      key: 'amount', label: 'Amount', align: 'right', cellKind: 'amount',
+      key: 'amount', label: t('common.amount'), align: 'right', cellKind: 'amount',
       width: LEDGER_COLUMN_WIDTHS.amount,
       cellClassName: (entry) => cn({ 'text-accent': entry.type === 'income' }),
       render: (entry) => entryMoney(entry, profileId),
@@ -68,7 +71,7 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
       key: 'actions', label: '', align: 'none', cellKind: 'action',
       width: LEDGER_COLUMN_WIDTHS.actions,
       render: (entry) => (
-        <Button variant="danger" size="sm" onClick={(event) => { event.stopPropagation(); onRemove(entry); }} aria-label={`Delete ${entry.concept}`}>
+        <Button variant="danger" size="sm" onClick={(event) => { event.stopPropagation(); onRemove(entry); }} aria-label={t('transactions.deleteEntryLabel', { concept: entry.concept })}>
           ✕
         </Button>
       ),
@@ -84,7 +87,7 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
           const previousDate = index > 0 ? rows[index - 1].txn_date : '';
           return (
             <Fragment key={`${entry.type}-${entry.id}`}>
-              {entry.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(entry.txn_date)}</DateDivider>}
+              {entry.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(entry.txn_date, dateLocale)}</DateDivider>}
               <TableRow row={entry} columns={columns} bgColor={rowBgColor(entry)} position={rowPosition(rows, index)} onClick={onEdit} />
             </Fragment>
           );

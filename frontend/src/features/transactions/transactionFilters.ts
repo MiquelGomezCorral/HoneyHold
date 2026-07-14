@@ -1,11 +1,11 @@
 import { compareLedgerEntries, entryAccountIds, entryTag } from '../../lib/format.js';
 import type { EntryType, LedgerEntry, Transaction, Transfer } from '../../types.js';
 
-export const TRANSACTION_TYPE_FILTERS: { key: EntryType | ''; label: string }[] = [
-  { key: '', label: 'All' },
-  { key: 'income', label: 'Income' },
-  { key: 'expense', label: 'Expenses' },
-  { key: 'transfer', label: 'Transfers' },
+export const TRANSACTION_TYPE_FILTERS: { key: EntryType | ''; labelKey: string }[] = [
+  { key: '', labelKey: 'common.all' },
+  { key: 'income', labelKey: 'common.income' },
+  { key: 'expense', labelKey: 'common.expenses' },
+  { key: 'transfer', labelKey: 'common.transfers' },
 ];
 
 export const AMOUNT_SLIDER_MAX = 5000;

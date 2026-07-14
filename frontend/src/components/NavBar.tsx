@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext.js';
 import { useFetch } from '../hooks/useFetch.js';
 import { VERSION } from '../lib/config.js';
+import { useI18n } from '../i18n.js';
 import Modal from './Modal.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
 import Button from './Button.js';
@@ -18,6 +19,7 @@ interface Props {
 
 export default function NavBar({ locale, onAdd }: Props) {
   const { profileId, version } = useProfile();
+  const { t } = useI18n();
   const { data: inbox } = useFetch<{ count: number }>(
     profileId ? `/profiles/${profileId}/inbox/count` : null,
     [profileId, version]
@@ -41,18 +43,18 @@ export default function NavBar({ locale, onAdd }: Props) {
             <span className="text-accent">.</span>
           </span>
         </button>
-        <nav className="flex gap-1" aria-label="Main">
+        <nav className="flex gap-1" aria-label={t('nav.main')}>
           <NavLink to={`/${locale}`} end className={tab}>
-          Overview
+          {t('nav.overview')}
         </NavLink>
         <NavLink to={`/${locale}/monthly`} className={tab}>
-          Monthly
+          {t('nav.monthly')}
         </NavLink>
         <NavLink to={`/${locale}/transactions`} className={tab}>
-          Transactions
+          {t('nav.transactions')}
         </NavLink>
         <NavLink to={`/${locale}/inbox`} className={tab}>
-            Inbox
+            {t('nav.inbox')}
             {inbox != null && inbox.count > 0 && (
               <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-center text-xs font-semibold text-white">
                 {inbox.count}
@@ -64,19 +66,19 @@ export default function NavBar({ locale, onAdd }: Props) {
         <LanguageChanger />
         <ProfileSwitcher />
         <Button onClick={onAdd}>
-          Add entry
+          {t('common.addEntry')}
         </Button>
       </header>
       {aboutOpen && (
-        <Modal title={`About HoneyHold (${VERSION})`} onClose={() => setAboutOpen(false)}>
+        <Modal title={t('about.title', { version: VERSION })} onClose={() => setAboutOpen(false)}>
           <p className="text-sm text-muted mb-4">
-            Personal finance ledger — track income, expenses, and transfers across multiple profiles. <br />
+            {t('about.body')} <br />
           </p>
           <dl className="text-sm space-y-2">
-            <dt className="font-semibold">Stack</dt>
-            <dd className="text-muted ml-0">React 18 + TypeScript + Tailwind + MySQL 8.4</dd>
-            <dt className="font-semibold">Design</dt>
-            <dd className="text-muted ml-0">Local-first, no auth, multi-profile</dd>
+            <dt className="font-semibold">{t('about.stack')}</dt>
+            <dd className="text-muted ml-0">{t('about.stackValue')}</dd>
+            <dt className="font-semibold">{t('about.design')}</dt>
+            <dd className="text-muted ml-0">{t('about.designValue')}</dd>
           </dl>
         </Modal>
       )}

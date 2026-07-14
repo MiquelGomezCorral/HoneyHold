@@ -4,11 +4,13 @@ import BalanceChart from '../../components/BalanceChart.js';
 import GoalsPanel from './GoalsPanel.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
+import { useI18n } from '../../i18n.js';
 import { currentPeriod, money } from '../../lib/format.js';
 import type { DashboardData } from '../../types.js';
 
 export default function DashboardView() {
   const { profileId, version } = useProfile();
+  const { t } = useI18n();
   const period = currentPeriod();
 
   const { data, loading, error } = useFetch<DashboardData>(
@@ -16,14 +18,14 @@ export default function DashboardView() {
     [profileId, period.year, period.month, version]
   );
 
-  if (error) return <p className="text-neg text-sm">{`Couldn't load the dashboard: ${error}`}</p>;
-  if (!data) return <p className="text-muted text-sm">{loading ? 'Adding things up…' : ''}</p>;
+  if (error) return <p className="text-neg text-sm">{t('dashboard.loadError', { error })}</p>;
+  if (!data) return <p className="text-muted text-sm">{loading ? t('common.loading') : ''}</p>;
 
   const { accounts, totalBalance, goals } = data;
 
   return (
     <>
-      <Section title="Balance" summary="All accounts, all time" hideBorder>
+      <Section title={t('dashboard.balance')} summary={t('dashboard.allAccountsAllTime')} hideBorder>
         <div className="grid grid-cols-[1.1fr_1fr] gap-14 items-start max-lg:grid-cols-1 max-lg:gap-7">
           <p className={cn('m-0 font-display font-semibold text-6xl leading-[1.05] tracking-[-0.02em] tabular-nums', { 'text-neg': totalBalance < 0 })}>
             {money(totalBalance)}
@@ -42,11 +44,11 @@ export default function DashboardView() {
         </div>
       </Section>
 
-      <Section title={`Balance over ${period.year}`} summary="Cumulative, end of month">
+      <Section title={t('dashboard.balanceOverYear', { year: period.year })} summary={t('dashboard.balanceSummary')}>
         <BalanceChart year={period.year} />
       </Section>
 
-      <Section title="Goals" summary={period.year}>
+      <Section title={t('dashboard.goals')} summary={period.year}>
         <GoalsPanel goals={goals} year={period.year} show={['annual']} />
       </Section>
     </>

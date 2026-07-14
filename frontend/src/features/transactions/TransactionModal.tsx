@@ -11,6 +11,7 @@ import SelectField from '../../components/SelectField.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
+import { useI18n } from '../../i18n.js';
 import { todayISO } from '../../lib/format.js';
 import { TEXT_LIMITS } from '../../lib/config.js';
 import { entryFormSchema, validationMessage } from '../../lib/validation.js';
@@ -75,6 +76,7 @@ const formFromEntry = (entry: LedgerEntry): FormState => ({
 
 export default function TransactionModal({ defaultType = 'expense', entry, onClose }: Props) {
   const { profileId, bump } = useProfile();
+  const { t } = useI18n();
   const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=1`, [profileId]);
   const { data: tags } = useFetch<{ id: number; name: string }[]>(`/profiles/${profileId}/tags`, [profileId]);
   const editing = !!entry;
@@ -97,8 +99,8 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
 
   useEffect(() => {
     if (form.type !== 'transfer' || conceptEdited || !fromAccount || !toAccount) return;
-    setForm((f) => ({ ...f, concept: `Transfer ${fromAccount.name} → ${toAccount.name}` }));
-  }, [form.type, conceptEdited, fromAccount, toAccount]);
+    setForm((f) => ({ ...f, concept: t('entryModal.transferConcept', { from: fromAccount.name, to: toAccount.name }) }));
+  }, [form.type, conceptEdited, fromAccount, toAccount, t]);
 
   const changeType = (type: EntryType) => {
     setConceptEdited(editing || type !== 'transfer' || !!form.concept.trim());
@@ -119,7 +121,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
       from_account_id: fromAccountId,
       to_account_id: toAccountId,
     });
-    if (!parsed.success) return setError(validationMessage(parsed.error));
+    if (!parsed.success) return setError(validationMessage(parsed.error, t));
 
     const values = parsed.data;
 
@@ -166,14 +168,14 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
   const tagOptions = tags?.map((t) => ({ value: t.name, label: t.name })) ?? [];
 
   return (
-    <Modal title={editing ? 'Edit entry' : 'Add entry'} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
+    <Modal title={editing ? t('entryModal.editTitle') : t('entryModal.addTitle')} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
       <form className="flex flex-col gap-4" onSubmit={submit}>
         <SegmentedControl
-          ariaLabel="Entry type"
+          ariaLabel={t('entryModal.entryType')}
           items={[
-            { value: 'expense', label: 'Expense' },
-            { value: 'income', label: 'Income' },
-            { value: 'transfer', label: 'Transfer' },
+            { value: 'expense', label: t('common.expense') },
+            { value: 'income', label: t('common.income') },
+            { value: 'transfer', label: t('common.transfer') },
           ]}
           value={form.type}
           onChange={changeType}
@@ -181,14 +183,14 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         />
 
         <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
-          <Field label="Amount (€)" htmlFor="tm-amount">
+          <Field label={t('common.amount')} htmlFor="tm-amount">
             <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
           </Field>
-          <DateField id="tm-date" label="Date" value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} />
+          <DateField id="tm-date" label={t('common.date')} value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} />
         </div>
 
-        <Field label="Concept" htmlFor="tm-concept">
-          <input id="tm-concept" type="text" value={form.concept} onChange={setConcept} maxLength={TEXT_LIMITS.concept} placeholder={form.type === 'transfer' ? 'Transfer Savings → Checking' : 'Groceries at Mercadona'} required />
+        <Field label={t('common.concept')} htmlFor="tm-concept">
+          <input id="tm-concept" type="text" value={form.concept} onChange={setConcept} maxLength={TEXT_LIMITS.concept} placeholder={form.type === 'transfer' ? t('entryModal.transferPlaceholder') : t('entryModal.conceptPlaceholder')} required />
         </Field>
 
         {form.type === 'transfer' ? (
@@ -197,36 +199,36 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
               id="tm-from-account"
               accounts={accounts ?? []}
               value={fromAccountId}
-              label="From"
-              placeholder="Pick account"
+              label={t('common.from')}
+              placeholder={t('entryModal.pickAccount')}
               onChange={(v) => setForm((f) => ({ ...f, from_account_id: v }))}
             />
             <Button
               variant="ghost"
               className="h-10 px-3 max-sm:w-full"
               onClick={() => setForm((f) => ({ ...f, from_account_id: String(toAccountId), to_account_id: String(fromAccountId) }))}
-              aria-label="Swap transfer accounts"
+              aria-label={t('entryModal.swapTransferAccounts')}
             >
-              <Icon src="arrows-left-right" type="black" className="h-5 w-5" title="Swap accounts" />
+              <Icon src="arrows-left-right" type="black" className="h-5 w-5" title={t('entryModal.swapAccounts')} />
             </Button>
             <AccountSelect
               id="tm-to-account"
               accounts={accounts ?? []}
               value={toAccountId}
-              label="To"
-              placeholder="Pick account"
+              label={t('common.to')}
+              placeholder={t('entryModal.pickAccount')}
               onChange={(v) => setForm((f) => ({ ...f, to_account_id: v }))}
             />
           </div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
-              <Field label={form.type === 'income' ? 'Payer' : 'Payee'} htmlFor="tm-who">
+              <Field label={form.type === 'income' ? t('entryModal.payer') : t('entryModal.payee')} htmlFor="tm-who">
                 <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
               </Field>
               <SelectField
                 id="tm-tag"
-                label="Tag"
+                label={t('common.tag')}
                 value={form.tag}
                 groups={[{ key: 'tags', options: tagOptions }]}
                 onChange={(v) => setForm((f) => ({ ...f, tag: v.slice(0, TEXT_LIMITS.tag) }))}
@@ -245,8 +247,8 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
               onChange={(v) => setForm((f) => ({ ...f, is_fixed: v }))}
               label={(
                 <span>
-                  Is fixed?
-                  <small className="block text-muted text-xs">Repeats automatically as a recurring entry</small>
+                  {t('entryModal.isFixed')}
+                  <small className="block text-muted text-xs">{t('entryModal.fixedHelp')}</small>
                 </span>
               )}
             />
@@ -256,23 +258,23 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         {form.type !== 'transfer' && form.is_fixed && (
           <div className="flex flex-col gap-3 pl-3.5 border-l-2 border-accent-soft">
             <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
-              <Field label="Frequency" htmlFor="tm-freq">
+              <Field label={t('entryModal.frequency')} htmlFor="tm-freq">
                 <select id="tm-freq" value={form.frequency} onChange={set('frequency')}>
-                  {FREQUENCIES.map((f) => <option key={f} value={f}>{f[0].toUpperCase() + f.slice(1)}</option>)}
+                  {FREQUENCIES.map((f) => <option key={f} value={f}>{t(`entryModal.frequencies.${f}`)}</option>)}
                 </select>
               </Field>
-              <DateField id="tm-start" label="Starts on" value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} />
+              <DateField id="tm-start" label={t('entryModal.startsOn')} value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} />
             </div>
-            <p className="m-0 text-xs text-muted">Past occurrences since the start date are added right away.</p>
+            <p className="m-0 text-xs text-muted">{t('entryModal.pastOccurrences')}</p>
           </div>
         )}
 
         {error && <p className="m-0 text-sm text-neg" role="alert">{error}</p>}
 
         <div className="flex justify-between gap-2.5 mt-1">
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" onClick={onClose}>{t('common.cancel')}</Button>
           <Button type="submit" disabled={saving}>
-            {saving ? 'Saving…' : editing ? 'Save changes' : form.type === 'income' ? 'Add income' : form.type === 'transfer' ? 'Add transfer' : 'Add expense'}
+            {saving ? t('common.saving') : editing ? t('common.saveChanges') : form.type === 'income' ? t('common.addIncome') : form.type === 'transfer' ? t('common.addTransfer') : t('common.addExpense')}
           </Button>
         </div>
       </form>
