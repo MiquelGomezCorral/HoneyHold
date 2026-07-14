@@ -17,7 +17,7 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 };
 
 const PAD_CLASSES: Record<ButtonSize, string> = {
-  sm: 'px-2 py-1.5',
+  sm: 'px-2 py-1',
   md: 'px-3 py-2',
   lg: 'px-4 py-4',
 };

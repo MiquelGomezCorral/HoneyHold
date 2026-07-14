@@ -223,21 +223,23 @@ export default function TransactionsView() {
         />
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 rounded-[20px] bg-white/35 p-3 shadow-[0_0_0_1px_rgba(89,113,134,0.12)]">
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="relative w-max flex-1">
-            <Icon src="search" type="black" title="" disabled className="pointer-events-none absolute left-3 bottom-1/2 m-0 h-4 w-4 translate-y-1/2 opacity-45" />
-            <span className="sr-only">Search ledger</span>
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search concept, payer, tag, account, amount, date or ID"
-              className="min-h-10 w-full rounded-xl border border-hairline bg-white/70 pl-9 pr-3 text-sm outline-none transition-[border-color,box-shadow] focus:border-accent focus:shadow-[0_0_0_3px_rgba(90,151,183,0.18)]"
-            />
-          </label>
-          <Button variant="ghost" size="md" onClick={resetFilters} disabled={!filtering} className="shrink-0 whitespace-nowrap">
-            Clear filters
-          </Button>
+      <div className="mt-5 flex flex-col gap-3 rounded-md bg-white/35 p-3 shadow-[0_0_0_1px_rgba(89,113,134,0.12)]">
+        <div className="flex flex-col gap-2">
+          <span>Search ledger</span>
+          <div className="flex min-w-0 w-full flex-1 gap-1">
+            <span className="relative w-full">
+              <Icon src="search" type="black" title="" disabled className="pointer-events-none absolute left-3 top-1/2 m-0 h-4 w-4 opacity-45" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search concept, payer, tag, account, amount, date or ID"
+                className="w-full rounded-lg border border-hairline bg-white/70 py-2 pl-9 pr-3 text-sm outline-none transition-[border-color,box-shadow] focus:border-accent focus:shadow-[0_0_0_3px_rgba(90,151,183,0.18)]"
+              />
+            </span>
+            <Button variant="ghost" size="md" onClick={resetFilters} disabled={!filtering} className="self-end whitespace-nowrap">
+              Clear filters
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
