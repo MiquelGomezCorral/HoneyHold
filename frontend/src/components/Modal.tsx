@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useEffect, type ReactNode } from 'react';
 import Button from './Button.js';
 import { BG_COLORS, type BgColor } from '../lib/theme.js';
@@ -18,16 +19,19 @@ export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Pr
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-[rgba(22,50,74,0.35)] max-sm:items-end max-sm:p-0"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/35 p-5 max-sm:items-end max-sm:p-0"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className={`w-full max-w-[460px] max-h-[calc(100vh-40px)] overflow-visible border border-hairline rounded-[14px] p-[22px_24px_20px] max-sm:max-w-none max-sm:max-h-[92dvh] max-sm:rounded-t-[16px] max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0 ${bgColor ? BG_COLORS[bgColor] ?? '' : ''}`}
+        className={cn(
+          'w-full max-w-md max-h-[calc(100vh-40px)] overflow-visible border border-hairline rounded-xl p-6 pb-5 max-sm:max-w-none max-sm:max-h-[92dvh] max-sm:rounded-t-2xl max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0',
+          BG_COLORS[bgColor]
+        )}
         role="dialog"
         aria-modal="true"
         aria-label={title}
       >
-        <div className="flex justify-between items-center mb-[18px]">
+        <div className="flex justify-between items-center mb-5">
           <h2 className="m-0 text-base font-semibold">{title}</h2>
           <Button variant="close" size="sm" onClick={onClose} aria-label="Close">
             ✕

@@ -1,3 +1,23 @@
+## [1.1.1](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.1.0...v1.1.1) (2026-07-14)
+
+### Bug Fixes
+
+* use input:where(:not([type="range"])) to avoid overriding Tailwind utility padding ([e3626f4](https://github.com/MiquelGomezCorral/HoneyHold/commit/e3626f45f95a0c682b33bd8735c65300c897f308))
+
+## [1.1.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.0.0...v1.1.0) (2026-07-14)
+
+### Features
+
+* add from/to date range query params to backend list endpoints ([018663d](https://github.com/MiquelGomezCorral/HoneyHold/commit/018663dead9ad6aee195008a05fb01bb7091d3a3))
+* add generic FilterPopover and DualRangeSlider components ([af5fecf](https://github.com/MiquelGomezCorral/HoneyHold/commit/af5fecff50bbe06dc55b97cc19a128fa67405a1d))
+* add reusable search engine with fuzzy matching and field scoring ([5af7692](https://github.com/MiquelGomezCorral/HoneyHold/commit/5af769230c0cede238444ec0841332ab71fc43c3))
+* wire search, faceted filters, amount range, and date range into transactions view ([96bdbb7](https://github.com/MiquelGomezCorral/HoneyHold/commit/96bdbb7413472d18deaf5f4d672e76a00af231cf))
+
+### Bug Fixes
+
+* match ledger search input height to button ([fa02172](https://github.com/MiquelGomezCorral/HoneyHold/commit/fa021724b69c6edc33fb3f16333a5072821eabed))
+* prevent disabled buttons from being squeezed on press ([4892a8c](https://github.com/MiquelGomezCorral/HoneyHold/commit/4892a8c44abce9535a74ab6141a89dd9e1a54947))
+
 ## 1.0.0 (2026-07-14)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "honeyhold",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "private": true,
   "description": "HoneyHold — personal finance ledger. Repository root for release tooling; the app itself lives in backend/ and frontend/.",
   "type": "module",

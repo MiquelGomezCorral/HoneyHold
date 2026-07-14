@@ -61,7 +61,7 @@ function LocalizedApp({ locale }: { locale: Locale }) {
       ) : (
         <div>
           <NavBar locale={locale} onAdd={() => openAdd('expense')} />
-          <main className="max-w-[1040px] mx-auto px-8 pb-24 pt-2.5">
+          <main className="max-w-5xl mx-auto px-8 pb-24 pt-2.5">
             <Routes>
               <Route path={`/${locale}`} element={<DashboardView />} />
               <Route path={`/${locale}/monthly`} element={<MonthlyView />} />

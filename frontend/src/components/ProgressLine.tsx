@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { money } from '../lib/format.js';
 import type { ReactNode } from 'react';
 
@@ -16,7 +17,7 @@ export default function ProgressLine({ label, actual, target, children }: Props)
       <div className="flex justify-between items-baseline gap-4 mb-2.5">
         <span className="font-semibold">{label}</span>
         <span className="tabular-nums">
-          <b className={actual < 0 ? 'text-neg' : ''}>{money(actual)}</b>
+          <b className={cn({ 'text-neg': actual < 0 })}>{money(actual)}</b>
           {target != null && <span className="text-muted"> / {money(target)}</span>}
         </span>
       </div>
@@ -28,7 +29,7 @@ export default function ProgressLine({ label, actual, target, children }: Props)
           aria-valuemin={0}
           aria-valuemax={100}
         >
-          <i className="block h-full bg-accent transition-[width_0.3s_ease]" style={{ width: `${pct}%` }} />
+          <i className="block h-full bg-accent transition-[width] duration-300 ease-in-out" style={{ width: `${pct}%` }} />
         </div>
       ) : (
         <p className="text-muted text-sm">No target set yet.</p>

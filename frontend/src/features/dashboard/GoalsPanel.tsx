@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import ProgressLine from '../../components/ProgressLine.js';
 import Button from '../../components/Button.js';
 import { api } from '../../api/client.js';
 import { useProfile } from '../../context/ProfileContext.js';
+import { goalFormSchema, validationMessage } from '../../lib/validation.js';
 
 interface Goals {
   monthly: { actual: number; target: number | null };
@@ -23,15 +24,18 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function save(e: React.FormEvent) {
+  async function save(e: FormEvent) {
     e.preventDefault();
-    setSaving(true);
     setError(null);
+    const parsed = goalFormSchema.safeParse({ target_amount: value });
+    if (!parsed.success) return setError(validationMessage(parsed.error));
+
+    setSaving(true);
     try {
       await api.put(`/profiles/${profileId}/goals`, {
         period,
         year,
-        target_amount: Number(value),
+        target_amount: parsed.data.target_amount,
       });
       setEditing(false);
       onSaved();
@@ -54,7 +58,7 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
 
   return (
     <form className="flex gap-2 items-center" onSubmit={save}>
-      <input type="number" inputMode="decimal" min="0" step="1" value={value} onChange={(e) => setValue(e.target.value)} autoFocus aria-label="Target amount" className="w-[130px]" />
+      <input type="number" inputMode="decimal" min="0" step="1" value={value} onChange={(e) => setValue(e.target.value)} autoFocus aria-label="Target amount" className="w-32" />
       <Button variant="primary" size="sm" type="submit" disabled={saving}>
         Save
       </Button>

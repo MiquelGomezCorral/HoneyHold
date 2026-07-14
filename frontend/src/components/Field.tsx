@@ -1,19 +1,16 @@
+import cn from 'classnames';
 import type { ReactNode } from 'react';
 
 interface FieldProps {
   label: string;
   htmlFor: string;
   children: ReactNode;
-  colSpan?: number;
   className?: string;
 }
 
-export default function Field({ label, htmlFor, children, colSpan, className }: FieldProps) {
-  const colClass = colSpan ? ` col-span-${colSpan}` : '';
-  const extra = className ? ` ${className}` : '';
-
+export default function Field({ label, htmlFor, children, className }: FieldProps) {
   return (
-    <div className={`flex flex-col gap-1.5 min-w-0${colClass}${extra}`}>
+    <div className={cn('flex flex-col gap-1.5 min-w-0', className)}>
       <label htmlFor={htmlFor} className="text-xs font-semibold tracking-[0.1em] uppercase text-muted">
         {label}
       </label>

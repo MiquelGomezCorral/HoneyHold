@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import Section from '../../components/Section.js';
 import BalanceChart from '../../components/BalanceChart.js';
 import GoalsPanel from './GoalsPanel.js';
@@ -24,12 +25,12 @@ export default function DashboardView() {
     <>
       <Section title="Balance" summary="All accounts, all time" hideBorder>
         <div className="grid grid-cols-[1.1fr_1fr] gap-14 items-start max-lg:grid-cols-1 max-lg:gap-7">
-          <p className={`m-0 font-display font-semibold text-6xl leading-[1.05] tracking-[-0.02em] tabular-nums${totalBalance < 0 ? ' text-neg' : ''}`}>
+          <p className={cn('m-0 font-display font-semibold text-6xl leading-[1.05] tracking-[-0.02em] tabular-nums', { 'text-neg': totalBalance < 0 })}>
             {money(totalBalance)}
           </p>
           <ul className="list-none mt-1 p-0">
             {accounts.map((a) => (
-              <li key={a.id} className="flex justify-between items-baseline gap-4 py-[9px] border-b border-hairline last:border-b-0">
+              <li key={a.id} className="flex justify-between items-baseline gap-4 py-3 border-b border-hairline last:border-b-0">
                 <span>
                   {a.name}
                   <span className="ml-2 text-xs text-muted">{a.kind}</span>

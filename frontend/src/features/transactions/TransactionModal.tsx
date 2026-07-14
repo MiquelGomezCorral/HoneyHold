@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import Modal from '../../components/Modal.js';
 import Button from '../../components/Button.js';
 import Field from '../../components/Field.js';
@@ -13,6 +13,7 @@ import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { todayISO } from '../../lib/format.js';
 import { TEXT_LIMITS } from '../../lib/config.js';
+import { entryFormSchema, validationMessage } from '../../lib/validation.js';
 import type { Account, EntryType, LedgerEntry } from '../../types.js';
 
 const FREQUENCIES = ['weekly', 'monthly', 'quarterly', 'yearly'];
@@ -84,23 +85,13 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
   const [error, setError] = useState<string | null>(null);
 
   function set(key: keyof FormState) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
   }
 
-  const accountId = useMemo(
-    () => form.account_id || accounts?.[0]?.id || '',
-    [form.account_id, accounts]
-  );
-
-  const fromAccountId = useMemo(
-    () => form.from_account_id || accounts?.[0]?.id || '',
-    [form.from_account_id, accounts]
-  );
-  const toAccountId = useMemo(
-    () => form.to_account_id || accounts?.find((a) => String(a.id) !== String(fromAccountId))?.id || '',
-    [form.to_account_id, fromAccountId, accounts]
-  );
+  const accountId = form.account_id || accounts?.[0]?.id || '';
+  const fromAccountId = form.from_account_id || accounts?.[0]?.id || '';
+  const toAccountId = form.to_account_id || accounts?.find((a) => String(a.id) !== String(fromAccountId))?.id || '';
   const fromAccount = accounts?.find((a) => String(a.id) === String(fromAccountId));
   const toAccount = accounts?.find((a) => String(a.id) === String(toAccountId));
 
@@ -111,61 +102,58 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
 
   const changeType = (type: EntryType) => {
     setConceptEdited(editing || type !== 'transfer' || !!form.concept.trim());
-    setForm((f) => ({ ...f, type }));
-  // function changeType(type: EntryType) {
-  //   setConceptEdited(type !== 'transfer' || !!form.concept.trim());
-  //   setForm((f) => ({ ...f, type, is_fixed: type === 'transfer' ? false : f.is_fixed }));
+    setForm((f) => ({ ...f, type, is_fixed: type === 'transfer' ? false : f.is_fixed }));
   };
 
-  function setConcept(e: React.ChangeEvent<HTMLInputElement>) {
+  function setConcept(e: ChangeEvent<HTMLInputElement>) {
     setConceptEdited(true);
     setForm((f) => ({ ...f, concept: e.target.value }));
   };
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!(Number(form.amount) > 0)) return setError('Enter an amount greater than zero.');
-    if (!form.concept.trim()) return setError('Enter a concept.');
-    if (form.type === 'transfer') {
-      if (!fromAccountId || !toAccountId) return setError('Pick both accounts.');
-      if (String(fromAccountId) === String(toAccountId)) return setError('Pick two different accounts.');
-    } else if (!accountId) {
-      return setError('Pick an account.');
-    }
+    const parsed = entryFormSchema.safeParse({
+      ...form,
+      account_id: accountId,
+      from_account_id: fromAccountId,
+      to_account_id: toAccountId,
+    });
+    if (!parsed.success) return setError(validationMessage(parsed.error));
+
+    const values = parsed.data;
 
     setSaving(true);
     try {
-      const transferBody = {
-        type: form.type,
-        profile_id: profileId,
-        from_account_id: Number(fromAccountId),
-        to_account_id: Number(toAccountId),
-        amount: Number(form.amount),
-        txn_date: form.txn_date,
-        concept: form.concept,
-      };
-      const transactionBody = {
-        profile_id: profileId,
-        account_id: Number(accountId),
-        type: form.type,
-        amount: Number(form.amount),
-        txn_date: form.txn_date,
-        concept: form.concept,
-        counterparty: form.counterparty.slice(0, TEXT_LIMITS.counterparty),
-        tag: form.tag,
-        is_fixed: form.is_fixed,
-        recurrence: form.is_fixed
-          ? { frequency: form.frequency, start_date: form.start_date }
-          : null,
-      };
-
-      if (entry) {
-        await api.put(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`, form.type === 'transfer' ? transferBody : transactionBody);
-      } else if (form.type === 'transfer') {
-        await api.post(`/profiles/${profileId}/transfers`, transferBody);
+      if (values.type === 'transfer') {
+        const body = {
+          type: values.type,
+          profile_id: profileId,
+          from_account_id: values.from_account_id,
+          to_account_id: values.to_account_id,
+          amount: values.amount,
+          txn_date: values.txn_date,
+          concept: values.concept,
+        };
+        if (entry) await api.put(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`, body);
+        else await api.post(`/profiles/${profileId}/transfers`, body);
       } else {
-        await api.post('/transactions', transactionBody);
+        const body = {
+          profile_id: profileId,
+          account_id: values.account_id,
+          type: values.type,
+          amount: values.amount,
+          txn_date: values.txn_date,
+          concept: values.concept,
+          counterparty: values.counterparty,
+          tag: values.tag,
+          is_fixed: values.is_fixed,
+          recurrence: values.is_fixed
+            ? { frequency: values.frequency, start_date: values.start_date }
+            : null,
+        };
+        if (entry) await api.put(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`, body);
+        else await api.post('/transactions', body);
       }
       bump();
       onClose();
@@ -192,7 +180,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
           full
         />
 
-        <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
+        <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
           <Field label="Amount (€)" htmlFor="tm-amount">
             <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
           </Field>
@@ -204,7 +192,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         </Field>
 
         {form.type === 'transfer' ? (
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-[10px] items-end max-sm:grid-cols-1">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-2.5 items-end max-sm:grid-cols-1">
             <AccountSelect
               id="tm-from-account"
               accounts={accounts ?? []}
@@ -215,7 +203,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
             />
             <Button
               variant="ghost"
-              className="h-[38px] px-3 max-sm:w-full"
+              className="h-10 px-3 max-sm:w-full"
               onClick={() => setForm((f) => ({ ...f, from_account_id: String(toAccountId), to_account_id: String(fromAccountId) }))}
               aria-label="Swap transfer accounts"
             >
@@ -232,7 +220,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
+            <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
               <Field label={form.type === 'income' ? 'Payer' : 'Payee'} htmlFor="tm-who">
                 <input id="tm-who" type="text" value={form.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
               </Field>
@@ -241,7 +229,6 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
                 label="Tag"
                 value={form.tag}
                 groups={[{ key: 'tags', options: tagOptions }]}
-                
                 onChange={(v) => setForm((f) => ({ ...f, tag: v.slice(0, TEXT_LIMITS.tag) }))}
               />
             </div>
@@ -267,8 +254,8 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         )}
 
         {form.type !== 'transfer' && form.is_fixed && (
-          <div className="flex flex-col gap-3 pl-[14px] border-l-2 border-accent-soft">
-            <div className="grid grid-cols-2 gap-[14px] max-sm:grid-cols-1">
+          <div className="flex flex-col gap-3 pl-3.5 border-l-2 border-accent-soft">
+            <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
               <Field label="Frequency" htmlFor="tm-freq">
                 <select id="tm-freq" value={form.frequency} onChange={set('frequency')}>
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{f[0].toUpperCase() + f.slice(1)}</option>)}
