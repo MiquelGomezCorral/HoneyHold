@@ -2,6 +2,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianG
 import { useFetch } from '../hooks/useFetch.js';
 import { useProfile } from '../context/ProfileContext.js';
 import { money } from '../lib/format.js';
+import { CHART_COLORS } from '../lib/theme.js';
 import EmptyState from './EmptyState.js';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -18,8 +19,6 @@ interface Props {
 export default function BalanceChart({ year }: Props) {
   const { profileId, version } = useProfile();
 
-  // `version` bumps whenever money is added or removed, so the chart refetches
-  // and re-renders automatically.
   const { data, error } = useFetch<BalancePoint[]>(
     profileId ? `/profiles/${profileId}/balance-series?year=${year}` : null,
     [profileId, year, version]
@@ -33,8 +32,8 @@ export default function BalanceChart({ year }: Props) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={series} margin={{ top: 8, right: 12, bottom: 0, left: 8 }}>
-        <CartesianGrid stroke="#d3e2ee" strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: '#d3e2ee' }} tick={{ fontSize: 12 }} />
+        <CartesianGrid stroke={CHART_COLORS.hairline} strokeDasharray="3 3" vertical={false} />
+        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: CHART_COLORS.hairline }} tick={{ fontSize: 12 }} />
         <YAxis
           width={72}
           tickLine={false}
@@ -50,9 +49,9 @@ export default function BalanceChart({ year }: Props) {
         <Line
           type="monotone"
           dataKey="balance"
-          stroke="#1f6fae"
+          stroke={CHART_COLORS.accent}
           strokeWidth={2}
-          dot={{ r: 3, fill: '#1f6fae' }}
+          dot={{ r: 3, fill: CHART_COLORS.accent }}
           activeDot={{ r: 5 }}
           isAnimationActive={false}
         />

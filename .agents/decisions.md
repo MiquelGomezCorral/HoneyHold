@@ -10,7 +10,10 @@ Record closed decisions here. Do not reopen them unless the user explicitly asks
 - **Automation never writes the ledger.** External feeds → `POST /api/ingest` → `inbox_entries` (deduped on `(source, external_id)`) → human Approve/Reject → `transactions` (source `automated`). A future Open Banking worker just needs the token + JSON contract; it never touches the schema.
 - **Recurring engine = template + materializer.** "Is fixed?" creates a `recurring_rules` row, not a transaction. `jobs/materialize.js` inserts real rows for every `next_due <= today` and advances `next_due` by frequency; runs on boot, every 12h, and right after a rule is created. Stopping a rule deactivates it; past ledger rows stay.
 - **Frontend fetch is centralized in `api/client.js`.** No view/component knows hosts/ports; Vite proxies `/api` via `VITE_API_PROXY`.
-- **Single stylesheet, design-token based.** `frontend/src/styles/global.css` holds all styling; no CSS-in-JS, no utility framework.
+- **Tailwind utility UI.** Frontend styling uses Tailwind v3 utilities plus design tokens in `tailwind.config.js`; `global.css` stays limited to Tailwind directives and global base rules.
+- **Vite frontend, no Next runtime.** Do not import `next/image` or other Next-only modules unless the frontend is explicitly migrated to Next or a compatible runtime is added.
+- **Custom date picker stays.** Use the project `DateField` component for app date fields; do not replace it with native date inputs unless the user reopens that decision.
+- **Forms use Zod schemas.** Keep form payload validation in `frontend/src/lib/validation.ts` instead of ad hoc inline validation.
 - **Backups use the same `mysql:8.4` image** as the DB so `mysqldump` matches the server. Triggered by cron inside `db-backup`; one dump also runs on container start.
 
 ## Revisit When

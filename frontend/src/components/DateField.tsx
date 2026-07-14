@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Field from './Field.js';
 import Icon from './Icon.js';
@@ -56,8 +57,15 @@ export default function DateField({ id, label, value, onChange, className }: Dat
     function closeOnOutside(event: PointerEvent) {
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false);
+    }
     document.addEventListener('pointerdown', closeOnOutside);
-    return () => document.removeEventListener('pointerdown', closeOnOutside);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutside);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
   }, [open]);
 
   function move(delta: number) {
@@ -80,7 +88,7 @@ export default function DateField({ id, label, value, onChange, className }: Dat
         <button
           id={id}
           type="button"
-          className="flex w-full items-center justify-between rounded-lg border border-hairline bg-paper-blue-raise px-[11px] py-[9px] text-left text-sm text-ink transition-[border-color,background-color] duration-300 hover:bg-accent-soft focus:border-accent focus:outline-none"
+          className="flex min-h-10 w-full items-center justify-between rounded-lg border border-hairline bg-paper-blue-raise px-3 py-2 text-left text-sm text-ink transition-[border-color,background-color] duration-300 hover:bg-accent-soft focus:border-accent focus:outline-none"
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={() => setOpen((current) => !current)}
@@ -90,7 +98,7 @@ export default function DateField({ id, label, value, onChange, className }: Dat
         </button>
 
         {open && (
-          <div className="absolute left-0 top-[calc(100%+6px)] z-30 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-[0_14px_35px_rgba(22,50,74,0.18)]" role="dialog" aria-label={`${label} calendar`}>
+          <div className="absolute left-0 top-full z-30 mt-1.5 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-xl" role="dialog" aria-label={`${label} calendar`}>
             <div className="mb-3 flex items-center justify-between gap-2">
               <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(-1)} aria-label={pickingMonth ? 'Previous year' : 'Previous month'}>
                 <Icon src="caret-left" type="black" className="h-4 w-4" title={pickingMonth ? 'Previous year' : 'Previous month'} />
@@ -111,7 +119,13 @@ export default function DateField({ id, label, value, onChange, className }: Dat
                     <button
                       key={index}
                       type="button"
-                      className={`h-9 rounded-lg text-sm transition-[background-color,color,transform] duration-300 active:duration-75 active:scale-95 ${active ? 'bg-accent text-white font-semibold' : 'text-ink hover:bg-accent-soft'}`}
+                      className={cn(
+                        'h-9 rounded-lg text-sm transition-[background-color,color,transform] duration-300 active:duration-75 active:scale-95',
+                        {
+                          'bg-accent text-white font-semibold': active,
+                          'text-ink hover:bg-accent-soft': !active,
+                        }
+                      )}
                       onClick={() => chooseMonth(index)}
                     >
                       {monthNameFormat.format(candidate)}
@@ -134,7 +148,13 @@ export default function DateField({ id, label, value, onChange, className }: Dat
                       <button
                         key={day}
                         type="button"
-                        className={`h-8 rounded-lg text-sm transition-[background-color,color,transform] duration-300 active:duration-75 active:scale-95 ${active ? 'bg-accent text-white font-semibold' : 'text-ink hover:bg-accent-soft'}`}
+                        className={cn(
+                          'h-8 rounded-lg text-sm transition-[background-color,color,transform] duration-300 active:duration-75 active:scale-95',
+                          {
+                            'bg-accent text-white font-semibold': active,
+                            'text-ink hover:bg-accent-soft': !active,
+                          }
+                        )}
                         onClick={() => choose(day)}
                       >
                         {day}

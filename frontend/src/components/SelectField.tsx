@@ -1,6 +1,6 @@
 import Field from './Field.js';
 
-export interface SelectGroup {
+interface SelectGroup {
   key: string;
   label?: string;
   options: { value: string | number; label: string }[];

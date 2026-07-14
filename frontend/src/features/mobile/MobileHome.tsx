@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import ProfileSwitcher from '../../components/ProfileSwitcher.js';
 import Button from '../../components/Button.js';
 import { useFetch } from '../../hooks/useFetch.js';
@@ -28,7 +29,7 @@ export default function MobileHome({ onAdd }: Props) {
 
       <div className="mt-[13vh]">
         <span className="m-0 text-xs font-semibold tracking-[0.14em] uppercase text-muted">Total balance</span>
-        <p className={`m-0 font-display font-semibold leading-[1.05] tracking-[-0.02em] tabular-nums mt-2${data && data.totalBalance < 0 ? ' text-neg' : ''}`}
+        <p className={cn('m-0 font-display font-semibold leading-[1.05] tracking-[-0.02em] tabular-nums mt-2', { 'text-neg': data != null && data.totalBalance < 0 })}
           style={{ fontSize: 'clamp(44px, 13vw, 58px)' }}
         >
           {data ? money(data.totalBalance) : '—'}

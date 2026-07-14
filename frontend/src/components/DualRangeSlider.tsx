@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import Icon from './Icon.js';
 
 interface DualRangeSliderProps {
@@ -44,7 +45,7 @@ export default function DualRangeSlider({ min, max, minGap = 0, minValue, maxVal
           step="10"
           value={safeMin}
           onChange={(event) => setMin(Number(event.target.value))}
-          className={`${rangeInputClasses} z-10`}
+          className={cn(rangeInputClasses, 'z-10')}
           aria-label="Minimum amount"
         />
         <input
@@ -54,14 +55,14 @@ export default function DualRangeSlider({ min, max, minGap = 0, minValue, maxVal
           step="10"
           value={safeMax}
           onChange={(event) => setMax(Number(event.target.value))}
-          className={`${rangeInputClasses} z-20`}
+          className={cn(rangeInputClasses, 'z-20')}
           aria-label="Maximum amount"
         />
       </div>
       <div className="flex justify-between text-xs text-muted tabular-nums">
         <span>{safeMin}</span>
         <span className="inline-flex h-4 items-center">
-          {maxValue == null ? <Icon src="infinity" type="black" title="No maximum" disabled className="m-0 h-3.5 w-3.5 opacity-60" /> : safeMax}
+          {maxValue == null ? <Icon src="infinity" type="black" title="No maximum" className="m-0 h-3.5 w-3.5 opacity-60" /> : safeMax}
         </span>
       </div>
     </div>

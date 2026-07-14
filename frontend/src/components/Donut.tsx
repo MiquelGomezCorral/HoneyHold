@@ -1,9 +1,8 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { money } from '../lib/format.js';
+import { CHART_COLORS } from '../lib/theme.js';
 import EmptyState from './EmptyState.js';
 import type { DonutSlice } from '../types.js';
-
-const BLUES = ['#1F6FAE', '#5D97C4', '#93BEDC', '#2E4E68', '#7FA6C1', '#C6DDEE', '#B3CCDE'];
 
 interface Props {
   data: DonutSlice[];
@@ -33,7 +32,7 @@ export default function Donut({ data, emptyNote }: Props) {
               isAnimationActive={false}
             >
               {slices.map((entry, i) => (
-                <Cell key={entry.label} fill={BLUES[i % BLUES.length]} />
+                <Cell key={entry.label} fill={CHART_COLORS.blues[i % CHART_COLORS.blues.length]} />
               ))}
             </Pie>
             <Tooltip formatter={(v: number) => money(v)} separator=" · " />
@@ -42,9 +41,9 @@ export default function Donut({ data, emptyNote }: Props) {
       </div>
       <ul className="list-none m-0 p-0">
         {slices.map((entry, i) => (
-          <li key={entry.label} className="flex justify-between gap-[14px] py-[7px] border-b border-hairline text-sm last:border-b-0">
+          <li key={entry.label} className="flex justify-between gap-3.5 py-2 border-b border-hairline text-sm last:border-b-0">
             <span>
-              <i className="inline-block w-[10px] h-[10px] rounded-[3px] mr-[9px]" style={{ background: BLUES[i % BLUES.length] }} />
+              <i className="inline-block h-2.5 w-2.5 rounded-sm mr-2.5" style={{ background: CHART_COLORS.blues[i % CHART_COLORS.blues.length] }} />
               {entry.label}
             </span>
             <span className="tabular-nums">{money(entry.value)}</span>
