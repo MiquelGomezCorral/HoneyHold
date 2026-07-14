@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { useI18n } from '../i18n.js';
 import Icon from './Icon.js';
 
 interface DualRangeSliderProps {
@@ -13,6 +14,7 @@ interface DualRangeSliderProps {
 const rangeInputClasses = 'pointer-events-none absolute inset-x-0 top-1/3 h-8 w-full -translate-y-1/2 appearance-none border-0 bg-transparent p-0 accent-accent [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-accent [&::-moz-range-thumb]:transition-colors hover:[&::-moz-range-thumb]:bg-accent-deep [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent [&::-webkit-slider-thumb]:transition-colors hover:[&::-webkit-slider-thumb]:bg-accent-deep';
 
 export default function DualRangeSlider({ min, max, minGap = 0, minValue, maxValue, onChange }: DualRangeSliderProps) {
+  const { t } = useI18n();
   const gap = Math.max(0, Math.min(minGap, max - min));
   const rawMax = maxValue == null ? max : Math.max(min + gap, Math.min(maxValue, max));
   const safeMin = Math.max(min, Math.min(minValue, rawMax - gap));
@@ -46,7 +48,7 @@ export default function DualRangeSlider({ min, max, minGap = 0, minValue, maxVal
           value={safeMin}
           onChange={(event) => setMin(Number(event.target.value))}
           className={cn(rangeInputClasses, 'z-10')}
-          aria-label="Minimum amount"
+          aria-label={t('filters.minAmount')}
         />
         <input
           type="range"
@@ -56,13 +58,13 @@ export default function DualRangeSlider({ min, max, minGap = 0, minValue, maxVal
           value={safeMax}
           onChange={(event) => setMax(Number(event.target.value))}
           className={cn(rangeInputClasses, 'z-20')}
-          aria-label="Maximum amount"
+          aria-label={t('filters.maxAmount')}
         />
       </div>
       <div className="flex justify-between text-xs text-muted tabular-nums">
         <span>{safeMin}</span>
         <span className="inline-flex h-4 items-center">
-          {maxValue == null ? <Icon src="infinity" type="black" title="No maximum" className="m-0 h-3.5 w-3.5 opacity-60" /> : safeMax}
+          {maxValue == null ? <Icon src="infinity" type="black" title={t('common.noMaximum')} className="m-0 h-3.5 w-3.5 opacity-60" /> : safeMax}
         </span>
       </div>
     </div>

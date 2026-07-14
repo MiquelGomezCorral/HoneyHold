@@ -16,16 +16,16 @@ export function entryMoney(t: LedgerEntry, profileId: number | null) {
   return signedMoney(t.from_profile_id === profileId ? 'expense' : 'income', t.amount);
 }
 
-export function monthLabel(year: number, month: number) {
-  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString('en-GB', {
+export function monthLabel(year: number, month: number, locale = 'en-GB') {
+  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(locale, {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
   });
 }
 
-export function shortDate(iso: string) {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+export function shortDate(iso: string, locale = 'en-GB') {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(locale, { day: '2-digit', month: 'short' });
 }
 
 function dbTimestamp(value: string) {
@@ -55,8 +55,8 @@ export function scopedAccountLabel(name: string, accountProfileId: number | null
   return accountProfileId && accountProfileId !== profileId ? accountLabel(name, accountProfileName) : name;
 }
 
-export function entryTag(entry: LedgerEntry) {
-  return entry.type === 'transfer' ? entry.tag_name || 'Transference' : entry.tag_name || '';
+export function entryTag(entry: LedgerEntry, transferFallback = '') {
+  return entry.type === 'transfer' ? entry.tag_name || transferFallback : entry.tag_name || '';
 }
 
 export function entryAccountIds(entry: LedgerEntry) {

@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import { money } from '../lib/format.js';
+import { useI18n } from '../i18n.js';
 import type { ReactNode } from 'react';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function ProgressLine({ label, actual, target, children }: Props) {
+  const { t } = useI18n();
   const pct = target && target > 0 ? Math.max(0, Math.min(100, (actual / target) * 100)) : 0;
 
   return (
@@ -32,7 +34,7 @@ export default function ProgressLine({ label, actual, target, children }: Props)
           <i className="block h-full bg-accent transition-[width] duration-300 ease-in-out" style={{ width: `${pct}%` }} />
         </div>
       ) : (
-        <p className="text-muted text-sm">No target set yet.</p>
+        <p className="text-muted text-sm">{t('goals.noTarget')}</p>
       )}
       {children}
     </div>

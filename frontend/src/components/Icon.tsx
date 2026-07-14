@@ -5,7 +5,7 @@ interface IconProps {
   height?: number;
   src: string;
   title?: string;
-  type?: 'white' | 'color' | 'black';
+  type?: 'white' | 'color' | 'black' | 'country';
   className?: string;
 }
 

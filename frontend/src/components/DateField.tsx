@@ -1,12 +1,8 @@
 import cn from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useI18n } from '../i18n.js';
 import Field from './Field.js';
 import Icon from './Icon.js';
-
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const monthFormat = new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' });
-const monthNameFormat = new Intl.DateTimeFormat('en', { month: 'short' });
-const dayFormat = new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short', year: 'numeric' });
 
 interface DateFieldProps {
   id: string;
@@ -38,6 +34,7 @@ function firstWeekday(date: Date) {
 }
 
 export default function DateField({ id, label, value, onChange, className }: DateFieldProps) {
+  const { locale, t, tl } = useI18n();
   const rootRef = useRef<HTMLDivElement>(null);
   const selected = useMemo(() => parseDate(value), [value]);
   const [open, setOpen] = useState(false);
@@ -46,6 +43,11 @@ export default function DateField({ id, label, value, onChange, className }: Dat
   const days = monthDays(month);
   const leading = firstWeekday(month);
   const months = Array.from({ length: 12 }, (_, index) => new Date(month.getFullYear(), index, 1));
+  const dateLocale = locale === 'es' ? 'es-ES' : 'en-GB';
+  const monthFormat = new Intl.DateTimeFormat(dateLocale, { month: 'long', year: 'numeric' });
+  const monthNameFormat = new Intl.DateTimeFormat(dateLocale, { month: 'short' });
+  const dayFormat = new Intl.DateTimeFormat(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+  const weekdays = tl('date.weekdays');
 
   useEffect(() => {
     setMonth(new Date(selected.getFullYear(), selected.getMonth(), 1));
@@ -94,20 +96,20 @@ export default function DateField({ id, label, value, onChange, className }: Dat
           onClick={() => setOpen((current) => !current)}
         >
           <span>{dayFormat.format(selected)}</span>
-          <Icon src="caret-down" type="black" className="h-4 w-4 opacity-70" title="Open calendar" />
+          <Icon src="caret-down" type="black" className="h-4 w-4 opacity-70" title={t('date.openCalendar')} />
         </button>
 
         {open && (
-          <div className="absolute left-0 top-full z-30 mt-1.5 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-xl" role="dialog" aria-label={`${label} calendar`}>
+          <div className="absolute left-0 top-full z-30 mt-1.5 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-xl" role="dialog" aria-label={t('date.calendar', { label })}>
             <div className="mb-3 flex items-center justify-between gap-2">
-              <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(-1)} aria-label={pickingMonth ? 'Previous year' : 'Previous month'}>
-                <Icon src="caret-left" type="black" className="h-4 w-4" title={pickingMonth ? 'Previous year' : 'Previous month'} />
+              <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(-1)} aria-label={pickingMonth ? t('date.previousYear') : t('date.previousMonth')}>
+                <Icon src="caret-left" type="black" className="h-4 w-4" title={pickingMonth ? t('date.previousYear') : t('date.previousMonth')} />
               </button>
               <button type="button" className="rounded-lg px-2 py-1 text-sm font-semibold text-ink transition-colors duration-300 hover:bg-accent-soft" onClick={() => setPickingMonth((current) => !current)}>
                 {pickingMonth ? month.getFullYear() : monthFormat.format(month)}
               </button>
-              <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(1)} aria-label={pickingMonth ? 'Next year' : 'Next month'}>
-                <Icon src="caret-right" type="black" className="h-4 w-4" title={pickingMonth ? 'Next year' : 'Next month'} />
+              <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(1)} aria-label={pickingMonth ? t('date.nextYear') : t('date.nextMonth')}>
+                <Icon src="caret-right" type="black" className="h-4 w-4" title={pickingMonth ? t('date.nextYear') : t('date.nextMonth')} />
               </button>
             </div>
 
@@ -136,7 +138,7 @@ export default function DateField({ id, label, value, onChange, className }: Dat
             ) : (
               <>
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
-                  {WEEKDAYS.map((day) => <span key={day}>{day}</span>)}
+                  {weekdays.map((day) => <span key={day}>{day}</span>)}
                 </div>
                 <div className="mt-1 grid grid-cols-7 gap-1">
                   {Array.from({ length: leading }).map((_, index) => <span key={`empty-${index}`} />)}
