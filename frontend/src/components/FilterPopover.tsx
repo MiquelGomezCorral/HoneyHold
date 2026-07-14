@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 
@@ -33,14 +34,21 @@ export default function FilterPopover({ label, active, buttonClassName, children
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className={`inline-flex min-h-[31px] items-center justify-center rounded-lg px-2 text-xs font-semibold transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.96] ${active ? 'bg-accent text-white border border-accent' : 'bg-white/45 text-ink border border-hairline hover:bg-accent-soft'} ${buttonClassName ?? ''}`}
+        className={cn(
+          'inline-flex h-8 items-center justify-center rounded-lg px-2 text-xs font-semibold transition-[color,background-color,border-color,transform] duration-300 active:duration-75 active:scale-95',
+          {
+            'bg-accent text-white border border-accent': active,
+            'bg-white/45 text-ink border border-hairline hover:bg-accent-soft': !active,
+          },
+          buttonClassName
+        )}
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
         <span className="min-w-0 truncate">{label}</span>
       </button>
       {open && (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-[min(340px,calc(100vw-32px))] rounded-2xl bg-white/95 p-4 shadow-[0_18px_45px_rgba(31,54,74,0.18),0_0_0_1px_rgba(89,113,134,0.15)] backdrop-blur">
+        <div className="absolute left-0 top-full z-20 mt-2 w-[min(340px,calc(100vw-32px))] rounded-2xl bg-white/95 p-4 shadow-xl ring-1 ring-muted/15 backdrop-blur">
           {children}
         </div>
       )}

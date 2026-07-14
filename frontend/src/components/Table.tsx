@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { BG_COLORS, type BgColor } from '../lib/theme.js';
 
@@ -18,13 +19,19 @@ interface TableHeaderProps<T> {
 
 export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   function headerClass(align: Column<T>['align'], index: number) {
-    const padClass = index === 0 ? 'pl-3 pr-3' : 'pr-3';
-    if (align === 'none') return `${padClass} pb-[9px] pt-2`;
-    return `pt-2 ${padClass} pb-[9px] text-xs font-semibold tracking-[0.12em] uppercase text-muted ${align === 'right' ? 'text-right' : 'text-left'}`;
+    return cn(
+      'py-2',
+      index === 0 ? 'pl-3 pr-3' : 'pr-3',
+      {
+        'text-xs font-semibold tracking-[0.12em] uppercase text-muted': align !== 'none',
+        'text-right': align === 'right',
+        'text-left': align === 'left',
+      }
+    );
   };
 
   return (
-    <thead className="sticky top-16 z-[2] bg-paper-blue shadow-[0_2px_0_0_#d3e2ee]">
+    <thead className="sticky top-16 z-[2] border-b border-hairline bg-paper-blue">
       <tr>
         {columns.map((col, index) => (
           <th
@@ -66,10 +73,10 @@ export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClic
     onClick(row);
   };
 
-  const bgClass = bgColor ? BG_COLORS[bgColor] ?? '' : '';
-  const trClass = [
-    onClick ? 'cursor-pointer transition-[filter,box-shadow,transform] duration-300 hover:brightness-[0.97] active:scale-[0.98] active:duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset' : '',
-  ].filter(Boolean).join(' ');
+  const bgClass = bgColor ? BG_COLORS[bgColor] : '';
+  const trClass = cn({
+    'cursor-pointer transition-[filter,box-shadow,transform] duration-300 hover:brightness-[0.97] active:scale-[0.98] active:duration-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset': onClick,
+  });
 
   return (
     <tr className={trClass} onClick={onClick ? () => onClick(row) : undefined} onKeyDown={handleKeyDown} tabIndex={onClick ? 0 : undefined} role={onClick ? 'button' : undefined}>
@@ -92,7 +99,7 @@ export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClic
 }
 
 
-export type CellKind = 'text' | 'muted' | 'amount' | 'action';
+type CellKind = 'text' | 'muted' | 'amount' | 'action';
 
 interface CellProps {
   kind?: CellKind;
@@ -106,22 +113,23 @@ interface CellProps {
 }
 
 const CELL_CLASSES: Record<CellKind, string> = {
-  text: 'py-[11px] pr-3 align-baseline',
-  muted: 'py-[11px] pr-3 align-baseline text-muted',
-  amount: 'py-[11px] pr-3 align-baseline font-semibold whitespace-nowrap tabular-nums text-right',
-  action: 'w-[34px] py-[11px] pr-3 align-baseline text-right',
+  text: 'py-3 pr-3 align-baseline',
+  muted: 'py-3 pr-3 align-baseline text-muted',
+  amount: 'py-3 pr-3 align-baseline font-semibold whitespace-nowrap tabular-nums text-right',
+  action: 'w-9 py-3 pr-3 align-baseline text-right',
 };
 
 export default function Cell({ kind = 'text', className, truncate, bgClass, index = 0, total = 1, position = 'middle', children }: CellProps) {
-  const padClass = index === 0 ? 'pl-3' : '';
-  const roundedClass = [
+  const roundedClass = cn(
     bgClass,
-    index === 0 && (position === 'single' || position === 'first') ? 'rounded-tl-lg' : '',
-    index === total - 1 && (position === 'single' || position === 'first') ? 'rounded-tr-lg' : '',
-    index === 0 && (position === 'single' || position === 'last') ? 'rounded-bl-lg' : '',
-    index === total - 1 && (position === 'single' || position === 'last') ? 'rounded-br-lg' : '',
-  ].filter(Boolean).join(' ');
-  const final = [CELL_CLASSES[kind], padClass, roundedClass, className].filter(Boolean).join(' ');
+    {
+      'rounded-tl-lg': index === 0 && (position === 'single' || position === 'first'),
+      'rounded-tr-lg': index === total - 1 && (position === 'single' || position === 'first'),
+      'rounded-bl-lg': index === 0 && (position === 'single' || position === 'last'),
+      'rounded-br-lg': index === total - 1 && (position === 'single' || position === 'last'),
+    }
+  );
+  const final = cn(CELL_CLASSES[kind], { 'pl-3': index === 0 }, roundedClass, className);
 
   return (
     <td className={final}>

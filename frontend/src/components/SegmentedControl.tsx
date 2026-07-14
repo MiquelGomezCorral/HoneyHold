@@ -1,3 +1,5 @@
+import cn from 'classnames';
+
 interface SegmentedControlItem<T> {
   value: T;
   label: string;
@@ -20,17 +22,18 @@ export default function SegmentedControl<T extends string>({
   full,
   className,
 }: SegmentedControlProps<T>) {
-  const extra = className ? ` ${className}` : '';
-  const btnClass = `px-3 py-[6px] rounded-lg text-muted font-medium text-sm cursor-pointer transition-[color,background-color,transform] duration-300 active:duration-75 active:scale-95 hover:text-ink${full ? ' flex-1' : ''}`;
-  const activeClass = 'bg-accent-soft text-ink font-semibold';
+  const btnClass = cn(
+    'px-3 py-1.5 rounded-lg text-muted font-medium text-sm cursor-pointer transition-[color,background-color,transform] duration-300 active:duration-75 active:scale-95 hover:text-ink',
+    { 'flex-1': full }
+  );
 
   return (
-    <div className={`inline-flex gap-0.5 p-0.5 rounded-[10px]${extra}`} role="group" aria-label={ariaLabel}>
+    <div className={cn('inline-flex gap-0.5 rounded-xl p-0.5', className)} role="group" aria-label={ariaLabel}>
       {items.map((item) => (
         <button
           key={item.value}
           type="button"
-          className={`${btnClass} ${item.value === value ? activeClass : ''}`}
+          className={cn(btnClass, { 'bg-accent-soft text-ink font-semibold': item.value === value })}
           onClick={() => onChange(item.value)}
         >
           {item.label}

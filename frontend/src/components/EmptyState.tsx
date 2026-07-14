@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import type { ReactNode } from 'react';
 
 interface EmptyStateProps {
@@ -6,9 +7,5 @@ interface EmptyStateProps {
 }
 
 export default function EmptyState({ children, className }: EmptyStateProps) {
-  const final = className
-    ? `text-muted text-sm ${className}`
-    : 'text-muted text-sm';
-
-  return <p className={final}>{children}</p>;
+  return <p className={cn('text-muted text-sm', className)}>{children}</p>;
 }

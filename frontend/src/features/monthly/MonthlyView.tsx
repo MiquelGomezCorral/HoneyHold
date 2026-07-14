@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useState } from 'react';
 import PeriodNav from '../../components/PeriodNav.js';
 import Donut from '../../components/Donut.js';
@@ -31,7 +32,10 @@ export default function MonthlyView() {
       <Section title="This month" hideBorder>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted">Net</span>
-          <p className={`m-0 text-left font-display font-semibold text-6xl leading-[1.05] tracking-[-0.02em] tabular-nums${month.net >= 0 ? ' text-accent' : ' text-neg'}`}>
+          <p className={cn('m-0 text-left font-display font-semibold text-6xl leading-[1.05] tracking-[-0.02em] tabular-nums', {
+            'text-accent': month.net >= 0,
+            'text-neg': month.net < 0,
+          })}>
             {money(month.net)}
           </p>
         </div>

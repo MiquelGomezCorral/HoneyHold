@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import type { ReactNode } from 'react';
 
 interface BadgeProps {
@@ -6,8 +7,5 @@ interface BadgeProps {
 }
 
 export default function Badge({ children, className }: BadgeProps) {
-  const base = 'inline-block px-2 py-px border border-hairline rounded-full text-xs text-muted align-middle';
-  const final = className ? `${base} ${className}` : base;
-
-  return <span className={final}>{children}</span>;
+  return <span className={cn('inline-block px-2 py-px border border-hairline rounded-full text-xs text-muted align-middle', className)}>{children}</span>;
 }

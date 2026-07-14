@@ -37,7 +37,7 @@ export default function App() {
       ) : (
         <div>
           <NavBar onAdd={() => openAdd('expense')} />
-          <main className="max-w-[1040px] mx-auto px-8 pb-24 pt-2.5">
+          <main className="max-w-5xl mx-auto px-8 pb-24 pt-2.5">
             <Routes>
               <Route path="/" element={<DashboardView />} />
               <Route path="/monthly" element={<MonthlyView />} />
