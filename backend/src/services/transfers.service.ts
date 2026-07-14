@@ -27,6 +27,8 @@ interface TransferRow extends RowDataPacket {
 interface ListQuery {
   year?: string;
   month?: string;
+  from?: string;
+  to?: string;
   accountId?: string;
   limit?: string;
 }
@@ -55,11 +57,20 @@ function validate(input: { amount: unknown; txn_date: string; concept: string })
 }
 
 export async function listTransfers(profileId: number, query: ListQuery) {
-  const { year, month, accountId, limit } = query;
+  const { year, month, from, to, accountId, limit } = query;
   const where = ['(fa.profile_id = ? OR ta.profile_id = ?)'];
   const params: (string | number)[] = [profileId, profileId];
 
-  if (year && month) {
+  if (from || to) {
+    if (from) {
+      where.push('tr.txn_date >= ?');
+      params.push(from);
+    }
+    if (to) {
+      where.push('tr.txn_date <= ?');
+      params.push(to);
+    }
+  } else if (year && month) {
     const [start, end] = monthRange(Number(year), Number(month));
     where.push('tr.txn_date >= ? AND tr.txn_date < ?');
     params.push(start, end);

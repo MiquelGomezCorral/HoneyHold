@@ -5,10 +5,11 @@ import Icon from './Icon.js';
 interface Props {
   year: number;
   month: number;
+  disabled?: boolean;
   onChange: (p: { year: number; month: number }) => void;
 }
 
-export default function PeriodNav({ year, month, onChange }: Props) {
+export default function PeriodNav({ year, month, disabled, onChange }: Props) {
   function shift(delta: number) {
     let m = month + delta;
     let y = year;
@@ -18,12 +19,12 @@ export default function PeriodNav({ year, month, onChange }: Props) {
   };
 
   return (
-    <div className="inline-flex items-center gap-1.5">
-      <Button variant="nav" onClick={() => shift(-1)} aria-label="Previous month">
+    <div className={`inline-flex items-center gap-1.5${disabled ? ' opacity-45' : ''}`} aria-disabled={disabled || undefined}>
+      <Button variant="nav" onClick={() => shift(-1)} aria-label="Previous month" disabled={disabled}>
         <Icon src="caret-left" type="black" title="Previous month" className="h-4 w-4"  />
       </Button>
       <span className="min-w-[132px] text-center font-semibold">{monthLabel(year, month)}</span>
-      <Button variant="nav" onClick={() => shift(1)} aria-label="Next month">
+      <Button variant="nav" onClick={() => shift(1)} aria-label="Next month" disabled={disabled}>
         <Icon src="caret-right" type="black" title="Next month" className="h-4 w-4"  />
       </Button>
     </div>
