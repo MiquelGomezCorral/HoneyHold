@@ -1,4 +1,4 @@
-import { LedgerEntry } from "../types";
+import type { LedgerEntry } from '../types.js';
 
 const eur = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 
@@ -28,7 +28,7 @@ export function shortDate(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 }
 
-export function dbTimestamp(value: string) {
+function dbTimestamp(value: string) {
   return new Date(value.includes('T') ? value : `${value.replace(' ', 'T')}Z`);
 }
 
@@ -51,6 +51,37 @@ export function accountLabel(name: string, profileName?: string | null) {
   return profileName ? `${name} (${profileName})` : name;
 }
 
+export function scopedAccountLabel(name: string, accountProfileId: number | null | undefined, accountProfileName: string | null | undefined, profileId: number | null) {
+  return accountProfileId && accountProfileId !== profileId ? accountLabel(name, accountProfileName) : name;
+}
+
+export function entryTag(entry: LedgerEntry) {
+  return entry.type === 'transfer' ? entry.tag_name || 'Transference' : entry.tag_name || '';
+}
+
+export function entryAccountIds(entry: LedgerEntry) {
+  if (entry.type === 'transfer') return [String(entry.from_account_id), String(entry.to_account_id)];
+  return entry.account_id ? [String(entry.account_id)] : [];
+}
+
+export function entryAccountText(entry: LedgerEntry, profileId: number | null) {
+  if (entry.type === 'transfer') {
+    const crossProfile = entry.from_profile_id !== entry.to_profile_id;
+    const from = accountLabel(entry.from_account_name, crossProfile ? entry.from_profile_name : null);
+    const to = accountLabel(entry.to_account_name, crossProfile ? entry.to_profile_name : null);
+    return [from, to, `${from} ${to}`];
+  }
+
+  if (!entry.account_name) return '';
+  return scopedAccountLabel(entry.account_name, entry.account_profile_id, entry.account_profile_name, profileId);
+}
+
+export function entryIds(entry: LedgerEntry) {
+  return entry.type === 'transfer'
+    ? [String(entry.id), String(entry.from_account_id), String(entry.to_account_id)]
+    : [String(entry.id), entry.account_id ? String(entry.account_id) : ''];
+}
+
 export function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -58,4 +89,4 @@ export function todayISO() {
 export function currentPeriod() {
   const now = new Date();
   return { year: now.getFullYear(), month: now.getMonth() + 1 };
-};
+}
