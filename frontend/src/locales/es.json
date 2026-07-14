@@ -41,6 +41,10 @@
     "en": "Inglés",
     "es": "Español"
   },
+  "theme": {
+    "toggleToDark": "Cambiar a modo oscuro",
+    "toggleToLight": "Cambiar a modo claro"
+  },
   "app": {
     "apiError": "No se puede conectar con la API ({error}).",
     "apiHelp": "¿Está arrancado el contenedor del backend? Prueba {command} y recarga.",

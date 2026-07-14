@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import ProfileSwitcher from '../../components/ProfileSwitcher.js';
 import LanguageChanger from '../../components/LanguageChanger.js';
+import ThemeToggle from '../../components/ThemeToggle.js';
 import Button from '../../components/Button.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
@@ -29,6 +30,7 @@ export default function MobileHome({ onAdd }: Props) {
         </span>
         <div className="flex items-center gap-2">
           <LanguageChanger mobile />
+          <ThemeToggle />
           <ProfileSwitcher />
         </div>
       </div>

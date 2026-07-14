@@ -41,6 +41,10 @@
     "en": "English",
     "es": "Spanish"
   },
+  "theme": {
+    "toggleToDark": "Switch to dark mode",
+    "toggleToLight": "Switch to light mode"
+  },
   "app": {
     "apiError": "Can't reach the API ({error}).",
     "apiHelp": "Is the backend container running? Try {command}, then reload.",

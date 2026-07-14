@@ -10,6 +10,7 @@ import ProfileSwitcher from './ProfileSwitcher.js';
 import Button from './Button.js';
 import Icon from './Icon.js';
 import LanguageChanger from './LanguageChanger.js';
+import ThemeToggle from './ThemeToggle.js';
 import type { Locale } from '../i18n.js';
 
 interface Props {
@@ -64,6 +65,7 @@ export default function NavBar({ locale, onAdd }: Props) {
         </nav>
         <span className="flex-1" />
         <LanguageChanger />
+        <ThemeToggle />
         <ProfileSwitcher />
         <Button onClick={onAdd}>
           {t('common.addEntry')}

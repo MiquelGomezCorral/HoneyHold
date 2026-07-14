@@ -1,13 +1,17 @@
 import { useProfile } from '../context/ProfileContext.js';
 import { useI18n } from '../i18n.js';
 import Button from './Button.js';
+import ThemeToggle from './ThemeToggle.js';
 
 export default function ProfileGate() {
   const { profiles, setProfileId } = useProfile();
   const { t } = useI18n();
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center">
+    <div className="relative min-h-dvh flex flex-col items-center justify-center p-6 text-center">
+      <div className="absolute right-6 top-6">
+        <ThemeToggle />
+      </div>
       <span className="font-display font-semibold text-3xl tracking-[-0.02em]">
         HoneyHold<span className="text-accent">.</span>
       </span>

@@ -38,7 +38,7 @@ export default function LanguageChanger({ mobile }: Props) {
     <div ref={ref} className="relative inline-flex">
       <button
         type="button"
-        className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-white/45 px-2.5 py-1.5 text-sm font-semibold text-ink transition-[color,background-color,transform] duration-300 active:duration-75 active:scale-95 hover:bg-accent-soft"
+        className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-paper-blue-raise/45 px-2.5 py-1.5 text-sm font-semibold text-ink transition-[color,background-color,transform] duration-300 active:duration-75 active:scale-95 hover:bg-accent-soft"
         aria-label={t('languages.label')}
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
@@ -48,7 +48,7 @@ export default function LanguageChanger({ mobile }: Props) {
       </button>
       {open && (
         <div
-          className="absolute right-0 top-[calc(100%+8px)] z-20 w-36 rounded-xl bg-white/95 p-1 shadow-[0_18px_45px_rgba(31,54,74,0.18),0_0_0_1px_rgba(89,113,134,0.15)] backdrop-blur"
+          className="absolute right-0 top-[calc(100%+8px)] z-20 w-36 rounded-xl bg-paper-blue-raise/95 p-1 shadow-xl ring-1 ring-muted/15 backdrop-blur"
         >
           {LANGUAGES.map((language) => (
             <button

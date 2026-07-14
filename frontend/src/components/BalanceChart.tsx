@@ -34,18 +34,21 @@ export default function BalanceChart({ year }: Props) {
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={series} margin={{ top: 8, right: 12, bottom: 0, left: 8 }}>
         <CartesianGrid stroke={CHART_COLORS.hairline} strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: CHART_COLORS.hairline }} tick={{ fontSize: 12 }} />
+        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: CHART_COLORS.hairline }} tick={{ fill: CHART_COLORS.muted, fontSize: 12 }} />
         <YAxis
           width={72}
           tickLine={false}
           axisLine={false}
-          tick={{ fontSize: 12 }}
+          tick={{ fill: CHART_COLORS.muted, fontSize: 12 }}
           tickFormatter={(v: number) => money(v)}
         />
         <Tooltip
           formatter={(v: number) => [money(v), t('chart.balance')]}
           labelFormatter={(label) => `${label} ${year}`}
           separator=" · "
+          contentStyle={{ background: CHART_COLORS.surface, border: `1px solid ${CHART_COLORS.hairline}`, borderRadius: 8 }}
+          itemStyle={{ color: CHART_COLORS.ink }}
+          labelStyle={{ color: CHART_COLORS.muted }}
         />
         <Line
           type="monotone"
