@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import Button from '../../components/Button.js';
 import Badge from '../../components/Badge.js';
 import Field from '../../components/Field.js';
@@ -10,6 +10,7 @@ import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { todayISO } from '../../lib/format.js';
 import { TEXT_LIMITS } from '../../lib/config.js';
+import { inboxApprovalSchema, validationMessage } from '../../lib/validation.js';
 import type { InboxEntry, Account } from '../../types.js';
 
 interface Draft {
@@ -36,7 +37,7 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
   const [error, setError] = useState<string | null>(null);
 
   function set(key: keyof Draft) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setDraft((d) => ({ ...d, [key]: e.target.value }));
   }
 
@@ -53,17 +54,9 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
   }
 
   function approve() {
-    return act(() =>
-      api.post(`/inbox/${entry.id}/approve`, {
-        account_id: Number(draft.account_id),
-        type: draft.type,
-        amount: Number(draft.amount),
-        txn_date: draft.txn_date,
-        concept: draft.concept,
-        counterparty: draft.counterparty,
-        tag: draft.tag,
-      })
-    );
+    const parsed = inboxApprovalSchema.safeParse(draft);
+    if (!parsed.success) return setError(validationMessage(parsed.error));
+    return act(() => api.post(`/inbox/${entry.id}/approve`, parsed.data));
   }
 
   function reject() { return act(() => api.post(`/inbox/${entry.id}/reject`)); }
@@ -81,7 +74,7 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
         <Field label="Date" htmlFor={`ib-date-${entry.id}`}>
           <input id={`ib-date-${entry.id}`} type="date" value={draft.txn_date} onChange={set('txn_date')} />
         </Field>
-        <Field label="Concept" htmlFor={`ib-concept-${entry.id}`} colSpan={2}>
+        <Field label="Concept" htmlFor={`ib-concept-${entry.id}`} className="col-span-2">
           <input id={`ib-concept-${entry.id}`} type="text" value={draft.concept} onChange={set('concept')} maxLength={TEXT_LIMITS.concept} />
         </Field>
         <Field label="Payer / payee" htmlFor={`ib-who-${entry.id}`}>
