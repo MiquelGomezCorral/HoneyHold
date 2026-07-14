@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.1.0...v1.1.1) (2026-07-14)
+
+### Bug Fixes
+
+* use input:where(:not([type="range"])) to avoid overriding Tailwind utility padding ([e3626f4](https://github.com/MiquelGomezCorral/HoneyHold/commit/e3626f45f95a0c682b33bd8735c65300c897f308))
+
 ## [1.1.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.0.0...v1.1.0) (2026-07-14)
 
 ### Features
