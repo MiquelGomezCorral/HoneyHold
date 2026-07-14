@@ -11,21 +11,21 @@
     @apply text-sm bg-accent-soft px-1 py-0.5 rounded;
   }
 
-  input,
+  input:where(:not([type="range"])),
   select {
-    @apply font-ui text-sm text-ink bg-paper-blue-raise border border-hairline rounded-lg px-[11px] py-[9px] w-full;
+    @apply min-h-10 w-full rounded-lg border border-hairline bg-paper-blue-raise px-3 py-2 font-ui text-sm text-ink;
   }
 
   select {
     appearance: none;
     background-image: url('/assets/icons/black/caret-down.svg');
-    background-position: right 11px center;
+    background-position: right 0.75rem center;
     background-repeat: no-repeat;
-    background-size: 14px 14px;
-    padding-right: 34px;
+    background-size: 0.875rem 0.875rem;
+    padding-right: 2.5rem;
   }
 
-  input:focus,
+  input:where(:not([type="range"])):focus,
   select:focus {
     @apply border-accent outline-none;
   }
