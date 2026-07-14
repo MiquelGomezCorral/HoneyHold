@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.1.1...v1.2.0) (2026-07-14)
+
+### Features
+
+* add locale-prefixed language switcher ([adae2f5](https://github.com/MiquelGomezCorral/HoneyHold/commit/adae2f52ed868ba4fa739fc4f12f969611bcbbe5))
+
 ## [1.1.1](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.1.0...v1.1.1) (2026-07-14)
 
 ### Bug Fixes
