@@ -1,4 +1,5 @@
 import ProfileSwitcher from '../../components/ProfileSwitcher.js';
+import LanguageChanger from '../../components/LanguageChanger.js';
 import Button from '../../components/Button.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
@@ -23,7 +24,10 @@ export default function MobileHome({ onAdd }: Props) {
         <span className="font-display font-semibold text-xl tracking-[-0.02em]">
           HoneyHold<span className="text-accent">.</span>
         </span>
-        <ProfileSwitcher />
+        <div className="flex items-center gap-2">
+          <LanguageChanger mobile />
+          <ProfileSwitcher />
+        </div>
       </div>
 
       <div className="mt-[13vh]">

@@ -7,12 +7,15 @@ import Modal from './Modal.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
 import Button from './Button.js';
 import Icon from './Icon.js';
+import LanguageChanger from './LanguageChanger.js';
+import type { Locale } from '../i18n.js';
 
 interface Props {
+  locale: Locale;
   onAdd: () => void;
 }
 
-export default function NavBar({ onAdd }: Props) {
+export default function NavBar({ locale, onAdd }: Props) {
   const { profileId, version } = useProfile();
   const { data: inbox } = useFetch<{ count: number }>(
     profileId ? `/profiles/${profileId}/inbox/count` : null,
@@ -35,16 +38,16 @@ export default function NavBar({ onAdd }: Props) {
         </span>
       </button>
       <nav className="flex gap-1" aria-label="Main">
-        <NavLink to="/" end className={tab}>
+        <NavLink to={`/${locale}`} end className={tab}>
           Overview
         </NavLink>
-        <NavLink to="/monthly" className={tab}>
+        <NavLink to={`/${locale}/monthly`} className={tab}>
           Monthly
         </NavLink>
-        <NavLink to="/transactions" className={tab}>
+        <NavLink to={`/${locale}/transactions`} className={tab}>
           Transactions
         </NavLink>
-        <NavLink to="/inbox" className={tab}>
+        <NavLink to={`/${locale}/inbox`} className={tab}>
           Inbox
           {inbox != null && inbox.count > 0 && (
             <span className="inline-block min-w-[18px] ml-[7px] px-[6px] py-[1px] rounded-full bg-accent text-white text-xs font-semibold text-center">
@@ -54,6 +57,7 @@ export default function NavBar({ onAdd }: Props) {
         </NavLink>
       </nav>
       <span className="flex-1" />
+      <LanguageChanger />
       <ProfileSwitcher />
       <Button onClick={onAdd}>
         Add entry

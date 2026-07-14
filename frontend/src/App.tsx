@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from './context/ProfileContext.js';
 import { useIsMobile } from './hooks/useIsMobile.js';
+import { I18nProvider, getPreferredLocale, localeFromPathname, withLocalePath } from './i18n.js';
 import NavBar from './components/NavBar.js';
 import ProfileGate from './components/ProfileGate.js';
 import TransactionModal from './features/transactions/TransactionModal.js';
@@ -11,8 +12,31 @@ import TransactionsView from './features/transactions/TransactionsView.js';
 import InboxView from './features/inbox/InboxView.js';
 import MobileHome from './features/mobile/MobileHome.js';
 import type { EntryType } from './types.js';
+import type { Locale } from './i18n.js';
 
 export default function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const locale = localeFromPathname(location.pathname);
+
+  if (!locale) {
+    const nextPath = withLocalePath(getPreferredLocale(), location.pathname);
+    return <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />;
+  }
+
+  function setLocale(nextLocale: Locale) {
+    const nextPath = withLocalePath(nextLocale, location.pathname);
+    navigate(`${nextPath}${location.search}${location.hash}`);
+  }
+
+  return (
+    <I18nProvider locale={locale} onLocaleChange={setLocale}>
+      <LocalizedApp locale={locale} />
+    </I18nProvider>
+  );
+}
+
+function LocalizedApp({ locale }: { locale: Locale }) {
   const { profiles, profileId, loadError } = useProfile();
   const isMobile = useIsMobile();
   const [modal, setModal] = useState<{ type: EntryType } | null>(null);
@@ -36,14 +60,14 @@ export default function App() {
         <MobileHome onAdd={openAdd} />
       ) : (
         <div>
-          <NavBar onAdd={() => openAdd('expense')} />
+          <NavBar locale={locale} onAdd={() => openAdd('expense')} />
           <main className="max-w-[1040px] mx-auto px-8 pb-24 pt-2.5">
             <Routes>
-              <Route path="/" element={<DashboardView />} />
-              <Route path="/monthly" element={<MonthlyView />} />
-              <Route path="/transactions" element={<TransactionsView />} />
-              <Route path="/inbox" element={<InboxView />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path={`/${locale}`} element={<DashboardView />} />
+              <Route path={`/${locale}/monthly`} element={<MonthlyView />} />
+              <Route path={`/${locale}/transactions`} element={<TransactionsView />} />
+              <Route path={`/${locale}/inbox`} element={<InboxView />} />
+              <Route path={`/${locale}/*`} element={<Navigate to={`/${locale}`} replace />} />
             </Routes>
           </main>
         </div>
