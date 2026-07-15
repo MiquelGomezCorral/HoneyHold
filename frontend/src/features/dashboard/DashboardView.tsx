@@ -44,8 +44,8 @@ export default function DashboardView() {
         </div>
       </Section>
 
-      <Section title={t('dashboard.balanceOverYear', { year: period.year })} summary={t('dashboard.balanceSummary')}>
-        <BalanceChart year={period.year} />
+      <Section title={t('dashboard.last12Months')} summary={t('dashboard.balanceSummary')}>
+        <BalanceChart />
       </Section>
 
       <Section title={t('dashboard.goals')} summary={period.year}>
