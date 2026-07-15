@@ -287,7 +287,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         {error && <p className="m-0 text-sm text-neg" role="alert">{error}</p>}
 
         <div className="flex justify-between gap-2.5 mt-1">
-          <Button variant="danger" onClick={onClose}>{t('common.cancel')}</Button>
+          <Button variant="danger-active" onClick={onClose}>{t('common.cancel')}</Button>
           <Button type="submit" disabled={saving}>
             {saving ? t('common.saving') : editing ? t('common.saveChanges') : form.type === 'income' ? t('common.addIncome') : form.type === 'transfer' ? t('common.addTransfer') : t('common.addExpense')}
           </Button>
