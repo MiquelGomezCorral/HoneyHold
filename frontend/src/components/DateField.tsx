@@ -10,6 +10,7 @@ interface DateFieldProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  darkPopupClassName?: string;
 }
 
 function parseDate(value: string) {
@@ -33,7 +34,7 @@ function firstWeekday(date: Date) {
   return (new Date(date.getFullYear(), date.getMonth(), 1).getDay() + 6) % 7;
 }
 
-export default function DateField({ id, label, value, onChange, className }: DateFieldProps) {
+export default function DateField({ id, label, value, onChange, className, darkPopupClassName }: DateFieldProps) {
   const { locale, t, tl } = useI18n();
   const rootRef = useRef<HTMLDivElement>(null);
   const selected = useMemo(() => parseDate(value), [value]);
@@ -90,6 +91,7 @@ export default function DateField({ id, label, value, onChange, className }: Dat
         <button
           id={id}
           type="button"
+          data-input-surface
           className="flex min-h-10 w-full items-center justify-between rounded-lg border border-hairline bg-paper-blue-raise px-3 py-2 text-left text-sm text-ink transition-[border-color,background-color] duration-300 hover:bg-accent-soft focus:border-accent focus:outline-none"
           aria-haspopup="dialog"
           aria-expanded={open}
@@ -100,7 +102,7 @@ export default function DateField({ id, label, value, onChange, className }: Dat
         </button>
 
         {open && (
-          <div className="absolute left-0 top-full z-30 mt-1.5 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-xl" role="dialog" aria-label={t('date.calendar', { label })}>
+          <div className={cn('absolute left-0 top-full z-30 mt-1.5 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-xl', darkPopupClassName)} role="dialog" aria-label={t('date.calendar', { label })}>
             <div className="mb-3 flex items-center justify-between gap-2">
               <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(-1)} aria-label={pickingMonth ? t('date.previousYear') : t('date.previousMonth')}>
                 <Icon src="caret-left" type="black" className="h-4 w-4" title={pickingMonth ? t('date.previousYear') : t('date.previousMonth')} />

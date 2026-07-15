@@ -1,15 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme-storage-key="HoneyHold.theme">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
     <script>
       (() => {
-        const theme = localStorage.getItem('HoneyHold.theme');
-        const dark = theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.classList.toggle('dark', dark);
-        document.documentElement.classList.toggle('light', theme === 'light');
+        const root = document.documentElement;
+        const storageKey = root.dataset.themeStorageKey;
+        let theme = null;
+        try {
+          theme = storageKey ? localStorage.getItem(storageKey) : null;
+        } catch {}
+        const dark = theme === 'dark' || (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        root.classList.toggle('dark', dark);
+        root.classList.toggle('light', theme === 'light');
         document.querySelector('meta[name="color-scheme"]').content = dark ? 'dark' : 'light';
       })();
     </script>

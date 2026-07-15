@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n.js';
 import Icon from './Icon.js';
 
-const STORAGE_KEY = 'HoneyHold.theme';
+const THEME_STORAGE_KEY = document.documentElement.dataset.themeStorageKey;
 
 type ThemeDocument = Document & {
   startViewTransition?: (callback: () => void) => void;
@@ -15,6 +15,21 @@ function applyTheme(dark: boolean, explicit = true) {
   document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]')?.setAttribute('content', dark ? 'dark' : 'light');
 }
 
+function storedTheme() {
+  try {
+    const theme = THEME_STORAGE_KEY ? localStorage.getItem(THEME_STORAGE_KEY) : null;
+    return theme === 'dark' || theme === 'light' ? theme : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveTheme(theme: 'dark' | 'light') {
+  try {
+    if (THEME_STORAGE_KEY) localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {}
+}
+
 export default function ThemeToggle() {
   const { t } = useI18n();
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
@@ -22,7 +37,7 @@ export default function ThemeToggle() {
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     function onChange(event: MediaQueryListEvent) {
-      if (localStorage.getItem(STORAGE_KEY)) return;
+      if (storedTheme()) return;
       applyTheme(event.matches, false);
       setDark(event.matches);
     }
@@ -32,7 +47,7 @@ export default function ThemeToggle() {
 
   function toggleTheme() {
     const nextDark = !dark;
-    localStorage.setItem(STORAGE_KEY, nextDark ? 'dark' : 'light');
+    saveTheme(nextDark ? 'dark' : 'light');
     const update = () => applyTheme(nextDark);
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const themeDocument = document as ThemeDocument;

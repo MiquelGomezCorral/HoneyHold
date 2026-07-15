@@ -25,7 +25,7 @@ export default function Icon({
         width={width}
         height={height}
         title={title}
-        className={cn('h-full w-full object-contain', { 'dark:invert': type === 'black' })}
+        className={cn('h-full w-full object-contain', { 'dark:invert transition-[filter] duration-300': type === 'black' })}
       />
     </figure>
   );
