@@ -4,7 +4,7 @@ import Badge from '../../components/Badge.js';
 import Button from '../../components/Button.js';
 import Icon from '../../components/Icon.js';
 import { DateDivider, TableColGroup, TableHeader, TableRow } from '../../components/Table.js';
-import { LEDGER_COLUMN_WIDTHS } from '../../lib/config.js';
+import { LEDGER_COLUMN_SPANS } from '../../lib/config.js';
 import { accountLabel, entryMoney, scopedAccountLabel, shortDate, timeStamp } from '../../lib/format.js';
 import { useI18n } from '../../i18n.js';
 import type { Column } from '../../components/Table.js';
@@ -23,12 +23,12 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
   const columns: Column<LedgerEntry>[] = [
     {
       key: 'date', label: t('common.date'), align: 'left', cellKind: 'muted',
-      width: LEDGER_COLUMN_WIDTHS.date,
+      span: LEDGER_COLUMN_SPANS.date,
       render: (entry) => timeStamp(entry.created_at),
     },
     {
       key: 'concept', label: t('common.concept'), align: 'left', cellKind: 'text',
-      width: LEDGER_COLUMN_WIDTHS.concept,
+      span: LEDGER_COLUMN_SPANS.concept,
       truncate: true,
       render: (entry) => (
         <>
@@ -40,7 +40,7 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
     },
     {
       key: 'counterparty', label: t('common.counterparty'), align: 'left', cellKind: 'muted',
-      width: LEDGER_COLUMN_WIDTHS.counterparty,
+      span: LEDGER_COLUMN_SPANS.counterparty,
       truncate: true,
       render: (entry) => entry.type === 'transfer'
         ? <span className="inline-flex items-center gap-1.5">
@@ -51,25 +51,25 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
     },
     {
       key: 'tag', label: t('common.tag'), align: 'left', cellKind: 'muted',
-      width: LEDGER_COLUMN_WIDTHS.tag,
+      span: LEDGER_COLUMN_SPANS.tag,
       truncate: true,
       render: (entry) => entry.type === 'transfer' ? entry.tag_name || t('transactions.transference') : entry.tag_name || '—',
     },
     {
       key: 'account', label: t('common.account'), align: 'left', cellKind: 'muted',
-      width: LEDGER_COLUMN_WIDTHS.account,
+      span: LEDGER_COLUMN_SPANS.account,
       truncate: true,
       render: (entry) => accountCell(entry, profileId),
     },
     {
       key: 'amount', label: t('common.amount'), align: 'right', cellKind: 'amount',
-      width: LEDGER_COLUMN_WIDTHS.amount,
+      span: LEDGER_COLUMN_SPANS.amount,
       cellClassName: (entry) => cn({ 'text-accent': entry.type === 'income' }),
       render: (entry) => entryMoney(entry, profileId),
     },
     {
       key: 'actions', label: '', align: 'none', cellKind: 'action',
-      width: LEDGER_COLUMN_WIDTHS.actions,
+      span: LEDGER_COLUMN_SPANS.actions,
       render: (entry) => (
         <Button variant="danger" size="sm" onClick={(event) => { event.stopPropagation(); onRemove(entry); }} aria-label={t('transactions.deleteEntryLabel', { concept: entry.concept })}>
           ✕
@@ -79,21 +79,23 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
   ];
 
   return (
-    <table className="w-full table-fixed border-separate border-spacing-0 text-sm">
-      <TableColGroup columns={columns} />
-      <TableHeader columns={columns} />
-      <tbody>
-        {rows.map((entry, index) => {
-          const previousDate = index > 0 ? rows[index - 1].txn_date : '';
-          return (
-            <Fragment key={`${entry.type}-${entry.id}`}>
-              {entry.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(entry.txn_date, dateLocale)}</DateDivider>}
-              <TableRow row={entry} columns={columns} bgColor={rowBgColor(entry)} position={rowPosition(rows, index)} onClick={onEdit} />
-            </Fragment>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className="max-lg:overflow-x-auto">
+      <table className="w-full table-fixed border-separate border-spacing-0 text-sm max-lg:min-w-[60rem]">
+        <TableColGroup columns={columns} />
+        <TableHeader columns={columns} className="max-lg:static" />
+        <tbody>
+          {rows.map((entry, index) => {
+            const previousDate = index > 0 ? rows[index - 1].txn_date : '';
+            return (
+              <Fragment key={`${entry.type}-${entry.id}`}>
+                {entry.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(entry.txn_date, dateLocale)}</DateDivider>}
+                <TableRow row={entry} columns={columns} bgColor={rowBgColor(entry)} position={rowPosition(rows, index)} onClick={onEdit} />
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

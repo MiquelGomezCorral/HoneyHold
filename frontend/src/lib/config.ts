@@ -6,12 +6,12 @@ export const TEXT_LIMITS = {
   tag: 255,
 } as const;
 
-export const LEDGER_COLUMN_WIDTHS = {
-  date: '5.5rem',
-  concept: '16rem',
-  counterparty: '10rem',
-  tag: '7rem',
-  account: '15rem',
-  amount: '7rem',
-  actions: '2.5rem',
+export const LEDGER_COLUMN_SPANS = {
+  date: 1,
+  concept: 2,
+  counterparty: 2,
+  tag: 1,
+  account: 3,
+  amount: 2,
+  actions: 1,
 } as const;
