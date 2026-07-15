@@ -82,13 +82,15 @@
     "loadError": "Couldn't load the dashboard: {error}",
     "balance": "Balance",
     "allAccountsAllTime": "All accounts, all time",
-    "balanceOverYear": "Balance over {year}",
-    "balanceSummary": "Cumulative, end of month",
+    "last12Months": "Last 12 months",
+    "balanceSummary": "Balance, monthly net and fixed-only expectation",
     "goals": "Goals"
   },
   "chart": {
     "loadError": "Couldn't load the chart: {error}",
     "balance": "Balance",
+    "monthlyNet": "Monthly net",
+    "expected": "Expected",
     "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   },
   "monthly": {

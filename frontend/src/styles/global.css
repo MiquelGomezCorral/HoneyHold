@@ -17,6 +17,8 @@
   --neg: 160 75 60;
   --scrollbar-track: rgb(var(--paper-blue));
   --scrollbar-thumb: rgb(var(--hairline));
+  --chart-green: #b6d7a8;
+  --chart-purple: #a88bc1;
   --chart-blue-1: #1f6fae;
   --chart-blue-2: #5d97c4;
   --chart-blue-3: #93bedc;
@@ -42,8 +44,10 @@ html.dark {
   --neg: 252 165 165;
   --scrollbar-track: rgb(var(--paper-blue));
   --scrollbar-thumb: rgb(var(--hairline));
+  --chart-green: #16a34a;
+  --chart-purple: #8b5cf6;
   --chart-blue-1: #60a5fa;
-  --chart-blue-2: #38bdf8;
+  --chart-blue-2: #0284c7;
   --chart-blue-3: #67e8f9;
   --chart-blue-4: #818cf8;
   --chart-blue-5: #a5b4fc;
