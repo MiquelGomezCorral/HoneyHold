@@ -6,10 +6,12 @@ export const BG_COLORS = {
 } as const;
 
 export const CHART_COLORS = {
-  accent: 'rgb(var(--accent))',
+  blue: 'var(--chart-blue-2)',
+  balance: 'var(--chart-green)',
   hairline: 'rgb(var(--hairline))',
   ink: 'rgb(var(--ink))',
   muted: 'rgb(var(--muted))',
+  net: 'var(--chart-purple)',
   surface: 'rgb(var(--paper-blue-raise))',
   blues: [
     'var(--chart-blue-1)',

@@ -84,13 +84,15 @@
     "loadError": "No se pudo cargar el resumen: {error}",
     "balance": "Saldo",
     "allAccountsAllTime": "Todas las cuentas, histórico completo",
-    "balanceOverYear": "Saldo en {year}",
-    "balanceSummary": "Acumulado a final de mes",
+    "last12Months": "Últimos 12 meses",
+    "balanceSummary": "Saldo, neto mensual y previsión solo de movimientos fijos",
     "goals": "Objetivos"
   },
   "chart": {
     "loadError": "No se pudo cargar la gráfica: {error}",
     "balance": "Saldo",
+    "monthlyNet": "Neto mensual",
+    "expected": "Previsto",
     "months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
   },
   "monthly": {

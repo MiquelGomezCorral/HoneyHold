@@ -34,8 +34,7 @@ router.get('/:profileId/dashboard', asyncH(async (req, res) => {
 }));
 
 router.get('/:profileId/balance-series', asyncH(async (req, res) => {
-  const year = Number(req.query.year) || new Date().getFullYear();
-  res.json(await dashboard.getBalanceSeries(req.profileId!, year));
+  res.json(await dashboard.getBalanceSeries(req.profileId!));
 }));
 
 router.get('/:profileId/transactions', asyncH(async (req, res) =>
