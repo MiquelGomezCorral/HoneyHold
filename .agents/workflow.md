@@ -11,14 +11,14 @@
 4. Re-initialize from scratch: `docker compose down -v && docker compose up --build`.
 
 Host-only dev (no Docker), if needed:
-- Backend: `cd backend && npm install && npm run dev` (nodemon, needs DB reachable per `backend/src/config/env.js`).
-- Frontend: `cd frontend && npm install && npm run dev` (vite --host 0.0.0.0; expects `VITE_API_PROXY` to point at a running backend).
+- Backend: `cd backend && bun install && bun run dev`.
+- Frontend: `cd frontend && bun install && bun run dev` (vite --host 0.0.0.0; expects `VITE_API_PROXY` to point at a running backend).
 
 ## Build
 
-- Frontend production build: `cd frontend && npm run build` (`vite build`) — not used by compose (frontend service runs the Vite dev server in dev).
+- Frontend production build: `cd frontend && bun run build` (`vite build`) — not used by compose (frontend service runs the Vite dev server in dev).
 - Backend Docker image: `backend/Dockerfile`. No separate build step; `node src/server.js` is the start.
-- No monorepo workspace: `backend/` and `frontend/` have independent `package-lock.json` files. Install in each directory separately.
+- No monorepo workspace: `backend/` and `frontend/` are installed in each directory separately. Prefer `bun`, not `npm`.
 
 ## Test
 
