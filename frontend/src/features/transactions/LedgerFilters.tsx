@@ -38,7 +38,7 @@ export default function LedgerFilters({
   const { query, accounts, tags, amountMin, amountMax, date } = filters;
 
   return (
-    <div className="mt-5 flex flex-col gap-3 rounded-lg border border-hairline bg-white/35 p-3">
+    <div className="mt-5 flex flex-col gap-3 rounded-lg border border-hairline bg-paper-blue-raise/35 p-3">
       <div className="flex flex-col gap-2">
         <span>{t('filters.searchLedger')}</span>
         <div className="flex min-w-0 w-full flex-1 gap-1">
@@ -48,7 +48,7 @@ export default function LedgerFilters({
               value={query}
               onChange={(event) => onChange({ query: event.target.value })}
               placeholder={t('filters.searchPlaceholder')}
-              className="w-full rounded-lg border border-hairline bg-white/70 py-2 pl-9 pr-3 text-sm outline-none transition-[border-color,box-shadow] focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="w-full rounded-lg border border-hairline bg-paper-blue-raise/70 py-2 pl-9 pr-3 text-sm outline-none transition-[border-color,box-shadow] focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </span>
           <Button variant="ghost" size="md" onClick={onReset} disabled={!filtering} className="h-10 self-end whitespace-nowrap">
@@ -120,7 +120,7 @@ function ChoiceList({ options, selected, onToggle, empty }: { options: ChoiceOpt
               'min-h-10 rounded-xl px-3 text-sm font-semibold transition-[color,background-color,border-color,transform] duration-300 active:duration-75 active:scale-95',
               {
                 'border border-accent bg-accent text-white': active,
-                'border border-hairline bg-white/60 text-ink hover:bg-accent-soft': !active,
+                'border border-hairline bg-paper-blue-raise/60 text-ink hover:bg-accent-soft': !active,
               }
             )}
             onClick={() => onToggle(option.value)}

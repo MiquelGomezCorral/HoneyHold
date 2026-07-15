@@ -28,7 +28,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   outline: 'bg-transparent text-ink border border-hairline hover:bg-accent-soft hover:border-accent disabled:bg-transparent disabled:text-ink disabled:border-hairline',
   close: 'border-0 bg-transparent text-muted hover:text-ink hover:bg-accent-soft disabled:bg-transparent disabled:text-muted',
   danger: 'border-0 bg-transparent text-muted hover:bg-paper-red hover:text-neg disabled:bg-transparent disabled:text-muted',
-  'danger-active': 'bg-transparent text-neg border border-hairline hover:bg-paper-red disabled:bg-transparent disabled:text-neg disabled:border-hairline',
+  'danger-active': 'bg-transparent text-neg border border-neg/20 hover:bg-paper-red disabled:bg-transparent disabled:text-neg disabled:border-hairline',
   link: 'border-0 bg-transparent p-0 text-accent font-medium text-xs underline underline-offset-[3px] decoration-hairline hover:decoration-accent disabled:opacity-45 disabled:cursor-not-allowed disabled:decoration-hairline',
   nav: 'h-8 w-8 border border-hairline bg-transparent text-muted rounded-lg text-base leading-none hover:text-ink hover:bg-accent-soft disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-transparent disabled:text-muted',
 };

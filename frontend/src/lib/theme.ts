@@ -6,9 +6,20 @@ export const BG_COLORS = {
 } as const;
 
 export const CHART_COLORS = {
-  accent: '#1f6fae',
-  hairline: '#d3e2ee',
-  blues: ['#1F6FAE', '#5D97C4', '#93BEDC', '#2E4E68', '#7FA6C1', '#C6DDEE', '#B3CCDE'],
+  accent: 'rgb(var(--accent))',
+  hairline: 'rgb(var(--hairline))',
+  ink: 'rgb(var(--ink))',
+  muted: 'rgb(var(--muted))',
+  surface: 'rgb(var(--paper-blue-raise))',
+  blues: [
+    'var(--chart-blue-1)',
+    'var(--chart-blue-2)',
+    'var(--chart-blue-3)',
+    'var(--chart-blue-4)',
+    'var(--chart-blue-5)',
+    'var(--chart-blue-6)',
+    'var(--chart-blue-7)',
+  ],
 } as const;
 
 export type BgColor = keyof typeof BG_COLORS;

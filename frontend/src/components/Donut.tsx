@@ -35,7 +35,13 @@ export default function Donut({ data, emptyNote }: Props) {
                 <Cell key={entry.label} fill={CHART_COLORS.blues[i % CHART_COLORS.blues.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(v: number) => money(v)} separator=" · " />
+            <Tooltip
+              formatter={(v: number) => money(v)}
+              separator=" · "
+              contentStyle={{ background: CHART_COLORS.surface, border: `1px solid ${CHART_COLORS.hairline}`, borderRadius: 8 }}
+              itemStyle={{ color: CHART_COLORS.ink }}
+              labelStyle={{ color: CHART_COLORS.muted }}
+            />
           </PieChart>
         </ResponsiveContainer>
       </div>

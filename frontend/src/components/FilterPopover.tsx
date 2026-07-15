@@ -38,7 +38,7 @@ export default function FilterPopover({ label, active, buttonClassName, children
           'inline-flex h-8 items-center justify-center rounded-lg px-2 text-xs font-semibold transition-[color,background-color,border-color,transform] duration-300 active:duration-75 active:scale-95',
           {
             'bg-accent text-white border border-accent': active,
-            'bg-white/45 text-ink border border-hairline hover:bg-accent-soft': !active,
+            'bg-paper-blue-raise/45 text-ink border border-hairline hover:bg-accent-soft': !active,
           },
           buttonClassName
         )}
@@ -48,7 +48,7 @@ export default function FilterPopover({ label, active, buttonClassName, children
         <span className="min-w-0 truncate">{label}</span>
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-2 w-[min(340px,calc(100vw-32px))] rounded-2xl bg-white/95 p-4 shadow-xl ring-1 ring-muted/15 backdrop-blur">
+        <div className="absolute left-0 top-full z-20 mt-2 w-[min(340px,calc(100vw-32px))] rounded-2xl bg-paper-blue-raise/95 p-4 shadow-xl ring-1 ring-muted/15 backdrop-blur">
           {children}
         </div>
       )}

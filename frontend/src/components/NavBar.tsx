@@ -8,9 +8,10 @@ import { useI18n } from '../i18n.js';
 import Modal from './Modal.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
 import Button from './Button.js';
-import Icon from './Icon.js';
 import LanguageChanger from './LanguageChanger.js';
+import ThemeToggle from './ThemeToggle.js';
 import type { Locale } from '../i18n.js';
+import HoneyHoldLogo from './HoneyHoldLogo.js';
 
 interface Props {
   locale: Locale;
@@ -36,13 +37,7 @@ export default function NavBar({ locale, onAdd }: Props) {
   return (
     <>
       <header className="sticky top-0 z-10 flex items-center gap-7 h-16 px-8 border-hairline backdrop-blur-md border-b-2">
-        <button className="flex items-center gap-2 cursor-pointer transition-[transform] duration-300 active:duration-75 active:scale-95" onClick={() => setAboutOpen(true)}>
-          <Icon type="color" src="bee-blue" title="HoneyHold" className="h-7 w-auto" />
-          <span className="font-display font-semibold text-xl tracking-[-0.02em]">
-            HoneyHold
-            <span className="text-accent">.</span>
-          </span>
-        </button>
+        <HoneyHoldLogo setAboutOpen={setAboutOpen} />
         <nav className="flex gap-1" aria-label={t('nav.main')}>
           <NavLink to={`/${locale}`} end className={tab}>
           {t('nav.overview')}
@@ -64,6 +59,7 @@ export default function NavBar({ locale, onAdd }: Props) {
         </nav>
         <span className="flex-1" />
         <LanguageChanger />
+        <ThemeToggle />
         <ProfileSwitcher />
         <Button onClick={onAdd}>
           {t('common.addEntry')}

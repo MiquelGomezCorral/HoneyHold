@@ -1,4 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import cn from 'classnames';
 import Modal from '../../components/Modal.js';
 import Button from '../../components/Button.js';
 import Field from '../../components/Field.js';
@@ -18,6 +19,12 @@ import { entryFormSchema, validationMessage } from '../../lib/validation.js';
 import type { Account, EntryType, LedgerEntry } from '../../types.js';
 
 const FREQUENCIES = ['weekly', 'monthly', 'quarterly', 'yearly'];
+
+const DARK_SELECTED_SURFACES = {
+  expense: 'dark:bg-[#29415d]',
+  income: 'dark:bg-[#31564a]',
+  transfer: 'dark:bg-[#62552f]',
+} as const;
 
 interface FormState {
   type: EntryType;
@@ -169,7 +176,14 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
 
   return (
     <Modal title={editing ? t('entryModal.editTitle') : t('entryModal.addTitle')} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
-      <form className="flex flex-col gap-4" onSubmit={submit}>
+      <form
+        className={cn('flex flex-col gap-4', {
+          'dark:[&_input]:bg-paper-blue dark:[&_input]:border-[#29415d] dark:[&_select]:bg-paper-blue dark:[&_select]:border-[#29415d] dark:[&_[data-input-surface]]:bg-paper-blue dark:[&_[data-input-surface]]:border-[#29415d]': form.type === 'expense',
+          'dark:[&_input]:bg-paper-green dark:[&_input]:border-[#31564a] dark:[&_select]:bg-paper-green dark:[&_select]:border-[#31564a] dark:[&_[data-input-surface]]:bg-paper-green dark:[&_[data-input-surface]]:border-[#31564a]': form.type === 'income',
+          'dark:[&_input]:bg-paper-yellow dark:[&_input]:border-[#62552f] dark:[&_select]:bg-paper-yellow dark:[&_select]:border-[#62552f] dark:[&_[data-input-surface]]:bg-paper-yellow dark:[&_[data-input-surface]]:border-[#62552f]': form.type === 'transfer',
+        })}
+        onSubmit={submit}
+      >
         <SegmentedControl
           ariaLabel={t('entryModal.entryType')}
           items={[
@@ -180,13 +194,14 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
           value={form.type}
           onChange={changeType}
           full
+          activeClassName={DARK_SELECTED_SURFACES[form.type]}
         />
 
         <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
           <Field label={t('common.amount')} htmlFor="tm-amount">
             <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
           </Field>
-          <DateField id="tm-date" label={t('common.date')} value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} />
+          <DateField id="tm-date" label={t('common.date')} value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} darkPopupClassName={DARK_SELECTED_SURFACES[form.type]} />
         </div>
 
         <Field label={t('common.concept')} htmlFor="tm-concept">
@@ -263,7 +278,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{t(`entryModal.frequencies.${f}`)}</option>)}
                 </select>
               </Field>
-              <DateField id="tm-start" label={t('entryModal.startsOn')} value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} />
+              <DateField id="tm-start" label={t('entryModal.startsOn')} value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} darkPopupClassName={DARK_SELECTED_SURFACES[form.type]} />
             </div>
             <p className="m-0 text-xs text-muted">{t('entryModal.pastOccurrences')}</p>
           </div>
@@ -272,7 +287,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         {error && <p className="m-0 text-sm text-neg" role="alert">{error}</p>}
 
         <div className="flex justify-between gap-2.5 mt-1">
-          <Button variant="ghost" onClick={onClose}>{t('common.cancel')}</Button>
+          <Button variant="danger-active" onClick={onClose}>{t('common.cancel')}</Button>
           <Button type="submit" disabled={saving}>
             {saving ? t('common.saving') : editing ? t('common.saveChanges') : form.type === 'income' ? t('common.addIncome') : form.type === 'transfer' ? t('common.addTransfer') : t('common.addExpense')}
           </Button>
