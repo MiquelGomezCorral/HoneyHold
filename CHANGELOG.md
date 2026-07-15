@@ -1,3 +1,14 @@
+## [1.3.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.2.0...v1.3.0) (2026-07-15)
+
+### Features
+
+* add dark mode toggle ([bff8282](https://github.com/MiquelGomezCorral/HoneyHold/commit/bff8282213f9b0ffd273b402e415c94dd2f53952))
+
+### Bug Fixes
+
+* emphasize cancel action ([55bcb9d](https://github.com/MiquelGomezCorral/HoneyHold/commit/55bcb9df7126a34c96d22f8abcb4dfda97bb50e2))
+* harden dark theme controls ([6ce55b4](https://github.com/MiquelGomezCorral/HoneyHold/commit/6ce55b4f9186ade454fa3b1ad6f53d7a1ec08553))
+
 ## [1.2.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.1.1...v1.2.0) (2026-07-14)
 
 ### Features
