@@ -21,7 +21,7 @@ This file routes agents to project memory. Read it before changing code in this 
 
 Stack: React 18 + Vite 5 + TypeScript + Tailwind CSS v3 frontend + Node.js/Express 4 + TypeScript backend + MySQL 8.4, orchestrated with Docker Compose. ESM on both ends.
 
-Package manager: npm with independent `package-lock.json` in `backend/` and `frontend/` (no workspace).
+Package manager preference: use `bun` commands for installs/build/dev unless the user explicitly asks for `npm`. `backend/` and `frontend/` are separate packages (no workspace).
 
 ### Commands
 
@@ -29,11 +29,11 @@ Package manager: npm with independent `package-lock.json` in `backend/` and `fro
 |------|-----|
 | Full stack | `docker compose up --build` |
 | Re-init DB (destroys data) | `docker compose down -v && docker compose up --build` |
-| Backend dev (host) | `cd backend && npm run dev` (`tsx watch src/server.ts`) |
-| Backend typecheck | `cd backend && npm run typecheck` (`tsc --noEmit`) |
-| Backend build | `cd backend && npm run build` (`tsc`) |
-| Frontend dev (host) | `cd frontend && npm run dev` (`vite --host 0.0.0.0`) |
-| Frontend build | `cd frontend && npm run build` (`vite build`) |
+| Backend dev (host) | `cd backend && bun run dev` (`tsx watch src/server.ts`) |
+| Backend typecheck | `cd backend && bun run typecheck` (`tsc --noEmit`) |
+| Backend build | `cd backend && bun run build` (`tsc`) |
+| Frontend dev (host) | `cd frontend && bun run dev` (`vite --host 0.0.0.0`) |
+| Frontend build | `cd frontend && bun run build` (`vite build`) |
 | Simulate bank feed | `docker compose exec backend node scripts/simulate-bank-feed.js` |
 | Restore backup | `gunzip < backups/finance_YYYYMMDD_HHMMSS.sql.gz \| docker compose exec -T db mysql -uroot -p"$MYSQL_ROOT_PASSWORD"` |
 
@@ -54,7 +54,7 @@ Package manager: npm with independent `package-lock.json` in `backend/` and `fro
 - **Frontend runs Vite dev server** in compose, not a production build.
 - **No test runner, no lint config, no CI** present anywhere. Verify manually.
 - **MySQL port 3306 is localhost-only** (`127.0.0.1:3306` in compose).
-- **Install separately** — `npm install` in `backend/` and `frontend/` independently.
+- **Install separately** — use `bun install` in `backend/` and `frontend/` independently.
 
 ## Hard Constraints (do not violate)
 
