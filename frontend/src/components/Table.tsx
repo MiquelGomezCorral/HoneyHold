@@ -6,7 +6,7 @@ export interface Column<T> {
   key: string;
   label: string;
   align: 'left' | 'right' | 'none';
-  width?: string;
+  span?: number;
   truncate?: boolean;
   cellKind: CellKind;
   cellClassName?: (row: T) => string;
@@ -15,9 +15,10 @@ export interface Column<T> {
 
 interface TableHeaderProps<T> {
   columns: Column<T>[];
+  className?: string;
 }
 
-export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
+export function TableHeader<T>({ columns, className }: TableHeaderProps<T>) {
   function headerClass(align: Column<T>['align'], index: number) {
     return cn(
       'py-2',
@@ -31,7 +32,7 @@ export function TableHeader<T>({ columns }: TableHeaderProps<T>) {
   };
 
   return (
-    <thead className="sticky top-16 z-[2] border-b border-hairline bg-paper-blue">
+    <thead className={cn('sticky top-16 z-[2] border-b border-hairline bg-paper-blue', className)}>
       <tr>
         {columns.map((col, index) => (
           <th
@@ -51,7 +52,7 @@ export function TableColGroup<T>({ columns }: TableHeaderProps<T>) {
   return (
     <colgroup>
       {columns.map((col) => (
-        <col key={col.key} style={col.width ? { width: col.width } : undefined} />
+        <col key={col.key} style={col.span ? { width: `${(col.span / 12) * 100}%` } : undefined} />
       ))}
     </colgroup>
   );
@@ -75,7 +76,7 @@ export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClic
 
   const bgClass = bgColor ? BG_COLORS[bgColor] : '';
   const trClass = cn({
-    'cursor-pointer transition-[filter,box-shadow,transform] duration-300 hover:brightness-[0.97] active:scale-[0.98] active:duration-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset': onClick,
+    'cursor-pointer transition-[filter,box-shadow,transform] duration-300 hover:brightness-[0.97] [&:not(:has(button:active))]:active:scale-[0.98] active:duration-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset': onClick,
   });
 
   return (

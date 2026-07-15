@@ -33,6 +33,8 @@
     "from": "From",
     "to": "To",
     "any": "Any",
+    "increase": "Increase",
+    "decrease": "Decrease",
     "noMax": "No max",
     "noMaximum": "No maximum"
   },

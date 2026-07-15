@@ -28,8 +28,8 @@ export default function ConfirmModal({
     <Modal title={title} onClose={onCancel}>
       <p className="text-sm text-muted">{message}</p>
       <div className="flex justify-end gap-3 mt-6">
-        <Button variant="ghost" size="sm" onClick={onCancel}>{t('common.cancel')}</Button>
-        <Button variant={variant} size="sm" onClick={onConfirm}>{confirmLabel ?? t('common.confirm')}</Button>
+        <Button variant="ghost" size="md" onClick={onCancel}>{t('common.cancel')}</Button>
+        <Button variant={variant} size="md" onClick={onConfirm}>{confirmLabel ?? t('common.confirm')}</Button>
       </div>
     </Modal>
   );

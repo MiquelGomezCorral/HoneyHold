@@ -75,7 +75,7 @@ html.dark {
     background-image: url('/assets/icons/black/caret-down.svg');
     background-position: right 0.75rem center;
     background-repeat: no-repeat;
-    background-size: 0.875rem 0.875rem;
+    background-size: 1rem 1rem;
     padding-right: 2.5rem;
   }
 
@@ -94,12 +94,14 @@ html.dark {
     @apply text-muted opacity-70;
   }
 
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    @apply rounded cursor-pointer transition-colors duration-300;
+  [data-input-surface] input[type="number"] {
+    appearance: textfield;
   }
 
-  input[type="date"]::-webkit-calendar-picker-indicator:hover {
-    @apply bg-accent-soft;
+  [data-input-surface] input[type="number"]::-webkit-inner-spin-button,
+  [data-input-surface] input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
   }
 }
 
