@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import ProgressLine from '../../components/ProgressLine.js';
 import Button from '../../components/Button.js';
+import NumberInput from '../../components/NumberInput.js';
 import { api } from '../../api/client.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { useI18n } from '../../i18n.js';
@@ -60,11 +61,11 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
 
   return (
     <form className="flex gap-2 items-center" onSubmit={save}>
-      <input type="number" inputMode="decimal" min="0" step="1" value={value} onChange={(e) => setValue(e.target.value)} autoFocus aria-label={t('goals.targetAmount')} className="w-32" />
-      <Button variant="primary" size="sm" type="submit" disabled={saving}>
+      <NumberInput inputMode="decimal" min="0" increment={100} value={value} onChange={(e) => setValue(e.target.value)} autoFocus aria-label={t('goals.targetAmount')} className="w-32" decreaseLabel={t('common.decrease')} increaseLabel={t('common.increase')} />
+      <Button variant="primary" size="md" type="submit" disabled={saving}>
         {t('common.save')}
       </Button>
-      <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+      <Button variant="ghost" size="md" onClick={() => setEditing(false)}>
         {t('common.cancel')}
       </Button>
       {error && <span className="text-neg text-sm">{error}</span>}

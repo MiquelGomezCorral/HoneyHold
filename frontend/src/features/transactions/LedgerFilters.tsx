@@ -1,8 +1,11 @@
 import cn from 'classnames';
 import Button from '../../components/Button.js';
+import DateField from '../../components/DateField.js';
 import DualRangeSlider from '../../components/DualRangeSlider.js';
+import Field from '../../components/Field.js';
 import FilterPopover from '../../components/FilterPopover.js';
 import Icon from '../../components/Icon.js';
+import NumberInput from '../../components/NumberInput.js';
 import { useI18n } from '../../i18n.js';
 import { AMOUNT_SLIDER_MAX, dateInputRange, toggleValue } from './transactionFilters.js';
 import type { ChoiceOption, DateFilter, TransactionFilters } from './transactionFilters.js';
@@ -69,14 +72,12 @@ export default function LedgerFilters({
         <FilterPopover label={amountFilterLabel(minAmount, maxAmount, t)} active={amountFiltering} buttonClassName="w-36 tabular-nums">
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
-              <label className="flex flex-col gap-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted">
-                {t('common.min')}
-                <input type="number" min="0" step="0.01" value={amountMin} onChange={(event) => onChange({ amountMin: event.target.value })} placeholder="0" />
-              </label>
-              <label className="flex flex-col gap-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted">
-                {t('common.max')}
-                <input type="number" min="0" step="0.01" value={amountMax} onChange={(event) => onChange({ amountMax: event.target.value })} placeholder={t('common.noMax')} />
-              </label>
+              <Field label={t('common.min')} htmlFor="lf-min">
+                <NumberInput id="lf-min" min="0" increment={50} value={amountMin} onChange={(event) => onChange({ amountMin: event.target.value })} placeholder="0" decreaseLabel={t('common.decrease')} increaseLabel={t('common.increase')} />
+              </Field>
+              <Field label={t('common.max')} htmlFor="lf-max">
+                <NumberInput id="lf-max" min="0" increment={50} value={amountMax} onChange={(event) => onChange({ amountMax: event.target.value })} placeholder={t('common.noMax')} decreaseLabel={t('common.decrease')} increaseLabel={t('common.increase')} />
+              </Field>
             </div>
             <DualRangeSlider
               min={0}
@@ -138,17 +139,15 @@ function DateFilterPanel({ dateFilter, period, onChange, onThisMonth }: { dateFi
   const range = dateInputRange(dateFilter, period);
   const year = new Date().getFullYear();
 
+  function changeRange(from: string, to: string) {
+    onChange(from || to ? { mode: 'range', from, to } : { mode: 'month' });
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3">
-        <label className="flex flex-col gap-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted">
-          {t('common.from')}
-          <input type="date" value={range.from} onChange={(event) => onChange({ mode: 'range', from: event.target.value, to: range.to })} />
-        </label>
-        <label className="flex flex-col gap-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted">
-          {t('common.to')}
-          <input type="date" value={range.to} onChange={(event) => onChange({ mode: 'range', from: range.from, to: event.target.value })} />
-        </label>
+        <DateField id="lf-from" label={t('common.from')} value={range.from} onChange={(from) => changeRange(from, range.to)} allowEmpty />
+        <DateField id="lf-to" label={t('common.to')} value={range.to} onChange={(to) => changeRange(range.from, to)} allowEmpty />
       </div>
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" onClick={onThisMonth}>{t('filters.thisMonth')}</Button>

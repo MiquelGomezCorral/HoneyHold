@@ -11,6 +11,8 @@ interface DateFieldProps {
   onChange: (value: string) => void;
   className?: string;
   darkPopupClassName?: string;
+  darkHoverClassName?: string;
+  allowEmpty?: boolean;
 }
 
 function parseDate(value: string) {
@@ -34,7 +36,7 @@ function firstWeekday(date: Date) {
   return (new Date(date.getFullYear(), date.getMonth(), 1).getDay() + 6) % 7;
 }
 
-export default function DateField({ id, label, value, onChange, className, darkPopupClassName }: DateFieldProps) {
+export default function DateField({ id, label, value, onChange, className, darkPopupClassName, darkHoverClassName, allowEmpty = false }: DateFieldProps) {
   const { locale, t, tl } = useI18n();
   const rootRef = useRef<HTMLDivElement>(null);
   const selected = useMemo(() => parseDate(value), [value]);
@@ -92,28 +94,30 @@ export default function DateField({ id, label, value, onChange, className, darkP
           id={id}
           type="button"
           data-input-surface
-          className="flex min-h-10 w-full items-center justify-between rounded-lg border border-hairline bg-paper-blue-raise px-3 py-2 text-left text-sm text-ink transition-[border-color,background-color] duration-300 hover:bg-accent-soft focus:border-accent focus:outline-none"
+          className={cn('flex min-h-10 w-full items-center justify-between rounded-lg border border-hairline bg-paper-blue-raise px-3 py-2 text-left text-sm text-ink transition-[border-color,background-color] duration-300 hover:bg-accent-soft focus:border-accent focus:outline-none', darkHoverClassName)}
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={() => setOpen((current) => !current)}
         >
-          <span>{dayFormat.format(selected)}</span>
+          <span>{value ? dayFormat.format(selected) : t('common.any')}</span>
           <Icon src="caret-down" type="black" className="h-4 w-4 opacity-70" title={t('date.openCalendar')} />
         </button>
 
         {open && (
           <div className={cn('absolute left-0 top-full z-30 mt-1.5 w-[282px] rounded-xl border border-hairline bg-paper-blue-raise p-3 shadow-xl', darkPopupClassName)} role="dialog" aria-label={t('date.calendar', { label })}>
             <div className="mb-3 flex items-center justify-between gap-2">
-              <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(-1)} aria-label={pickingMonth ? t('date.previousYear') : t('date.previousMonth')}>
+              <button type="button" className={cn('rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft', darkHoverClassName)} onClick={() => move(-1)} aria-label={pickingMonth ? t('date.previousYear') : t('date.previousMonth')}>
                 <Icon src="caret-left" type="black" className="h-4 w-4" title={pickingMonth ? t('date.previousYear') : t('date.previousMonth')} />
               </button>
-              <button type="button" className="rounded-lg px-2 py-1 text-sm font-semibold text-ink transition-colors duration-300 hover:bg-accent-soft" onClick={() => setPickingMonth((current) => !current)}>
+              <button type="button" className={cn('rounded-lg px-2 py-1 text-sm font-semibold text-ink transition-colors duration-300 hover:bg-accent-soft', darkHoverClassName)} onClick={() => setPickingMonth((current) => !current)}>
                 {pickingMonth ? month.getFullYear() : monthFormat.format(month)}
               </button>
-              <button type="button" className="rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft" onClick={() => move(1)} aria-label={pickingMonth ? t('date.nextYear') : t('date.nextMonth')}>
+              <button type="button" className={cn('rounded-lg p-1.5 transition-colors duration-300 hover:bg-accent-soft', darkHoverClassName)} onClick={() => move(1)} aria-label={pickingMonth ? t('date.nextYear') : t('date.nextMonth')}>
                 <Icon src="caret-right" type="black" className="h-4 w-4" title={pickingMonth ? t('date.nextYear') : t('date.nextMonth')} />
               </button>
             </div>
+
+            {allowEmpty && value && <button type="button" className="mb-3 text-xs font-semibold text-accent underline underline-offset-[3px]" onClick={() => { onChange(''); setOpen(false); }}>{t('common.any')}</button>}
 
             {pickingMonth ? (
               <div className="grid grid-cols-3 gap-1">
@@ -128,7 +132,8 @@ export default function DateField({ id, label, value, onChange, className, darkP
                         {
                           'bg-accent text-white font-semibold': active,
                           'text-ink hover:bg-accent-soft': !active,
-                        }
+                        },
+                        !active && darkHoverClassName
                       )}
                       onClick={() => chooseMonth(index)}
                     >
@@ -157,7 +162,8 @@ export default function DateField({ id, label, value, onChange, className, darkP
                           {
                             'bg-accent text-white font-semibold': active,
                             'text-ink hover:bg-accent-soft': !active,
-                          }
+                          },
+                          !active && darkHoverClassName
                         )}
                         onClick={() => choose(day)}
                       >

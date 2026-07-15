@@ -1,7 +1,9 @@
 import { useState, type ChangeEvent } from 'react';
 import Button from '../../components/Button.js';
 import Badge from '../../components/Badge.js';
+import DateField from '../../components/DateField.js';
 import Field from '../../components/Field.js';
+import NumberInput from '../../components/NumberInput.js';
 import AccountSelect from '../../components/AccountSelect.js';
 import EmptyState from '../../components/EmptyState.js';
 import Section from '../../components/Section.js';
@@ -73,9 +75,7 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
       </div>
 
       <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2">
-        <Field label={t('common.date')} htmlFor={`ib-date-${entry.id}`}>
-          <input id={`ib-date-${entry.id}`} type="date" value={draft.txn_date} onChange={set('txn_date')} />
-        </Field>
+        <DateField id={`ib-date-${entry.id}`} label={t('common.date')} value={draft.txn_date} onChange={(txn_date) => setDraft((current) => ({ ...current, txn_date }))} />
         <Field label={t('common.concept')} htmlFor={`ib-concept-${entry.id}`} className="col-span-2">
           <input id={`ib-concept-${entry.id}`} type="text" value={draft.concept} onChange={set('concept')} maxLength={TEXT_LIMITS.concept} />
         </Field>
@@ -83,7 +83,7 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
           <input id={`ib-who-${entry.id}`} type="text" value={draft.counterparty} onChange={set('counterparty')} maxLength={TEXT_LIMITS.counterparty} />
         </Field>
         <Field label={t('common.amount')} htmlFor={`ib-amount-${entry.id}`}>
-          <input id={`ib-amount-${entry.id}`} type="number" inputMode="decimal" step="0.01" min="0.01" value={draft.amount} onChange={set('amount')} />
+          <NumberInput id={`ib-amount-${entry.id}`} inputMode="decimal" increment={5} min="0.01" value={draft.amount} onChange={set('amount')} decreaseLabel={t('common.decrease')} increaseLabel={t('common.increase')} />
         </Field>
         <Field label={t('common.type')} htmlFor={`ib-type-${entry.id}`}>
           <select id={`ib-type-${entry.id}`} value={draft.type} onChange={set('type')}>

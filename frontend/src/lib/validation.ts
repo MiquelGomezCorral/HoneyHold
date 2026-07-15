@@ -3,11 +3,11 @@ import { TEXT_LIMITS } from './config.js';
 
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'validation.dateFormat');
 const positiveAmountSchema = z.union([z.string(), z.number()])
-  .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, 'validation.amountPositive')
-  .transform(Number);
+  .transform((value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100)
+  .refine((value) => Number.isFinite(value) && value > 0, 'validation.amountPositive');
 const nonNegativeAmountSchema = z.union([z.string(), z.number()])
-  .refine((value) => Number.isFinite(Number(value)) && Number(value) >= 0, 'validation.targetNonNegative')
-  .transform(Number);
+  .transform((value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100)
+  .refine((value) => Number.isFinite(value) && value >= 0, 'validation.targetNonNegative');
 const accountIdSchema = (message: string) => z.union([z.string(), z.number()])
   .refine((value) => Number.isInteger(Number(value)) && Number(value) > 0, message)
   .transform(Number);

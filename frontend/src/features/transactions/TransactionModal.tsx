@@ -4,6 +4,7 @@ import Modal from '../../components/Modal.js';
 import Button from '../../components/Button.js';
 import Field from '../../components/Field.js';
 import Icon from '../../components/Icon.js';
+import NumberInput from '../../components/NumberInput.js';
 import Toggle from '../../components/Toggle.js';
 import AccountSelect from '../../components/AccountSelect.js';
 import DateField from '../../components/DateField.js';
@@ -24,6 +25,12 @@ const DARK_SELECTED_SURFACES = {
   expense: 'dark:bg-[#29415d]',
   income: 'dark:bg-[#31564a]',
   transfer: 'dark:bg-[#62552f]',
+} as const;
+
+const DARK_DATE_HOVER_SURFACES = {
+  expense: 'dark:hover:bg-paper-blue',
+  income: 'dark:hover:bg-paper-green',
+  transfer: 'dark:hover:bg-paper-yellow',
 } as const;
 
 interface FormState {
@@ -178,9 +185,9 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
     <Modal title={editing ? t('entryModal.editTitle') : t('entryModal.addTitle')} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
       <form
         className={cn('flex flex-col gap-4', {
-          'dark:[&_input]:bg-paper-blue dark:[&_input]:border-[#29415d] dark:[&_select]:bg-paper-blue dark:[&_select]:border-[#29415d] dark:[&_[data-input-surface]]:bg-paper-blue dark:[&_[data-input-surface]]:border-[#29415d]': form.type === 'expense',
-          'dark:[&_input]:bg-paper-green dark:[&_input]:border-[#31564a] dark:[&_select]:bg-paper-green dark:[&_select]:border-[#31564a] dark:[&_[data-input-surface]]:bg-paper-green dark:[&_[data-input-surface]]:border-[#31564a]': form.type === 'income',
-          'dark:[&_input]:bg-paper-yellow dark:[&_input]:border-[#62552f] dark:[&_select]:bg-paper-yellow dark:[&_select]:border-[#62552f] dark:[&_[data-input-surface]]:bg-paper-yellow dark:[&_[data-input-surface]]:border-[#62552f]': form.type === 'transfer',
+          'dark:[&_input]:bg-paper-blue dark:[&_input]:border-[#29415d] dark:[&_select]:bg-paper-blue dark:[&_select]:border-[#29415d] dark:[&_[data-input-surface]]:bg-paper-blue dark:[&_[data-input-surface]]:border-[#29415d] dark:[&_[data-number-stepper]_button:hover]:bg-[#29415d] dark:[&_[data-number-stepper]_button:focus-visible]:bg-[#29415d]': form.type === 'expense',
+          'dark:[&_input]:bg-paper-green dark:[&_input]:border-[#31564a] dark:[&_select]:bg-paper-green dark:[&_select]:border-[#31564a] dark:[&_[data-input-surface]]:bg-paper-green dark:[&_[data-input-surface]]:border-[#31564a] dark:[&_[data-number-stepper]_button:hover]:bg-[#31564a] dark:[&_[data-number-stepper]_button:focus-visible]:bg-[#31564a]': form.type === 'income',
+          'dark:[&_input]:bg-paper-yellow dark:[&_input]:border-[#62552f] dark:[&_select]:bg-paper-yellow dark:[&_select]:border-[#62552f] dark:[&_[data-input-surface]]:bg-paper-yellow dark:[&_[data-input-surface]]:border-[#62552f] dark:[&_[data-number-stepper]_button:hover]:bg-[#62552f] dark:[&_[data-number-stepper]_button:focus-visible]:bg-[#62552f]': form.type === 'transfer',
         })}
         onSubmit={submit}
       >
@@ -199,9 +206,9 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
 
         <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
           <Field label={t('common.amount')} htmlFor="tm-amount">
-            <input id="tm-amount" type="number" inputMode="decimal" step="0.01" min="0.01" value={form.amount} onChange={set('amount')} autoFocus required />
+            <NumberInput id="tm-amount" inputMode="decimal" increment={5} min="0.01" value={form.amount} onChange={set('amount')} autoFocus required decreaseLabel={t('common.decrease')} increaseLabel={t('common.increase')} />
           </Field>
-          <DateField id="tm-date" label={t('common.date')} value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} darkPopupClassName={DARK_SELECTED_SURFACES[form.type]} />
+          <DateField id="tm-date" label={t('common.date')} value={form.txn_date} onChange={(v) => setForm((f) => ({ ...f, txn_date: v }))} darkPopupClassName={DARK_SELECTED_SURFACES[form.type]} darkHoverClassName={DARK_DATE_HOVER_SURFACES[form.type]} />
         </div>
 
         <Field label={t('common.concept')} htmlFor="tm-concept">
@@ -278,7 +285,7 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
                   {FREQUENCIES.map((f) => <option key={f} value={f}>{t(`entryModal.frequencies.${f}`)}</option>)}
                 </select>
               </Field>
-              <DateField id="tm-start" label={t('entryModal.startsOn')} value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} darkPopupClassName={DARK_SELECTED_SURFACES[form.type]} />
+              <DateField id="tm-start" label={t('entryModal.startsOn')} value={form.start_date} onChange={(v) => setForm((f) => ({ ...f, start_date: v }))} darkPopupClassName={DARK_SELECTED_SURFACES[form.type]} darkHoverClassName={DARK_DATE_HOVER_SURFACES[form.type]} />
             </div>
             <p className="m-0 text-xs text-muted">{t('entryModal.pastOccurrences')}</p>
           </div>
