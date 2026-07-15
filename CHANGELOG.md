@@ -1,3 +1,13 @@
+## [1.5.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.4.0...v1.5.0) (2026-07-15)
+
+### Features
+
+* standardize finance input controls ([158df25](https://github.com/MiquelGomezCorral/HoneyHold/commit/158df2552e5e1cb46e16ea547cbd02ae645ab005))
+
+### Bug Fixes
+
+* stabilize ledger table interactions ([2b92be2](https://github.com/MiquelGomezCorral/HoneyHold/commit/2b92be2af48e094678cb12d69f4df29ddcd93e9f))
+
 ## [1.4.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.3.0...v1.4.0) (2026-07-15)
 
 ### Features
