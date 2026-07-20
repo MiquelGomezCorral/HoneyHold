@@ -6,6 +6,14 @@ export function money(v: number | string) {
   return eur.format(Number(v) || 0);
 }
 
+const pct = new Intl.NumberFormat('es-ES', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+// `ratio` is a fraction where 1 === 100 % (e.g. 0.644 -> "64,4 %").
+export function percent(ratio: number | null | undefined) {
+  if (ratio == null || !Number.isFinite(ratio)) return '—';
+  return pct.format(ratio);
+}
+
 export function signedMoney(type: 'income' | 'expense', v: number | string) {
   return `${type === 'income' ? '+' : '\u2212'}\u2009${money(v)}`; // \u2009 is a thin space and \u2212 is a minus sign (not a hyphen)
 }
