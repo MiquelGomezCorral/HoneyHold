@@ -2,6 +2,7 @@ import cn from 'classnames';
 import Section from '../../components/Section.js';
 import BalanceChart from '../../components/BalanceChart.js';
 import GoalsPanel from './GoalsPanel.js';
+import AnnualOverview from './AnnualOverview.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { useI18n } from '../../i18n.js';
@@ -50,6 +51,10 @@ export default function DashboardView() {
 
       <Section title={t('dashboard.goals')} summary={period.year}>
         <GoalsPanel goals={goals} year={period.year} show={['annual']} />
+      </Section>
+
+      <Section title={t('annual.title')} summary={period.year}>
+        <AnnualOverview year={period.year} />
       </Section>
     </>
   );
