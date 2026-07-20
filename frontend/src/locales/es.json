@@ -65,7 +65,16 @@
     "stack": "Stack",
     "stackValue": "React 18 + TypeScript + Tailwind + MySQL 8.4",
     "design": "Diseño",
-    "designValue": "Local-first, sin auth, multiperfil"
+    "designValue": "Local-first, sin auth, multiperfil",
+    "whatsNew": "Novedades de {version}",
+    "fullChangelog": "Ver todos los cambios",
+    "noNotes": "No hay novedades registradas para esta versión.",
+    "sections": {
+      "Features": "Novedades",
+      "Bug Fixes": "Correcciones",
+      "Performance Improvements": "Rendimiento",
+      "Reverts": "Reversiones"
+    }
   },
   "profileGate": {
     "question": "¿Quién lleva las cuentas?",
