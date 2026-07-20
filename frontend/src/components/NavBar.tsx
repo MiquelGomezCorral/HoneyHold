@@ -3,7 +3,8 @@ import cn from 'classnames';
 import { NavLink } from 'react-router-dom';
 import { useProfile } from '../context/ProfileContext.js';
 import { useFetch } from '../hooks/useFetch.js';
-import { VERSION } from '../lib/config.js';
+import { VERSION, LATEST_RELEASE } from '../lib/config.js';
+import type { ReleaseNote } from '../lib/config.js';
 import { useI18n } from '../i18n.js';
 import Modal from './Modal.js';
 import ProfileSwitcher from './ProfileSwitcher.js';
@@ -16,6 +17,29 @@ import HoneyHoldLogo from './HoneyHoldLogo.js';
 interface Props {
   locale: Locale;
   onAdd: () => void;
+}
+
+// Group the latest release's notes by their changelog section, preserving order.
+const RELEASE_SECTIONS = LATEST_RELEASE.notes.reduce<{ section: string; notes: ReleaseNote[] }[]>(
+  (groups, note) => {
+    const group = groups.find((g) => g.section === note.section);
+    if (group) group.notes.push(note);
+    else groups.push({ section: note.section, notes: [note] });
+    return groups;
+  },
+  []
+);
+
+// Format an ISO calendar date (YYYY-MM-DD) in the active locale, avoiding the
+// UTC-parsing off-by-one by building a local Date from the parts.
+function formatReleaseDate(iso: string, locale: Locale) {
+  const [year, month, day] = iso.split('-').map(Number);
+  if (!year || !month || !day) return iso;
+  return new Date(year, month - 1, day).toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
 export default function NavBar({ locale, onAdd }: Props) {
@@ -76,6 +100,51 @@ export default function NavBar({ locale, onAdd }: Props) {
             <dt className="font-semibold">{t('about.design')}</dt>
             <dd className="text-muted ml-0">{t('about.designValue')}</dd>
           </dl>
+          <section className="mt-5 pt-4 border-t border-hairline">
+            <div className="flex items-baseline justify-between gap-3">
+              <h3 className="m-0 text-sm font-semibold">
+                {t('about.whatsNew', { version: LATEST_RELEASE.version })}
+              </h3>
+              <span className="text-xs text-muted whitespace-nowrap">
+                {formatReleaseDate(LATEST_RELEASE.date, locale)}
+              </span>
+            </div>
+            {RELEASE_SECTIONS.length > 0 ? (
+              <div className="mt-2 max-h-44 overflow-y-auto pr-1 space-y-3">
+                {RELEASE_SECTIONS.map((group) => {
+                  const key = `about.sections.${group.section}`;
+                  const label = t(key);
+                  return (
+                    <div key={group.section}>
+                      <p className="m-0 text-xs font-semibold uppercase tracking-wide text-muted">
+                        {label === key ? group.section : label}
+                      </p>
+                      <ul className="mt-1 space-y-1 list-none p-0">
+                        {group.notes.map((note, i) => (
+                          <li key={i} className="flex gap-2 text-sm text-ink">
+                            <span aria-hidden className="text-accent leading-5">•</span>
+                            <span>{note.summary}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-muted">{t('about.noNotes')}</p>
+            )}
+            {LATEST_RELEASE.url && (
+              <a
+                href={LATEST_RELEASE.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-accent no-underline hover:text-accent-deep"
+              >
+                {t('about.fullChangelog')} →
+              </a>
+            )}
+          </section>
         </Modal>
       )}
     </>
