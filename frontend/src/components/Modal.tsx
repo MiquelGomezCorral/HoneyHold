@@ -9,21 +9,23 @@ interface Props {
   onClose: () => void;
   children: ReactNode;
   bgColor?: BgColor;
+  closeDisabled?: boolean;
 }
 
-export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Props) {
+export default function Modal({ title, onClose, children, bgColor = 'Blue', closeDisabled }: Props) {
   const { t } = useI18n();
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    if (closeDisabled) return;
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [closeDisabled, onClose]);
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/35 p-5 max-sm:items-end max-sm:p-0"
-      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+      onMouseDown={(e) => e.target === e.currentTarget && !closeDisabled && onClose()}
     >
       <div
         className={cn(
@@ -36,7 +38,7 @@ export default function Modal({ title, onClose, children, bgColor = 'Blue' }: Pr
       >
         <div className="flex justify-between items-center mb-5">
           <h2 className="m-0 text-base font-semibold">{title}</h2>
-          <Button variant="close" size="sm" onClick={onClose} aria-label={t('common.close')}>
+          <Button variant="close" size="sm" onClick={onClose} disabled={closeDisabled} aria-label={t('common.close')}>
             ✕
           </Button>
         </div>
