@@ -6,6 +6,7 @@
     "save": "Save",
     "saving": "Saving…",
     "saveChanges": "Save changes",
+    "accept": "Accept",
     "confirm": "Confirm",
     "addEntry": "Add entry",
     "addExpense": "Add expense",
@@ -197,6 +198,19 @@
       "yearly": "Yearly"
     }
   },
+  "tagsModal": {
+    "title": "Manage tags",
+    "manage": "Manage tags",
+    "tabs": "Tag action",
+    "modify": "Modify",
+    "add": "Add",
+    "remove": "Remove",
+    "select": "Select a tag",
+    "name": "Tag name",
+    "protected": "This tag is required by the app and cannot be changed.",
+    "removeTitle": "Remove tag?",
+    "removeMessage": "Remove {name}? {count} affected records will be reassigned to Otros."
+  },
   "toast": {
     "transactionCreated": "Transaction added.",
     "transactionUpdated": "Transaction updated.",
@@ -205,6 +219,9 @@
     "transferUpdated": "Transfer updated.",
     "transferDeleted": "Transfer deleted.",
     "ruleStopped": "Recurring rule stopped.",
+    "tagAdded": "Tag added.",
+    "tagUpdated": "Tag updated.",
+    "tagDeleted": "Tag removed.",
     "inboxApproved": "Entry approved.",
     "inboxRejected": "Entry rejected.",
     "goalSaved": "Savings goal updated."

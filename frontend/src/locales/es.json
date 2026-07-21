@@ -6,6 +6,7 @@
     "save": "Guardar",
     "saving": "Guardando…",
     "saveChanges": "Guardar cambios",
+    "accept": "Aceptar",
     "confirm": "Confirmar",
     "addEntry": "Añadir apunte",
     "addExpense": "Añadir gasto",
@@ -197,6 +198,19 @@
       "yearly": "Anual"
     }
   },
+  "tagsModal": {
+    "title": "Gestionar etiquetas",
+    "manage": "Gestionar etiquetas",
+    "tabs": "Acción de etiqueta",
+    "modify": "Modificar",
+    "add": "Añadir",
+    "remove": "Eliminar",
+    "select": "Elige una etiqueta",
+    "name": "Nombre de etiqueta",
+    "protected": "Esta etiqueta es necesaria para la aplicación y no se puede cambiar.",
+    "removeTitle": "¿Eliminar etiqueta?",
+    "removeMessage": "¿Eliminar {name}? Se reasignarán {count} registros afectados a Otros."
+  },
   "toast": {
     "transactionCreated": "Transacción añadida.",
     "transactionUpdated": "Transacción actualizada.",
@@ -205,6 +219,9 @@
     "transferUpdated": "Transferencia actualizada.",
     "transferDeleted": "Transferencia eliminada.",
     "ruleStopped": "Regla recurrente detenida.",
+    "tagAdded": "Etiqueta añadida.",
+    "tagUpdated": "Etiqueta actualizada.",
+    "tagDeleted": "Etiqueta eliminada.",
     "inboxApproved": "Entrada aprobada.",
     "inboxRejected": "Entrada rechazada.",
     "goalSaved": "Objetivo de ahorro actualizado."
