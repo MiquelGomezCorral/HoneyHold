@@ -45,9 +45,3 @@ export const LEDGER_COLUMN_SPANS = {
   amount: 2,
   actions: 1,
 } as const;
-
-export const TOAST = {
-  max_toasts: 5,
-  duration_ms: 3000,
-  exit_ms: 200,
-}

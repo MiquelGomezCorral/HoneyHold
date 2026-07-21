@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import Button from '../components/Button.js';
 import { useI18n } from '../i18n.js';
-import { TOAST } from '../lib/config.js';
+
 export type ToastType = 'success' | 'error' | 'info';
 
 interface Toast {
@@ -16,6 +16,9 @@ interface ToastContextValue {
   showError: (error: unknown) => void;
 }
 
+const MAX_TOASTS = 5;
+const TOAST_DURATION_MS = 3000;
+const TOAST_EXIT_MS = 200;
 const Ctx = createContext<ToastContextValue | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -56,12 +59,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     if (expiryTimer) window.clearTimeout(expiryTimer);
     expiryTimers.current.delete(id);
     updateToasts(toastsRef.current.map((item) => item.id === id ? { ...item, closing: true } : item));
-    removalTimers.current.set(id, window.setTimeout(() => removeToast(id), TOAST.exit_ms));
+    removalTimers.current.set(id, window.setTimeout(() => removeToast(id), TOAST_EXIT_MS));
   }
 
   function showToast(message: string, type: ToastType = 'info') {
     const toast = { id: nextId.current++, message, type, closing: false };
-    if (toastsRef.current.length >= TOAST.max_toasts) {
+    if (toastsRef.current.length >= MAX_TOASTS) {
       pendingToasts.current.push(toast);
       if (!toastsRef.current.some((item) => item.closing)) dismissToast(toastsRef.current[0].id);
       return;
@@ -72,7 +75,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   function addToast(toast: Toast) {
     updateToasts([...toastsRef.current, toast]);
-    expiryTimers.current.set(toast.id, window.setTimeout(() => dismissToast(toast.id), TOAST.duration_ms));
+    expiryTimers.current.set(toast.id, window.setTimeout(() => dismissToast(toast.id), TOAST_DURATION_MS));
   }
 
   function showError(error: unknown) {
