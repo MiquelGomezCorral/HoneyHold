@@ -10,16 +10,14 @@ import AccountSelect from '../../components/AccountSelect.js';
 import DateField from '../../components/DateField.js';
 import SegmentedControl from '../../components/SegmentedControl.js';
 import SelectField from '../../components/SelectField.js';
-import ManageTagsModal from './ManageTagsModal.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
-import { useToast } from '../../context/ToastContext.js';
 import { useI18n } from '../../i18n.js';
 import { todayISO } from '../../lib/format.js';
 import { TEXT_LIMITS } from '../../lib/config.js';
 import { entryFormSchema, validationMessage } from '../../lib/validation.js';
-import type { Account, EntryType, LedgerEntry, Tag } from '../../types.js';
+import type { Account, EntryType, LedgerEntry } from '../../types.js';
 
 const FREQUENCIES = ['weekly', 'monthly', 'quarterly', 'yearly'];
 
@@ -91,17 +89,16 @@ const formFromEntry = (entry: LedgerEntry): FormState => ({
 });
 
 export default function TransactionModal({ defaultType = 'expense', entry, onClose }: Props) {
-  const { profileId, version, bump } = useProfile();
-  const { showError, showToast } = useToast();
+  const { profileId, bump } = useProfile();
   const { t } = useI18n();
   const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=1`, [profileId]);
-  const { data: tags } = useFetch<Tag[]>(`/profiles/${profileId}/tags`, [profileId, version]);
+  const { data: tags } = useFetch<{ id: number; name: string }[]>(`/profiles/${profileId}/tags`, [profileId]);
   const editing = !!entry;
 
   const [form, setForm] = useState<FormState>(() => entry ? formFromEntry(entry) : blankForm(defaultType));
   const [conceptEdited, setConceptEdited] = useState(editing || defaultType !== 'transfer');
   const [saving, setSaving] = useState(false);
-  const [managingTags, setManagingTags] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function set(key: keyof FormState) {
     return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -131,13 +128,14 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    setError(null);
     const parsed = entryFormSchema.safeParse({
       ...form,
       account_id: accountId,
       from_account_id: fromAccountId,
       to_account_id: toAccountId,
     });
-    if (!parsed.success) return showError(validationMessage(parsed.error, t));
+    if (!parsed.success) return setError(validationMessage(parsed.error, t));
 
     const values = parsed.data;
 
@@ -173,33 +171,15 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
         if (entry) await api.put(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`, body);
         else await api.post('/transactions', body);
       }
-      showToast(t(values.type === 'transfer'
-        ? entry ? 'toast.transferUpdated' : 'toast.transferCreated'
-        : entry ? 'toast.transactionUpdated' : 'toast.transactionCreated'), 'success');
       bump();
       onClose();
     } catch (err) {
-      showError(err);
+      setError((err as Error).message);
       setSaving(false);
     }
   };
 
   const tagOptions = tags?.map((t) => ({ value: t.name, label: t.name })) ?? [];
-
-  if (managingTags) {
-    return (
-      <ManageTagsModal
-        tags={tags ?? []}
-        selectedTag={form.tag}
-        onClose={() => setManagingTags(false)}
-        onChange={(tag, changedTag) => {
-          setForm((current) => ({ ...current, tag: changedTag && current.tag !== changedTag ? current.tag : tag }));
-          setManagingTags(false);
-          bump();
-        }}
-      />
-    );
-  }
 
   return (
     <Modal title={editing ? t('entryModal.editTitle') : t('entryModal.addTitle')} onClose={onClose} bgColor={form.type === 'income' ? 'Green' : form.type === 'transfer' ? 'Yellow' : 'Blue'}>
@@ -270,11 +250,10 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
               </Field>
               <SelectField
                 id="tm-tag"
-                label={t('common.tags')}
+                label={t('common.tag')}
                 value={form.tag}
                 groups={[{ key: 'tags', options: tagOptions }]}
                 onChange={(v) => setForm((f) => ({ ...f, tag: v.slice(0, TEXT_LIMITS.tag) }))}
-                action={<Button variant="link" onClick={() => setManagingTags(true)}>{t('tagsModal.manage')}</Button>}
               />
             </div>
 
@@ -311,6 +290,8 @@ export default function TransactionModal({ defaultType = 'expense', entry, onClo
             <p className="m-0 text-xs text-muted">{t('entryModal.pastOccurrences')}</p>
           </div>
         )}
+
+        {error && <p className="m-0 text-sm text-neg" role="alert">{error}</p>}
 
         <div className="flex justify-between gap-2.5 mt-1">
           <Button variant="danger-active" onClick={onClose}>{t('common.cancel')}</Button>

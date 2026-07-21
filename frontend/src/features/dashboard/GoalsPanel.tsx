@@ -4,7 +4,6 @@ import Button from '../../components/Button.js';
 import NumberInput from '../../components/NumberInput.js';
 import { api } from '../../api/client.js';
 import { useProfile } from '../../context/ProfileContext.js';
-import { useToast } from '../../context/ToastContext.js';
 import { useI18n } from '../../i18n.js';
 import { goalFormSchema, validationMessage } from '../../lib/validation.js';
 
@@ -22,16 +21,17 @@ interface TargetEditorProps {
 
 function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
   const { profileId } = useProfile();
-  const { showError, showToast } = useToast();
   const { t } = useI18n();
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(current ?? '');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function save(e: FormEvent) {
     e.preventDefault();
+    setError(null);
     const parsed = goalFormSchema.safeParse({ target_amount: value });
-    if (!parsed.success) return showError(validationMessage(parsed.error, t));
+    if (!parsed.success) return setError(validationMessage(parsed.error, t));
 
     setSaving(true);
     try {
@@ -42,9 +42,8 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
       });
       setEditing(false);
       onSaved();
-      showToast(t('toast.goalSaved'), 'success');
     } catch (err) {
-      showError(err);
+      setError((err as Error).message);
     } finally {
       setSaving(false);
     }
@@ -69,6 +68,7 @@ function TargetEditor({ period, year, current, onSaved }: TargetEditorProps) {
       <Button variant="ghost" size="md" onClick={() => setEditing(false)}>
         {t('common.cancel')}
       </Button>
+      {error && <span className="text-neg text-sm">{error}</span>}
     </form>
   );
 }

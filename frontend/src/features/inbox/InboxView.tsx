@@ -10,7 +10,6 @@ import Section from '../../components/Section.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
-import { useToast } from '../../context/ToastContext.js';
 import { useI18n } from '../../i18n.js';
 import { todayISO } from '../../lib/format.js';
 import { TEXT_LIMITS } from '../../lib/config.js';
@@ -29,7 +28,6 @@ interface Draft {
 
 function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Account[]; onDone: () => void }) {
   const { t } = useI18n();
-  const { showError, showToast } = useToast();
   const [draft, setDraft] = useState<Draft>({
     account_id: entry.account_id ?? '',
     type: entry.suggested_type ?? 'expense',
@@ -40,31 +38,32 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
     tag: '',
   });
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function set(key: keyof Draft) {
     return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setDraft((d) => ({ ...d, [key]: e.target.value }));
   }
 
-  async function act(fn: () => Promise<unknown>, message: string) {
+  async function act(fn: () => Promise<unknown>) {
     setBusy(true);
+    setError(null);
     try {
       await fn();
       onDone();
-      showToast(message, 'success');
     } catch (err) {
-      showError(err);
+      setError((err as Error).message);
       setBusy(false);
     }
   }
 
   function approve() {
     const parsed = inboxApprovalSchema.safeParse(draft);
-    if (!parsed.success) return showError(validationMessage(parsed.error, t));
-    return act(() => api.post(`/inbox/${entry.id}/approve`, parsed.data), t('toast.inboxApproved'));
+    if (!parsed.success) return setError(validationMessage(parsed.error, t));
+    return act(() => api.post(`/inbox/${entry.id}/approve`, parsed.data));
   }
 
-  function reject() { return act(() => api.post(`/inbox/${entry.id}/reject`), t('toast.inboxRejected')); }
+  function reject() { return act(() => api.post(`/inbox/${entry.id}/reject`)); }
 
 
   return (
@@ -110,6 +109,8 @@ function InboxRow({ entry, accounts, onDone }: { entry: InboxEntry; accounts: Ac
           <pre className="m-2 mt-0 p-2.5 bg-accent-soft rounded-lg overflow-auto text-ink">{JSON.stringify(entry.raw_payload, null, 2)}</pre>
         </details>
       )}
+
+      {error && <p className="m-0 text-sm text-neg mt-3" role="alert">{error}</p>}
 
       <div className="flex justify-end gap-2.5 mt-[14px]">
         <Button variant="ghost" onClick={reject} disabled={busy}>{t('inbox.reject')}</Button>

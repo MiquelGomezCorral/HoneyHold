@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from './context/ProfileContext.js';
-import { ToastProvider } from './context/ToastContext.js';
 import { useIsMobile } from './hooks/useIsMobile.js';
 import { I18nProvider, getPreferredLocale, localeFromPathname, useI18n, withLocalePath } from './i18n.js';
 import NavBar from './components/NavBar.js';
@@ -32,9 +31,7 @@ export default function App() {
 
   return (
     <I18nProvider locale={locale} onLocaleChange={setLocale}>
-      <ToastProvider>
-        <LocalizedApp locale={locale} />
-      </ToastProvider>
+      <LocalizedApp locale={locale} />
     </I18nProvider>
   );
 }
