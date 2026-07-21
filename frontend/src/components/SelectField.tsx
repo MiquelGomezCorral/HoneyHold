@@ -1,5 +1,4 @@
 import Field from './Field.js';
-import type { ReactNode } from 'react';
 
 interface SelectGroup {
   key: string;
@@ -15,12 +14,11 @@ interface SelectFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-  action?: ReactNode;
 }
 
-export default function SelectField({ id, label, value, groups, onChange, placeholder, className, action }: SelectFieldProps) {
+export default function SelectField({ id, label, value, groups, onChange, placeholder, className }: SelectFieldProps) {
   return (
-    <Field label={label} htmlFor={id} className={className} action={action}>
+    <Field label={label} htmlFor={id} className={className}>
       <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
         {placeholder != null && <option value="">{placeholder}</option>}
         {groups.map((group) => group.label ? (
