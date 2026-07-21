@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Button from '../../components/Button.js';
 import PeriodNav from '../../components/PeriodNav.js';
 import ConfirmModal from '../../components/ConfirmModal.js';
@@ -18,7 +18,7 @@ import { currentPeriod, entryAccountText, entryIds, entryMoney, entryTag, money,
 import { searchItems, type SearchField } from '../../lib/search.js';
 import { DEFAULT_TRANSACTION_FILTERS, TRANSACTION_TYPE_FILTERS, dateParams, mergeLedgerRows, parseAmount, passesEntryFilters } from './transactionFilters.js';
 import type { TransactionFilters } from './transactionFilters.js';
-import type { Account, EntryType, LedgerEntry, RecurringRule, Transaction, Transfer } from '../../types.js';
+import type { Account, EntryType, LedgerEntry, RecurringRule, Tag, Transaction, Transfer } from '../../types.js';
 
 export default function TransactionsView() {
   const { profileId, version, bump } = useProfile();
@@ -46,8 +46,17 @@ export default function TransactionsView() {
     [profileId, transferQuery, type, version]
   );
   const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=1`, [profileId]);
-  const { data: tags } = useFetch<{ id: number; name: string }[]>(`/profiles/${profileId}/tags`, [profileId]);
+  const { data: tags } = useFetch<Tag[]>(`/profiles/${profileId}/tags`, [profileId, version]);
   const { data: rules } = useFetch<RecurringRule[]>(`/profiles/${profileId}/recurring`, [profileId, version]);
+
+  useEffect(() => {
+    if (!tags) return;
+    const tagNames = new Set(tags.map((tag) => tag.name));
+    setFilters((current) => {
+      const nextTags = current.tags.filter((tag) => tagNames.has(tag));
+      return nextTags.length === current.tags.length ? current : { ...current, tags: nextTags };
+    });
+  }, [tags]);
 
   const rows = useMemo(() => {
     return mergeLedgerRows(type, transactionRows, transferRows);
