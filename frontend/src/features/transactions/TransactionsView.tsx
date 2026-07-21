@@ -42,7 +42,7 @@ export default function TransactionsView() {
     type === 'income' || type === 'expense' ? null : `/profiles/${profileId}/transfers?${transferQuery}`,
     [profileId, transferQuery, type, version]
   );
-  const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=1`, [profileId]);
+  const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=0`, [profileId]);
   const { data: tags } = useFetch<{ id: number; name: string }[]>(`/profiles/${profileId}/tags`, [profileId]);
   const { data: rules } = useFetch<RecurringRule[]>(`/profiles/${profileId}/recurring`, [profileId, version]);
 
