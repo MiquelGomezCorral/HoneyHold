@@ -2,6 +2,7 @@ import { pool } from '../db/pool.js';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import type { PoolConnection } from 'mysql2/promise';
 import { HttpError } from '../middleware/errors.js';
+import { FALLBACK_TAG, PROTECTED_ONES } from '../config/tags.js';
 
 interface TagRow extends RowDataPacket {
   id: number;
@@ -9,8 +10,6 @@ interface TagRow extends RowDataPacket {
   profile_id: number | null;
   usage_count: number;
 }
-
-const PROTECTED_GLOBAL_TAGS = new Set(['Otros', 'Transference']);
 
 function cleanName(name: unknown) {
   if (typeof name !== 'string') throw new HttpError(400, 'Tag name is required');
@@ -21,7 +20,7 @@ function cleanName(name: unknown) {
 }
 
 function protectedTag(tag: Pick<TagRow, 'name' | 'profile_id'>) {
-  return tag.profile_id === null && PROTECTED_GLOBAL_TAGS.has(tag.name);
+  return tag.profile_id === null && PROTECTED_ONES.includes(tag.name);
 }
 
 function validTagId(tagId: number) {
@@ -51,7 +50,23 @@ export async function listTags(profileId: number) {
       ORDER BY name`,
     [profileId]
   );
-  return rows;
+  return rows.map((tag) => ({
+    ...tag,
+    protected: protectedTag(tag),
+  }));
+}
+
+export async function ensureProtectedTags() {
+  for (const name of PROTECTED_ONES) {
+    await pool.query(
+      `INSERT INTO tags (profile_id, name)
+       SELECT NULL, ?
+       WHERE NOT EXISTS (
+         SELECT 1 FROM tags WHERE profile_id IS NULL AND name = ?
+       )`,
+      [name, name]
+    );
+  }
 }
 
 export async function createTag(name: unknown) {
@@ -96,7 +111,8 @@ export async function deleteTag(profileId: number, tagId: number) {
     if (protectedTag(tag)) throw new HttpError(400, 'This tag cannot be removed');
 
     const [fallbackRows] = await conn.query<TagRow[]>(
-      "SELECT id, name, profile_id FROM tags WHERE profile_id IS NULL AND name = 'Otros' LIMIT 1 FOR UPDATE"
+      'SELECT id, name, profile_id FROM tags WHERE profile_id IS NULL AND name = ? LIMIT 1 FOR UPDATE',
+      [FALLBACK_TAG]
     );
     if (!fallbackRows.length) throw new HttpError(500, 'Fallback tag not found');
     const fallback = fallbackRows[0];

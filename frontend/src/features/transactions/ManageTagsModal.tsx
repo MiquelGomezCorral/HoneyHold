@@ -18,13 +18,13 @@ type Tab = 'modify' | 'add' | 'remove';
 const TAB_COLORS = {
   modify: 'Blue',
   add: 'Green',
-  remove: 'Red',
+  remove: 'Blue',
 } as const;
 
 const DARK_SURFACES = {
   modify: 'dark:[&_input]:bg-paper-blue dark:[&_input]:border-[#29415d] dark:[&_select]:bg-paper-blue dark:[&_select]:border-[#29415d]',
   add: 'dark:[&_input]:bg-paper-green dark:[&_input]:border-[#31564a] dark:[&_select]:bg-paper-green dark:[&_select]:border-[#31564a]',
-  remove: 'dark:[&_input]:bg-paper-red dark:[&_input]:border-[#593238] dark:[&_select]:bg-paper-red dark:[&_select]:border-[#593238]',
+  remove: 'dark:[&_input]:bg-paper-blue dark:[&_input]:border-[#29415d] dark:[&_select]:bg-paper-blue dark:[&_select]:border-[#29415d]',
 } as const;
 
 interface Props {
@@ -45,7 +45,7 @@ export default function ManageTagsModal({ tags, selectedTag, onClose, onChange }
   const [saving, setSaving] = useState(false);
   const [confirming, setConfirming] = useState<Tag | null>(null);
   const selected = tags.find((tag) => tag.id === selectedTagId);
-  const protectedTag = selected?.profile_id === null && ['Otros', 'Transference'].includes(selected.name);
+  const protectedTag = selected?.protected ?? false;
   const tagOptions = tags.map((tag) => ({ value: tag.id, label: tag.name }));
 
   function selectTag(id: string) {
@@ -72,12 +72,14 @@ export default function ManageTagsModal({ tags, selectedTag, onClose, onChange }
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (tab === 'remove') {
-      if (selected && !protectedTag) setConfirming(selected);
+      if (protectedTag) return showError(t('tagsModal.protected'));
+      if (selected) setConfirming(selected);
       return;
     }
 
     const tagToModify = tab === 'modify' ? selected : null;
-    if (tab === 'modify' && (!tagToModify || protectedTag)) return;
+    if (tab === 'modify' && !tagToModify) return;
+    if (tab === 'modify' && protectedTag) return showError(t('tagsModal.protected'));
     setSaving(true);
     try {
       if (tagToModify) {
@@ -104,7 +106,6 @@ export default function ManageTagsModal({ tags, selectedTag, onClose, onChange }
         message={t('tagsModal.removeMessage', { name: confirming.name, count: confirming.usage_count })}
         confirmLabel={t('tagsModal.remove')}
         variant="danger-active"
-        bgColor="Red"
         disabled={saving}
         onConfirm={() => { void remove(confirming); }}
         onCancel={() => setConfirming(null)}
@@ -155,7 +156,7 @@ export default function ManageTagsModal({ tags, selectedTag, onClose, onChange }
         {protectedTag && tab !== 'add' && <p className="m-0 text-sm text-muted">{t('tagsModal.protected')}</p>}
         <div className="flex justify-between gap-2.5 mt-1">
           <Button variant="danger-active" onClick={onClose}>{t('common.cancel')}</Button>
-          <Button type="submit" variant={tab === 'remove' ? 'danger-active' : 'primary'} disabled={saving || (tab !== 'add' && (!selected || protectedTag))}>
+          <Button type="submit" variant='primary' disabled={saving || (tab !== 'add' && !selected)}>
             {saving ? t('common.saving') : t('common.accept')}
           </Button>
         </div>

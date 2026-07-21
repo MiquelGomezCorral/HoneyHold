@@ -18,6 +18,7 @@ export interface Tag {
   name: string;
   profile_id: number | null;
   usage_count: number;
+  protected: boolean;
 }
 
 export type EntryType = 'income' | 'expense' | 'transfer';
