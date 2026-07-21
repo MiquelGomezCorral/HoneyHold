@@ -13,6 +13,13 @@ export interface Account {
   profile_name?: string;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+  profile_id: number | null;
+  usage_count: number;
+}
+
 export type EntryType = 'income' | 'expense' | 'transfer';
 
 export interface Transaction {
