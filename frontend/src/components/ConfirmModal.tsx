@@ -1,7 +1,6 @@
 import Modal from './Modal.js';
 import Button, { type ButtonVariant } from './Button.js';
 import { useI18n } from '../i18n.js';
-import type { BgColor } from '../lib/theme.js';
 
 interface Props {
   open: boolean;
@@ -9,7 +8,6 @@ interface Props {
   message: string;
   confirmLabel?: string;
   variant?: ButtonVariant;
-  bgColor?: BgColor;
   disabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -21,7 +19,6 @@ export default function ConfirmModal({
   message,
   confirmLabel,
   variant = 'primary',
-  bgColor,
   disabled,
   onConfirm,
   onCancel,
@@ -30,7 +27,7 @@ export default function ConfirmModal({
   if (!open) return null;
 
   return (
-    <Modal title={title} onClose={onCancel} bgColor={bgColor} closeDisabled={disabled}>
+    <Modal title={title} onClose={onCancel} closeDisabled={disabled}>
       <p className="text-sm text-muted">{message}</p>
       <div className="flex justify-end gap-3 mt-6">
         <Button variant="ghost" size="md" onClick={onCancel} disabled={disabled}>{t('common.cancel')}</Button>
