@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
+    "build": "tsc && cp src/config/protected-tags.conf dist/config/protected-tags.conf",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

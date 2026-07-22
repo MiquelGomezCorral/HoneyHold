@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Button from '../../components/Button.js';
 import PeriodNav from '../../components/PeriodNav.js';
 import ConfirmModal from '../../components/ConfirmModal.js';
@@ -12,20 +12,23 @@ import TransactionModal from './TransactionModal.js';
 import { api } from '../../api/client.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { useI18n } from '../../i18n.js';
 import { currentPeriod, entryAccountText, entryIds, entryMoney, entryTag, money, scopedAccountLabel, shortDate, signedMoney, timeStamp } from '../../lib/format.js';
 import { searchItems, type SearchField } from '../../lib/search.js';
 import { DEFAULT_TRANSACTION_FILTERS, TRANSACTION_TYPE_FILTERS, dateParams, mergeLedgerRows, parseAmount, passesEntryFilters } from './transactionFilters.js';
 import type { TransactionFilters } from './transactionFilters.js';
-import type { Account, EntryType, LedgerEntry, RecurringRule, Transaction, Transfer } from '../../types.js';
+import type { Account, EntryType, LedgerEntry, RecurringRule, Tag, Transaction, Transfer } from '../../types.js';
 
 export default function TransactionsView() {
   const { profileId, version, bump } = useProfile();
+  const { showError, showToast } = useToast();
   const { locale, t } = useI18n();
   const [period, setPeriod] = useState(currentPeriod);
   const [filters, setFilters] = useState<TransactionFilters>(DEFAULT_TRANSACTION_FILTERS);
   const [editing, setEditing] = useState<LedgerEntry | null>(null);
   const [confirm, setConfirm] = useState<{ kind: 'delete'; entry: LedgerEntry } | { kind: 'stop'; ruleId: number } | null>(null);
+  const [confirming, setConfirming] = useState(false);
   const { type, query, accounts: selectedAccounts, tags: selectedTags, amountMin, amountMax, date: dateFilter } = filters;
 
   const dateQuery = dateParams(dateFilter, period);
@@ -43,8 +46,17 @@ export default function TransactionsView() {
     [profileId, transferQuery, type, version]
   );
   const { data: accounts } = useFetch<Account[]>(`/profiles/${profileId}/accounts?include_cross=1`, [profileId]);
-  const { data: tags } = useFetch<{ id: number; name: string }[]>(`/profiles/${profileId}/tags`, [profileId]);
+  const { data: tags } = useFetch<Tag[]>(`/profiles/${profileId}/tags`, [profileId, version]);
   const { data: rules } = useFetch<RecurringRule[]>(`/profiles/${profileId}/recurring`, [profileId, version]);
+
+  useEffect(() => {
+    if (!tags) return;
+    const tagNames = new Set(tags.map((tag) => tag.name));
+    setFilters((current) => {
+      const nextTags = current.tags.filter((tag) => tagNames.has(tag));
+      return nextTags.length === current.tags.length ? current : { ...current, tags: nextTags };
+    });
+  }, [tags]);
 
   const rows = useMemo(() => {
     return mergeLedgerRows(type, transactionRows, transferRows);
@@ -92,15 +104,24 @@ export default function TransactionsView() {
   }
 
   async function handleConfirm() {
-    if (!confirm) return;
-    if (confirm.kind === 'delete') {
-      const { entry } = confirm;
-      await api.del(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`);
-    } else {
-      await api.del(`/recurring/${confirm.ruleId}`);
+    if (!confirm || confirming) return;
+    setConfirming(true);
+    try {
+      if (confirm.kind === 'delete') {
+        const { entry } = confirm;
+        await api.del(entry.type === 'transfer' ? `/transfers/${entry.id}` : `/transactions/${entry.id}`);
+        showToast(t(entry.type === 'transfer' ? 'toast.transferDeleted' : 'toast.transactionDeleted'), 'success');
+      } else {
+        await api.del(`/recurring/${confirm.ruleId}`);
+        showToast(t('toast.ruleStopped'), 'success');
+      }
+      setConfirm(null);
+      bump();
+    } catch (err) {
+      showError(err);
+    } finally {
+      setConfirming(false);
     }
-    setConfirm(null);
-    bump();
   }
 
   return (
@@ -171,8 +192,9 @@ export default function TransactionsView() {
           }
           confirmLabel={confirm.kind === 'delete' ? t('transactions.delete') : t('transactions.stop')}
           variant="danger-active"
+          disabled={confirming}
           onConfirm={handleConfirm}
-          onCancel={() => setConfirm(null)}
+          onCancel={() => { setConfirm(null); setConfirming(false); }}
         />
       )}
     </>
