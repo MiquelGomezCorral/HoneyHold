@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { useState } from 'react';
 import PeriodNav from '../../components/PeriodNav.js';
-import Donut from '../../components/Donut.js';
+import PieChartDisplay from '../../components/PieChartDisplay.js';
 import Section from '../../components/Section.js';
 import GoalsPanel from '../dashboard/GoalsPanel.js';
 import { useFetch } from '../../hooks/useFetch.js';
@@ -9,6 +9,7 @@ import { useProfile } from '../../context/ProfileContext.js';
 import { useI18n } from '../../i18n.js';
 import { currentPeriod, money } from '../../lib/format.js';
 import type { DashboardData } from '../../types.js';
+import { Separator } from '../../components/Sepatator.js';
 
 export default function MonthlyView() {
   const { profileId, version } = useProfile();
@@ -54,14 +55,17 @@ export default function MonthlyView() {
       </Section>
 
       <Section title={t('monthly.whereItGoes')}>
-        <div className="grid grid-cols-2 gap-14 max-lg:grid-cols-1 max-lg:gap-7">
-          <div>
+        <div className="flex w-full gap-14 max-lg:flex-col max-lg:gap-7">
+          <div className="w-full">
             <h3 className="m-0 mb-2 text-sm font-semibold">{t('monthly.fixedVsVariable')}</h3>
-            <Donut data={fixedVsVariable} emptyNote={t('monthly.noExpenses')} />
+            <PieChartDisplay data={fixedVsVariable} emptyNote={t('monthly.noExpenses')} />
           </div>
-          <div>
+          
+          <Separator direction="vertical"/>
+
+          <div className="w-full">
             <h3 className="m-0 mb-2 text-sm font-semibold">{t('monthly.spendingByTag')}</h3>
-            <Donut data={byTag} emptyNote={t('monthly.addExpenseBreakdown')} />
+            <PieChartDisplay data={byTag} emptyNote={t('monthly.addExpenseBreakdown')} />
           </div>
         </div>
       </Section>

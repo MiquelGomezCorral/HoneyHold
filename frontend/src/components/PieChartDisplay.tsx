@@ -9,7 +9,7 @@ interface Props {
   emptyNote: string;
 }
 
-export default function Donut({ data, emptyNote }: Props) {
+export default function PieChartDisplay({ data, emptyNote }: Props) {
   const slices = data.filter((d) => Number(d.value) > 0);
 
   if (!slices.length) {
@@ -17,7 +17,7 @@ export default function Donut({ data, emptyNote }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-[190px_1fr] gap-5 items-center">
+    <div className="grid grid-cols-[190px_1fr] gap-5 items-start">
       <div>
         <ResponsiveContainer width="100%" height={190}>
           <PieChart>
