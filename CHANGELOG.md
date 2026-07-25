@@ -1,3 +1,13 @@
+## [1.6.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.5.2...v1.6.0) (2026-07-25)
+
+### Features
+
+* manage tags ([71f87fd](https://github.com/MiquelGomezCorral/HoneyHold/commit/71f87fd486479b7af4b8aee44107a34986ad87e4))
+
+### Bug Fixes
+
+* not fitting label ([4ce574d](https://github.com/MiquelGomezCorral/HoneyHold/commit/4ce574d9232940f8d7881d1543be02e9b6f9e09f))
+
 ## [1.5.2](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.5.1...v1.5.2) (2026-07-25)
 
 ### Bug Fixes
