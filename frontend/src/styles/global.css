@@ -18,6 +18,7 @@
   --scrollbar-track: rgb(var(--paper-blue));
   --scrollbar-thumb: rgb(var(--hairline));
   --chart-green: #b6d7a8;
+  --chart-label-stroke: 242 247 251;
   --chart-purple: #a88bc1;
   --chart-blue-1: #1f6fae;
   --chart-blue-2: #5d97c4;
@@ -45,6 +46,7 @@ html.dark {
   --scrollbar-track: rgb(var(--paper-blue));
   --scrollbar-thumb: rgb(var(--hairline));
   --chart-green: #16a34a;
+  --chart-label-stroke: 14, 27, 42;
   --chart-purple: #8b5cf6;
   --chart-blue-1: #60a5fa;
   --chart-blue-2: #0284c7;
