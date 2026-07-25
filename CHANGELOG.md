@@ -1,3 +1,9 @@
+## [1.8.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.7.0...v1.8.0) (2026-07-25)
+
+### Features
+
+* added table of monthly resume and two pie charts ([e11abe9](https://github.com/MiquelGomezCorral/HoneyHold/commit/e11abe9e7a6db877e34edef5148cf20074a7a605))
+
 ## [1.7.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.6.0...v1.7.0) (2026-07-25)
 
 ### Features
