@@ -1,3 +1,13 @@
+## [1.7.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.6.0...v1.7.0) (2026-07-25)
+
+### Features
+
+* new separator ([ac97a62](https://github.com/MiquelGomezCorral/HoneyHold/commit/ac97a621382d8bd42b17fcd8573cea5b8a6745a5))
+
+### Bug Fixes
+
+* better layout for donuts chars + refactor ([7c29c7d](https://github.com/MiquelGomezCorral/HoneyHold/commit/7c29c7dd2991eb86649e32d13ea8e2ffaec496d3))
+
 ## [1.6.0](https://github.com/MiquelGomezCorral/HoneyHold/compare/v1.5.2...v1.6.0) (2026-07-25)
 
 ### Features
