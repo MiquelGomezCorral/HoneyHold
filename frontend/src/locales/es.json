@@ -199,8 +199,8 @@
     }
   },
   "tagsModal": {
-    "title": "Gestionar etiquetas",
-    "manage": "Gestionar etiquetas",
+    "title": "Gestionar",
+    "manage": "Gestionar",
     "tabs": "Acción de etiqueta",
     "modify": "Modificar",
     "add": "Añadir",
