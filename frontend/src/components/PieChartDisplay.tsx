@@ -7,14 +7,18 @@ import type { DonutSlice } from '../types.js';
 interface Props {
   data: DonutSlice[];
   emptyNote: string;
+  formatValue?: (value: number, total: number) => string;
 }
 
-export default function PieChartDisplay({ data, emptyNote }: Props) {
+export default function PieChartDisplay({ data, emptyNote, formatValue }: Props) {
   const slices = data.filter((d) => Number(d.value) > 0);
 
   if (!slices.length) {
     return <EmptyState>{emptyNote}</EmptyState>;
   }
+
+  const total = slices.reduce((sum, d) => sum + Number(d.value), 0);
+  const fmt = (v: number) => (formatValue ? formatValue(v, total) : money(v));
 
   return (
     <div className="grid grid-cols-[190px_1fr] gap-5 items-start">
@@ -36,7 +40,7 @@ export default function PieChartDisplay({ data, emptyNote }: Props) {
               ))}
             </Pie>
             <Tooltip
-              formatter={(v: number) => money(v)}
+              formatter={(v: number) => fmt(v)}
               separator=" · "
               contentStyle={{ background: CHART_COLORS.surface, border: `1px solid ${CHART_COLORS.hairline}`, borderRadius: 8 }}
               itemStyle={{ color: CHART_COLORS.ink }}
@@ -52,7 +56,7 @@ export default function PieChartDisplay({ data, emptyNote }: Props) {
               <i className="inline-block h-2.5 w-2.5 rounded-sm mr-2.5" style={{ background: CHART_COLORS.blues[i % CHART_COLORS.blues.length] }} />
               {entry.label}
             </span>
-            <span className="tabular-nums">{money(entry.value)}</span>
+            <span className="tabular-nums">{fmt(entry.value)}</span>
           </li>
         ))}
       </ul>

@@ -46,6 +46,12 @@ router.get('/:profileId/balance-series', asyncH(async (req, res) => {
   res.json(await dashboard.getBalanceSeries(req.profileId!));
 }));
 
+router.get('/:profileId/annual-summary', asyncH(async (req, res) => {
+  const year = req.query.year == null ? new Date().getFullYear() : Number(req.query.year);
+  if (!Number.isInteger(year) || year < 1900 || year > 2100) throw new HttpError(400, 'Invalid year');
+  res.json(await dashboard.getAnnualSummary(req.profileId!, year));
+}));
+
 router.get('/:profileId/transactions', asyncH(async (req, res) =>
   res.json(await txns.listTransactions(req.profileId!, req.query as Record<string, string>))));
 

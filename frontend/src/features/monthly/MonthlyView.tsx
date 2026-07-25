@@ -7,9 +7,9 @@ import GoalsPanel from '../dashboard/GoalsPanel.js';
 import { useFetch } from '../../hooks/useFetch.js';
 import { useProfile } from '../../context/ProfileContext.js';
 import { useI18n } from '../../i18n.js';
-import { currentPeriod, money } from '../../lib/format.js';
+import { categorySlices, currentPeriod, money } from '../../lib/format.js';
 import type { DashboardData } from '../../types.js';
-import { Separator } from '../../components/Sepatator.js';
+import { Separator } from '../../components/Separator.js';
 
 export default function MonthlyView() {
   const { profileId, version } = useProfile();
@@ -60,12 +60,11 @@ export default function MonthlyView() {
             <h3 className="m-0 mb-2 text-sm font-semibold">{t('monthly.fixedVsVariable')}</h3>
             <PieChartDisplay data={fixedVsVariable} emptyNote={t('monthly.noExpenses')} />
           </div>
-          
           <Separator direction="vertical"/>
 
           <div className="w-full">
             <h3 className="m-0 mb-2 text-sm font-semibold">{t('monthly.spendingByTag')}</h3>
-            <PieChartDisplay data={byTag} emptyNote={t('monthly.addExpenseBreakdown')} />
+            <PieChartDisplay data={categorySlices(byTag, t('common.untagged'))} emptyNote={t('monthly.addExpenseBreakdown')} />
           </div>
         </div>
       </Section>

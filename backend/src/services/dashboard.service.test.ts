@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { balanceSeriesMonths, projectedFixedNet } from './dashboard.service.js';
+import { annualBalances, balanceSeriesMonths, buildAnnualMonths, projectedFixedNet } from './dashboard.service.js';
 
 test('limits the balance series and fixed projection to the requested months', () => {
   assert.deepEqual(balanceSeriesMonths('2026-07-01', '2024-01-10'), [
@@ -16,4 +16,41 @@ test('limits the balance series and fixed projection to the requested months', (
     { type: 'income', amount: 1000, frequency: 'monthly', next_due: '2026-07-20', end_date: null },
     { type: 'expense', amount: 50, frequency: 'weekly', next_due: '2026-07-22', end_date: null },
   ], '2026-07-01', '2026-08-01'), 900);
+});
+
+test('rolls annual balances from an opening balance built out of prior deltas', () => {
+  const deltas = new Map([
+    ['2025-11', 500],   // before the year → folded into the opening balance
+    ['2026-01', 1000],
+    ['2026-02', -400],
+    ['2026-03', 200],
+  ]);
+  const { opening, balances } = annualBalances(2026, 6979.38, [], deltas);
+  assert.equal(opening, 7479.38);
+  assert.deepEqual(balances.slice(0, 3), [8479.38, 8079.38, 8279.38]);
+  assert.equal(balances[11], 8279.38); // later months carry the last value forward
+});
+
+test('annual balances honour a snapshot as an override anchor', () => {
+  const deltas = new Map([['2026-01', 1000], ['2026-02', 999], ['2026-03', 50]]);
+  const snapshots = [{ month: '2026-02', balance: 5000 }];
+  const { opening, balances } = annualBalances(2026, 0, snapshots, deltas);
+  assert.equal(opening, 0);
+  assert.deepEqual(balances.slice(0, 3), [1000, 5000, 5050]); // Feb snapshot wins, March builds on it
+});
+
+test('annual months distinguish savings flow from balance-only activity', () => {
+  const months = buildAnnualMonths(
+    2026,
+    Array.from({ length: 12 }, () => 1000),
+    new Map([['2026-03', { income: 1000, expense: 400 }]]),
+    new Map([['2026-01', 50], ['2026-03', -10]]),
+    new Set(['2026-02'])
+  );
+
+  assert.deepEqual(months.slice(0, 3).map(({ hasData, hasFlow, income, expense }) => ({ hasData, hasFlow, income, expense })), [
+    { hasData: true, hasFlow: false, income: 0, expense: 0 },
+    { hasData: true, hasFlow: false, income: 0, expense: 0 },
+    { hasData: true, hasFlow: true, income: 1000, expense: 400 },
+  ]);
 });

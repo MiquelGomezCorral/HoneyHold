@@ -1,6 +1,5 @@
 import cn from 'classnames';
 
-
 export function Separator({ direction = 'horizontal', className }: { direction?: 'horizontal' | 'vertical'; className?: string }) {
   return (
     direction === 'horizontal' ? (
@@ -10,5 +9,3 @@ export function Separator({ direction = 'horizontal', className }: { direction?:
     )
   );
 }
-
-

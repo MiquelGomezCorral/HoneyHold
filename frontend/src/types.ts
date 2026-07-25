@@ -91,14 +91,44 @@ export interface DashboardData {
   totalBalance: number;
   month: { income: number; expense: number; net: number };
   fixedVsVariable: { label: string; value: number }[];
-  byTag: { label: string; value: number }[];
+  byTag: CategorySlice[];
   goals: {
     monthly: { actual: number; target: number | null };
     annual: { actual: number; target: number | null };
   };
 }
 
+export interface CategorySlice {
+  label: string | null;
+  value: number;
+}
+
 export interface DonutSlice {
   label: string;
   value: number;
+}
+
+export interface AnnualMonth {
+  month: number; // 1-12
+  income: number;
+  expense: number;
+  net: number;
+  savingsRate: number | null; // net / income, as a fraction; null when income is 0
+  balance: number; // cumulative balance at the end of the month
+  hasData: boolean;
+  hasFlow: boolean;
+}
+
+export interface AnnualSummary {
+  year: number;
+  openingBalance: number;
+  months: AnnualMonth[];
+  totals: {
+    income: number;
+    expense: number;
+    net: number;
+    savingsRate: number | null;
+    balance: number;
+  };
+  byCategory: CategorySlice[];
 }

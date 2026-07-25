@@ -51,3 +51,19 @@ export const TOAST = {
   duration_ms: 3000,
   exit_ms: 200,
 };
+
+export const ANNUAL_OVERVIEW = {
+  defaultSavingsRateTarget: 0.5,
+  savingsRateTargetStoragePrefix: 'HoneyHold.savingsRateTarget',
+  columnWidthsStorageKey: 'HoneyHold.annualColWidths',
+  resizeStep: 16,
+  columns: [
+    { key: 'month', labelKey: 'annual.month', minWidth: 76, defaultWidth: 116, align: 'left' },
+    { key: 'income', labelKey: 'annual.colIncome', minWidth: 92, defaultWidth: 128, align: 'right' },
+    { key: 'expense', labelKey: 'annual.colExpense', minWidth: 92, defaultWidth: 118, align: 'right' },
+    { key: 'savings', labelKey: 'annual.colSavings', minWidth: 92, defaultWidth: 128, align: 'right' },
+    { key: 'rate', labelKey: 'annual.colRate', minWidth: 128, defaultWidth: 172, align: 'right' },
+    { key: 'balance', labelKey: 'annual.colBalance', minWidth: 100, defaultWidth: 148, align: 'right' },
+    { key: 'status', labelKey: 'annual.colStatus', minWidth: 72, defaultWidth: 92, align: 'center' },
+  ],
+} as const;
