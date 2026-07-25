@@ -14,6 +14,7 @@ services:
       - db_data:/var/lib/mysql
       # Schema + seeds run automatically on the FIRST boot of an empty volume.
       - ./db/init:/docker-entrypoint-initdb.d:ro
+      - ./backend/src/config/protected-tags.conf:/opt/honeyhold/protected-tags.conf:ro
     ports:
       - "127.0.0.1:3306:3306" # local inspection only; remove if not needed
     healthcheck:

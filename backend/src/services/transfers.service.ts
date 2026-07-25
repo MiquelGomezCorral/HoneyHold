@@ -1,4 +1,5 @@
 import { pool } from '../db/pool.js';
+import { TRANSFER_TAG } from '../config/tags.js';
 import { HttpError } from '../middleware/errors.js';
 import { monthRange } from '../utils/dates.js';
 import { accountById } from './profiles.service.js';
@@ -36,14 +37,15 @@ interface ListQuery {
 async function resolveTransferTagId(): Promise<number | null> {
   const [existing] = await pool.query<RowDataPacket[]>(
     `SELECT id FROM tags
-      WHERE profile_id IS NULL AND name = 'Transference'
-      LIMIT 1`
+      WHERE profile_id IS NULL AND name = ?
+      LIMIT 1`,
+    [TRANSFER_TAG]
   );
   if (existing.length) return existing[0].id;
 
   const [result] = await pool.query<ResultSetHeader>(
     'INSERT INTO tags (profile_id, name) VALUES (NULL, ?)',
-    ['Transference']
+    [TRANSFER_TAG]
   );
   return result.insertId;
 }
