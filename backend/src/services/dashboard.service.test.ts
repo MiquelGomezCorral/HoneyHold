@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { annualBalances, balanceSeriesMonths, projectedFixedNet } from './dashboard.service.js';
+import { annualBalances, balanceSeriesMonths, buildAnnualMonths, projectedFixedNet } from './dashboard.service.js';
 
 test('limits the balance series and fixed projection to the requested months', () => {
   assert.deepEqual(balanceSeriesMonths('2026-07-01', '2024-01-10'), [
@@ -37,4 +37,20 @@ test('annual balances honour a snapshot as an override anchor', () => {
   const { opening, balances } = annualBalances(2026, 0, snapshots, deltas);
   assert.equal(opening, 0);
   assert.deepEqual(balances.slice(0, 3), [1000, 5000, 5050]); // Feb snapshot wins, March builds on it
+});
+
+test('annual months distinguish savings flow from balance-only activity', () => {
+  const months = buildAnnualMonths(
+    2026,
+    Array.from({ length: 12 }, () => 1000),
+    new Map([['2026-03', { income: 1000, expense: 400 }]]),
+    new Map([['2026-01', 50], ['2026-03', -10]]),
+    new Set(['2026-02'])
+  );
+
+  assert.deepEqual(months.slice(0, 3).map(({ hasData, hasFlow, income, expense }) => ({ hasData, hasFlow, income, expense })), [
+    { hasData: true, hasFlow: false, income: 0, expense: 0 },
+    { hasData: true, hasFlow: false, income: 0, expense: 0 },
+    { hasData: true, hasFlow: true, income: 1000, expense: 400 },
+  ]);
 });

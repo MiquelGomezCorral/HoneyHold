@@ -1,9 +1,18 @@
-import type { LedgerEntry } from '../types.js';
+import type { CategorySlice, DonutSlice, LedgerEntry } from '../types.js';
 
 const eur = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 
 export function money(v: number | string) {
   return eur.format(Number(v) || 0);
+}
+
+export function categorySlices(slices: CategorySlice[], untagged: string): DonutSlice[] {
+  const totals = new Map<string, number>();
+  for (const slice of slices) {
+    const label = slice.label ?? untagged;
+    totals.set(label, (totals.get(label) ?? 0) + slice.value);
+  }
+  return [...totals].map(([label, value]) => ({ label, value }));
 }
 
 const pct = new Intl.NumberFormat('es-ES', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });

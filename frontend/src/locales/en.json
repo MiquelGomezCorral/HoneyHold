@@ -6,6 +6,7 @@
     "save": "Save",
     "saving": "Saving…",
     "saveChanges": "Save changes",
+    "accept": "Accept",
     "confirm": "Confirm",
     "addEntry": "Add entry",
     "addExpense": "Add expense",
@@ -36,7 +37,8 @@
     "increase": "Increase",
     "decrease": "Decrease",
     "noMax": "No max",
-    "noMaximum": "No maximum"
+    "noMaximum": "No maximum",
+    "untagged": "Untagged"
   },
   "languages": {
     "label": "Language",
@@ -65,7 +67,16 @@
     "stack": "Stack",
     "stackValue": "React 18 + TypeScript + Tailwind + MySQL 8.4",
     "design": "Design",
-    "designValue": "Local-first, no auth, multi-profile"
+    "designValue": "Local-first, no auth, multi-profile",
+    "whatsNew": "What's new in {version}",
+    "fullChangelog": "View full changelog",
+    "noNotes": "No highlights recorded for this release.",
+    "sections": {
+      "Features": "Features",
+      "Bug Fixes": "Bug fixes",
+      "Performance Improvements": "Performance",
+      "Reverts": "Reverts"
+    }
   },
   "profileGate": {
     "question": "Who is keeping the books?",
@@ -106,7 +117,7 @@
     "colRate": "Savings %",
     "colBalance": "Balance",
     "colStatus": "Status",
-    "openingBalance": "Opening balance",
+    "openingBalance": "Opening",
     "total": "TOTAL {year}",
     "met": "Yes",
     "missed": "No",
@@ -212,6 +223,34 @@
       "quarterly": "Quarterly",
       "yearly": "Yearly"
     }
+  },
+  "tagsModal": {
+    "title": "Manage tags",
+    "manage": "Manage tags",
+    "tabs": "Tag action",
+    "modify": "Modify",
+    "add": "Add",
+    "remove": "Remove",
+    "select": "Select a tag",
+    "name": "Tag name",
+    "protected": "This tag is required by the app and cannot be changed.",
+    "removeTitle": "Remove tag?",
+    "removeMessage": "Remove {name}? {count} affected records will be reassigned to Otros."
+  },
+  "toast": {
+    "transactionCreated": "Transaction added.",
+    "transactionUpdated": "Transaction updated.",
+    "transactionDeleted": "Transaction deleted.",
+    "transferCreated": "Transfer added.",
+    "transferUpdated": "Transfer updated.",
+    "transferDeleted": "Transfer deleted.",
+    "ruleStopped": "Recurring rule stopped.",
+    "tagAdded": "Tag added.",
+    "tagUpdated": "Tag updated.",
+    "tagDeleted": "Tag removed.",
+    "inboxApproved": "Entry approved.",
+    "inboxRejected": "Entry rejected.",
+    "goalSaved": "Savings goal updated."
   },
   "validation": {
     "dateFormat": "Date must be YYYY-MM-DD.",

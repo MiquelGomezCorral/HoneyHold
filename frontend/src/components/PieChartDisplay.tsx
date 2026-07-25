@@ -7,11 +7,10 @@ import type { DonutSlice } from '../types.js';
 interface Props {
   data: DonutSlice[];
   emptyNote: string;
-  /** Formats each slice's value for the legend and tooltip. Defaults to money; `total` is the sum of all slices. */
   formatValue?: (value: number, total: number) => string;
 }
 
-export default function Donut({ data, emptyNote, formatValue }: Props) {
+export default function PieChartDisplay({ data, emptyNote, formatValue }: Props) {
   const slices = data.filter((d) => Number(d.value) > 0);
 
   if (!slices.length) {
@@ -22,7 +21,7 @@ export default function Donut({ data, emptyNote, formatValue }: Props) {
   const fmt = (v: number) => (formatValue ? formatValue(v, total) : money(v));
 
   return (
-    <div className="grid grid-cols-[190px_1fr] gap-5 items-center">
+    <div className="grid grid-cols-[190px_1fr] gap-5 items-start">
       <div>
         <ResponsiveContainer width="100%" height={190}>
           <PieChart>

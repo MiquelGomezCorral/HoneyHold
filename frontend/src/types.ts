@@ -13,6 +13,14 @@ export interface Account {
   profile_name?: string;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+  profile_id: number | null;
+  usage_count: number;
+  protected: boolean;
+}
+
 export type EntryType = 'income' | 'expense' | 'transfer';
 
 export interface Transaction {
@@ -83,11 +91,16 @@ export interface DashboardData {
   totalBalance: number;
   month: { income: number; expense: number; net: number };
   fixedVsVariable: { label: string; value: number }[];
-  byTag: { label: string; value: number }[];
+  byTag: CategorySlice[];
   goals: {
     monthly: { actual: number; target: number | null };
     annual: { actual: number; target: number | null };
   };
+}
+
+export interface CategorySlice {
+  label: string | null;
+  value: number;
 }
 
 export interface DonutSlice {
@@ -103,6 +116,7 @@ export interface AnnualMonth {
   savingsRate: number | null; // net / income, as a fraction; null when income is 0
   balance: number; // cumulative balance at the end of the month
   hasData: boolean;
+  hasFlow: boolean;
 }
 
 export interface AnnualSummary {
@@ -116,5 +130,5 @@ export interface AnnualSummary {
     savingsRate: number | null;
     balance: number;
   };
-  byCategory: DonutSlice[];
+  byCategory: CategorySlice[];
 }

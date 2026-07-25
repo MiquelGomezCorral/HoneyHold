@@ -10,6 +10,7 @@ export const CHART_COLORS = {
   balance: 'var(--chart-green)',
   hairline: 'rgb(var(--hairline))',
   ink: 'rgb(var(--ink))',
+  labelStroke: 'rgb(var(--chart-label-stroke))',
   muted: 'rgb(var(--muted))',
   net: 'var(--chart-purple)',
   surface: 'rgb(var(--paper-blue-raise))',

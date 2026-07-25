@@ -1,14 +1,17 @@
 import cn from 'classnames';
-import type { KeyboardEvent, ReactNode } from 'react';
+import { Fragment, type CSSProperties, type Key, type KeyboardEvent, type ReactNode } from 'react';
 import { BG_COLORS, type BgColor } from '../lib/theme.js';
 
 export interface Column<T> {
   key: string;
   label: string;
-  align: 'left' | 'right' | 'none';
+  align: 'left' | 'right' | 'center' | 'none';
   span?: number;
+  width?: number | string;
   truncate?: boolean;
   cellKind: CellKind;
+  header?: ReactNode;
+  headerClassName?: string;
   cellClassName?: (row: T) => string;
   render: (row: T) => ReactNode;
 }
@@ -16,9 +19,10 @@ export interface Column<T> {
 interface TableHeaderProps<T> {
   columns: Column<T>[];
   className?: string;
+  sticky?: boolean;
 }
 
-export function TableHeader<T>({ columns, className }: TableHeaderProps<T>) {
+export function TableHeader<T>({ columns, className, sticky = true }: TableHeaderProps<T>) {
   function headerClass(align: Column<T>['align'], index: number) {
     return cn(
       'py-2',
@@ -27,20 +31,21 @@ export function TableHeader<T>({ columns, className }: TableHeaderProps<T>) {
         'text-xs font-semibold tracking-[0.12em] uppercase text-muted': align !== 'none',
         'text-right': align === 'right',
         'text-left': align === 'left',
+        'text-center': align === 'center',
       }
     );
   };
 
   return (
-    <thead className={cn('sticky top-16 z-[2] border-b border-hairline bg-paper-blue', className)}>
+    <thead className={cn('z-[2] border-b border-hairline bg-paper-blue', { 'sticky top-16': sticky }, className)}>
       <tr>
         {columns.map((col, index) => (
           <th
             key={col.key}
-            className={headerClass(col.align, index)}
+            className={cn(headerClass(col.align, index), col.headerClassName)}
             aria-label={col.label || undefined}
           >
-            {col.label}
+            {col.header ?? col.label}
           </th>
         ))}
       </tr>
@@ -52,21 +57,22 @@ export function TableColGroup<T>({ columns }: TableHeaderProps<T>) {
   return (
     <colgroup>
       {columns.map((col) => (
-        <col key={col.key} style={col.span ? { width: `${(col.span / 12) * 100}%` } : undefined} />
+        <col key={col.key} style={col.width != null ? { width: col.width } : col.span ? { width: `${(col.span / 12) * 100}%` } : undefined} />
       ))}
     </colgroup>
   );
 }
 
-interface TableRowProps<T> {
+export interface TableRowProps<T> {
   row: T;
   columns: Column<T>[];
   bgColor?: BgColor;
   position?: 'single' | 'first' | 'middle' | 'last';
   onClick?: (row: T) => void;
+  className?: string;
 }
 
-export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClick }: TableRowProps<T>) {
+export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClick, className }: TableRowProps<T>) {
   const handleKeyDown = (event: KeyboardEvent<HTMLTableRowElement>) => {
     if (!onClick || event.target !== event.currentTarget) return;
     if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -80,7 +86,7 @@ export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClic
   });
 
   return (
-    <tr className={trClass} onClick={onClick ? () => onClick(row) : undefined} onKeyDown={handleKeyDown} tabIndex={onClick ? 0 : undefined} role={onClick ? 'button' : undefined}>
+    <tr className={cn(trClass, className)} onClick={onClick ? () => onClick(row) : undefined} onKeyDown={handleKeyDown} tabIndex={onClick ? 0 : undefined} role={onClick ? 'button' : undefined}>
       {columns.map((col, index) => (
         <Cell
           key={col.key}
@@ -96,6 +102,55 @@ export function TableRow<T>({ row, columns, bgColor, position = 'middle', onClic
         </Cell>
       ))}
     </tr>
+  );
+}
+
+export interface DataTableProps<T> {
+  columns: Column<T>[];
+  rows: readonly T[];
+  rowKey: (row: T, index: number) => Key;
+  wrapperClassName?: string;
+  tableClassName?: string;
+  tableStyle?: CSSProperties;
+  headerClassName?: string;
+  stickyHeader?: boolean;
+  bodyStart?: ReactNode;
+  beforeRow?: (row: T, index: number, rows: readonly T[]) => ReactNode;
+  rowProps?: (row: T, index: number, rows: readonly T[]) => Omit<TableRowProps<T>, 'row' | 'columns'>;
+  footer?: ReactNode;
+}
+
+export function DataTable<T>({
+  columns,
+  rows,
+  rowKey,
+  wrapperClassName,
+  tableClassName,
+  tableStyle,
+  headerClassName,
+  stickyHeader,
+  bodyStart,
+  beforeRow,
+  rowProps,
+  footer,
+}: DataTableProps<T>) {
+  return (
+    <div className={wrapperClassName}>
+      <table className={tableClassName} style={tableStyle}>
+        <TableColGroup columns={columns} />
+        <TableHeader columns={columns} className={headerClassName} sticky={stickyHeader} />
+        <tbody>
+          {bodyStart}
+          {rows.map((row, index) => (
+            <Fragment key={rowKey(row, index)}>
+              {beforeRow?.(row, index, rows)}
+              <TableRow row={row} columns={columns} {...rowProps?.(row, index, rows)} />
+            </Fragment>
+          ))}
+        </tbody>
+        {footer}
+      </table>
+    </div>
   );
 }
 

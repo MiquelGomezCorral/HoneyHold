@@ -1,9 +1,8 @@
-import { Fragment } from 'react';
 import cn from 'classnames';
 import Badge from '../../components/Badge.js';
 import Button from '../../components/Button.js';
 import Icon from '../../components/Icon.js';
-import { DateDivider, TableColGroup, TableHeader, TableRow } from '../../components/Table.js';
+import { DataTable, DateDivider } from '../../components/Table.js';
 import { LEDGER_COLUMN_SPANS } from '../../lib/config.js';
 import { accountLabel, entryMoney, scopedAccountLabel, shortDate, timeStamp } from '../../lib/format.js';
 import { useI18n } from '../../i18n.js';
@@ -79,23 +78,23 @@ export default function LedgerTable({ rows, profileId, onEdit, onRemove }: Ledge
   ];
 
   return (
-    <div className="max-lg:overflow-x-auto">
-      <table className="w-full table-fixed border-separate border-spacing-0 text-sm max-lg:min-w-[60rem]">
-        <TableColGroup columns={columns} />
-        <TableHeader columns={columns} className="max-lg:static" />
-        <tbody>
-          {rows.map((entry, index) => {
-            const previousDate = index > 0 ? rows[index - 1].txn_date : '';
-            return (
-              <Fragment key={`${entry.type}-${entry.id}`}>
-                {entry.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(entry.txn_date, dateLocale)}</DateDivider>}
-                <TableRow row={entry} columns={columns} bgColor={rowBgColor(entry)} position={rowPosition(rows, index)} onClick={onEdit} />
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={columns}
+      rows={rows}
+      rowKey={(entry) => `${entry.type}-${entry.id}`}
+      wrapperClassName="max-lg:overflow-x-auto"
+      tableClassName="w-full table-fixed border-separate border-spacing-0 text-sm max-lg:min-w-[60rem]"
+      headerClassName="max-lg:static"
+      beforeRow={(entry, index, allRows) => {
+        const previousDate = index > 0 ? allRows[index - 1].txn_date : '';
+        return entry.txn_date !== previousDate && <DateDivider colSpan={columns.length}>{shortDate(entry.txn_date, dateLocale)}</DateDivider>;
+      }}
+      rowProps={(entry, index, allRows) => ({
+        bgColor: rowBgColor(entry),
+        position: rowPosition(allRows, index),
+        onClick: onEdit,
+      })}
+    />
   );
 }
 
@@ -114,7 +113,7 @@ function accountCell(entry: LedgerEntry, profileId: number | null) {
   return entry.account_name ? scopedAccountLabel(entry.account_name, entry.account_profile_id, entry.account_profile_name, profileId) : '—';
 }
 
-function rowPosition(rows: LedgerEntry[], index: number) {
+function rowPosition(rows: readonly LedgerEntry[], index: number) {
   const entry = rows[index];
   const previousDate = index > 0 ? rows[index - 1].txn_date : '';
   const nextDate = index < rows.length - 1 ? rows[index + 1].txn_date : '';

@@ -26,6 +26,15 @@ router.get('/:profileId/accounts', asyncH(async (req, res) =>
 router.get('/:profileId/tags', asyncH(async (req, res) =>
   res.json(await tags.listTags(req.profileId!))));
 
+router.post('/:profileId/tags', asyncH(async (req, res) =>
+  res.status(201).json(await tags.createTag(req.body?.name))));
+
+router.put('/:profileId/tags/:tagId', asyncH(async (req, res) =>
+  res.json(await tags.renameTag(req.profileId!, Number(req.params.tagId), req.body?.name))));
+
+router.delete('/:profileId/tags/:tagId', asyncH(async (req, res) =>
+  res.json(await tags.deleteTag(req.profileId!, Number(req.params.tagId)))));
+
 router.get('/:profileId/dashboard', asyncH(async (req, res) => {
   const now = new Date();
   const year = Number(req.query.year) || now.getFullYear();
@@ -38,7 +47,8 @@ router.get('/:profileId/balance-series', asyncH(async (req, res) => {
 }));
 
 router.get('/:profileId/annual-summary', asyncH(async (req, res) => {
-  const year = Number(req.query.year) || new Date().getFullYear();
+  const year = req.query.year == null ? new Date().getFullYear() : Number(req.query.year);
+  if (!Number.isInteger(year) || year < 1900 || year > 2100) throw new HttpError(400, 'Invalid year');
   res.json(await dashboard.getAnnualSummary(req.profileId!, year));
 }));
 

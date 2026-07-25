@@ -6,6 +6,7 @@
     "save": "Guardar",
     "saving": "Guardando…",
     "saveChanges": "Guardar cambios",
+    "accept": "Aceptar",
     "confirm": "Confirmar",
     "addEntry": "Añadir apunte",
     "addExpense": "Añadir gasto",
@@ -36,7 +37,8 @@
     "increase": "Aumentar",
     "decrease": "Reducir",
     "noMax": "Sin máximo",
-    "noMaximum": "Sin máximo"
+    "noMaximum": "Sin máximo",
+    "untagged": "Sin etiqueta"
   },
   "languages": {
     "label": "Idioma",
@@ -65,7 +67,16 @@
     "stack": "Stack",
     "stackValue": "React 18 + TypeScript + Tailwind + MySQL 8.4",
     "design": "Diseño",
-    "designValue": "Local-first, sin auth, multiperfil"
+    "designValue": "Local-first, sin auth, multiperfil",
+    "whatsNew": "Novedades de {version}",
+    "fullChangelog": "Ver todos los cambios",
+    "noNotes": "No hay novedades registradas para esta versión.",
+    "sections": {
+      "Features": "Novedades",
+      "Bug Fixes": "Correcciones",
+      "Performance Improvements": "Rendimiento",
+      "Reverts": "Reversiones"
+    }
   },
   "profileGate": {
     "question": "¿Quién lleva las cuentas?",
@@ -212,6 +223,34 @@
       "quarterly": "Trimestral",
       "yearly": "Anual"
     }
+  },
+  "tagsModal": {
+    "title": "Gestionar",
+    "manage": "Gestionar",
+    "tabs": "Acción de etiqueta",
+    "modify": "Modificar",
+    "add": "Añadir",
+    "remove": "Eliminar",
+    "select": "Elige una etiqueta",
+    "name": "Nombre de etiqueta",
+    "protected": "Esta etiqueta es necesaria para la aplicación y no se puede cambiar.",
+    "removeTitle": "¿Eliminar etiqueta?",
+    "removeMessage": "¿Eliminar {name}? Se reasignarán {count} registros afectados a Otros."
+  },
+  "toast": {
+    "transactionCreated": "Transacción añadida.",
+    "transactionUpdated": "Transacción actualizada.",
+    "transactionDeleted": "Transacción eliminada.",
+    "transferCreated": "Transferencia añadida.",
+    "transferUpdated": "Transferencia actualizada.",
+    "transferDeleted": "Transferencia eliminada.",
+    "ruleStopped": "Regla recurrente detenida.",
+    "tagAdded": "Etiqueta añadida.",
+    "tagUpdated": "Etiqueta actualizada.",
+    "tagDeleted": "Etiqueta eliminada.",
+    "inboxApproved": "Entrada aprobada.",
+    "inboxRejected": "Entrada rechazada.",
+    "goalSaved": "Objetivo de ahorro actualizado."
   },
   "validation": {
     "dateFormat": "La fecha debe tener formato YYYY-MM-DD.",
