@@ -66,7 +66,7 @@ export default function BalanceChart() {
           activeDot={{ r: 5 }}
           isAnimationActive={false}
         >
-          <LabelList dataKey="balance" position="top" fill={CHART_COLORS.balance} fontSize={10} formatter={money} stroke="rgba(255, 255, 255, 0.55)" strokeWidth={1.5} paintOrder="stroke" />
+          <LabelList dataKey="balance" position="top" fill={CHART_COLORS.balance} fontSize={10} formatter={money} stroke={CHART_COLORS.labelStroke} strokeWidth={4.0} paintOrder="stroke" />
         </Area>
         <Area
           type="monotone"
@@ -86,13 +86,13 @@ export default function BalanceChart() {
           name={t('chart.monthlyNet')}
           stroke={CHART_COLORS.net}
           strokeWidth={1.5}
-          strokeOpacity={0.8}
+          strokeOpacity={1.0}
           fill={CHART_COLORS.net}
           fillOpacity={0.3}
           dot={false}
           isAnimationActive={false}
         >
-          <LabelList dataKey="net" position="bottom" fill={CHART_COLORS.net} fontSize={10} formatter={money} stroke="rgba(255, 255, 255, 0.55)" strokeWidth={1.5} paintOrder="stroke" />
+          <LabelList dataKey="net" position="bottom" fill={CHART_COLORS.net} fontSize={10} formatter={money} stroke={CHART_COLORS.labelStroke} strokeWidth={4.0} paintOrder="stroke" />
         </Area>
       </AreaChart>
     </ResponsiveContainer>
