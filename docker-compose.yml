@@ -35,11 +35,17 @@ services:
       DB_USER: ${MYSQL_USER:-finance}
       DB_PASSWORD: ${MYSQL_PASSWORD:-finance-pw}
       INGEST_TOKEN: ${INGEST_TOKEN:-dev-ingest-token}
+      ENABLE_BANKING_PEM_NAME: ${ENABLE_BANKING_PEM_NAME}
+      ENABLE_BANKING_PRIVATE_KEY_PATH: ${ENABLE_BANKING_PRIVATE_KEY_PATH:-/run/secrets/enable-banking.pem}
+      ENABLE_BANKING_REDIRECT_URL: ${ENABLE_BANKING_REDIRECT_URL:-https://banking.miquelgc.net/enablebanking/callback}
+      TZ: ${TZ:-Europe/Madrid}
     ports:
       - "4000:4000"
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - ./db/init:/db/init:ro
+      - ./${ENABLE_BANKING_PEM_NAME:?Set ENABLE_BANKING_PEM_NAME in .env}.pem:/run/secrets/enable-banking.pem:ro
     depends_on:
       db:
         condition: service_healthy

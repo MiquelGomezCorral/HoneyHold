@@ -10,6 +10,11 @@ interface EnvConfig {
   port: number;
   db: DbConfig;
   ingestToken: string;
+  enableBanking: {
+    appId: string;
+    privateKeyPath: string;
+    redirectUrl: string;
+  };
 }
 
 export const env: EnvConfig = {
@@ -22,4 +27,9 @@ export const env: EnvConfig = {
     database: process.env.DB_NAME || 'finance',
   },
   ingestToken: process.env.INGEST_TOKEN || 'dev-ingest-token',
+  enableBanking: {
+    appId: process.env.ENABLE_BANKING_PEM_NAME || '',
+    privateKeyPath: process.env.ENABLE_BANKING_PRIVATE_KEY_PATH || '/run/secrets/enable-banking.pem',
+    redirectUrl: process.env.ENABLE_BANKING_REDIRECT_URL || 'https://banking.miquelgc.net/enablebanking/callback',
+  },
 };

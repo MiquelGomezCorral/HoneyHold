@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import type { Request, Response } from 'express';
 import api from './routes/index.js';
-import { errorHandler, notFound } from './middleware/errors.js';
+import { asyncH, errorHandler, notFound } from './middleware/errors.js';
 import { pool } from './db/pool.js';
+import { enableBankingCallback } from './routes/enable-banking.routes.js';
 
 export const app = express();
 
@@ -20,6 +21,8 @@ app.get('/api/health', async (_req: Request, res: Response) => {
   }
   res.json({ ok: true, db });
 });
+
+app.get('/enablebanking/callback', asyncH(enableBankingCallback));
 
 app.use('/api', api);
 app.use(notFound);

@@ -8,8 +8,13 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    allowedHosts: ['banking.miquelgc.net'],
     proxy: {
       '/api': {
+        target: process.env.VITE_API_PROXY || 'http://localhost:4000',
+        changeOrigin: true,
+      },
+      '/enablebanking': {
         target: process.env.VITE_API_PROXY || 'http://localhost:4000',
         changeOrigin: true,
       },

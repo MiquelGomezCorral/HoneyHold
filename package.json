@@ -5,6 +5,7 @@
   "description": "HoneyHold — personal finance ledger. Repository root for release tooling; the app itself lives in backend/ and frontend/.",
   "type": "module",
   "scripts": {
+    "authorize-banks": "bun scripts/authorize-banks.ts",
     "release": "semantic-release"
   },
   "repository": {

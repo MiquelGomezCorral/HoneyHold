@@ -1,0 +1,20 @@
+[
+  {
+    "aspsp_name": "BBVA",
+    "country": "ES",
+    "profile_slug": "maikol",
+    "account_name": "BBVA"
+  },
+  {
+    "aspsp_name": "Trade Republic",
+    "country": "DE",
+    "profile_slug": "maikol",
+    "account_name": "Trade"
+  },
+  {
+    "aspsp_name": "Revolut",
+    "country": "ES",
+    "profile_slug": "maikol",
+    "account_name": "Revolut"
+  }
+]

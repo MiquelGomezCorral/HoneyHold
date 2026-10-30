@@ -45,3 +45,6 @@ backups/
 
 docs/files.zip
 docs/hucha.zip
+
+app_code.txt
+./**/.pem
